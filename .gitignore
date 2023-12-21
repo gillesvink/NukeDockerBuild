@@ -1,0 +1,5 @@
+*.pyc
+*.drawio
+.vscode
+
+Dockerfile
