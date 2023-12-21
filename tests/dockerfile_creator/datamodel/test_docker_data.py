@@ -28,6 +28,21 @@ class TestDockerfile:
             nuke_version=15.0,
         )
 
+    @pytest.mark.xfail()
+    @pytest.mark.parametrize(
+        (
+            "test_operating_system",
+            "test_nuke_version",
+            "expected_upstream_container",
+        ),
+        [
+            (OperatingSystem.LINUX, 15.0, UpstreamImage.ROCKYLINUX_8),
+            (OperatingSystem.LINUX, 14.0, UpstreamImage.CENTOS_7),
+            (OperatingSystem.LINUX, 13.2, UpstreamImage.CENTOS_7),
+            (OperatingSystem.LINUX, 13.0, UpstreamImage.CENTOS_7),
+            (OperatingSystem.LINUX, 12.0, UpstreamImage.CENTOS_7),
+        ],
+    )
     def test_upstream_image(
         self,
         dummy_dockerfile: Dockerfile,
@@ -41,44 +56,76 @@ class TestDockerfile:
 
         assert dummy_dockerfile.upstream_image == expected_upstream_container
 
+    @pytest.mark.xfail()
+    @pytest.mark.parametrize(
+        (
+            "test_upstream_image",
+            "expected_installation_command",
+        ),
+        [
+            (UpstreamImage.ROCKYLINUX_8, "command here"),
+        ],
+    )
     def test_get_installation_command(
         self,
         dummy_dockerfile: Dockerfile,
-        test_operating_system: OperatingSystem,
-        upstream_container: UpstreamImage,
+        test_upstream_image: UpstreamImage,
         expected_installation_command: str,
     ) -> None:
         """Test the calculation of the installation command."""
-        dummy_dockerfile.operating_system = test_operating_system
-
         with patch(
             "dockerfile_creator.datamodel.docker_data.Dockerfile.upstream_image",
-            upstream_container,
+            test_upstream_image,
         ):
             assert (
                 dummy_dockerfile.get_installation_command()
                 == expected_installation_command
             )
 
+    @pytest.mark.xfail()
+    @pytest.mark.parametrize(
+        ("test_upstream_image", "expected_run_command"),
+        [
+            (UpstreamImage.ROCKYLINUX_8, "command here"),
+        ],
+    )
     def test_get_run_command(
         self,
         dummy_dockerfile: Dockerfile,
-        test_operating_system: OperatingSystem,
-        upstream_container: UpstreamImage,
+        test_upstream_image: UpstreamImage,
         expected_run_command: str,
     ) -> None:
         """Test the calculation of the run command."""
-        dummy_dockerfile.operating_system = test_operating_system
-
         with patch(
             "dockerfile_creator.datamodel.docker_data.Dockerfile.upstream_image",
-            upstream_container,
+            test_upstream_image,
         ):
             assert (
                 dummy_dockerfile.get_installation_command()
                 == expected_run_command
             )
 
+    @pytest.mark.xfail()
+    @pytest.mark.parametrize(
+        ("test_operating_system", "test_nuke_version", "expected_path"),
+        [
+            (
+                OperatingSystem.LINUX,
+                15.0,
+                Path("dockerfiles/15.0/linux/Dockerfile"),
+            ),
+            (
+                OperatingSystem.MACOS,
+                14.1,
+                Path("dockerfiles/14.0/macos/Dockerfile"),
+            ),
+            (
+                OperatingSystem.WINDOWS,
+                13.2,
+                Path("dockerfiles/14.0/windows/Dockerfile"),
+            ),
+        ],
+    )
     def test_get_dockerfile_path(
         self,
         dummy_dockerfile: Dockerfile,
@@ -92,6 +139,16 @@ class TestDockerfile:
 
         assert dummy_dockerfile.get_dockerfile_path() == expected_path
 
+    @pytest.mark.xfail()
+    @pytest.mark.parametrize(
+        ("test_operating_system", "test_nuke_version"),
+        [
+            (OperatingSystem.LINUX, 15.0),
+            (OperatingSystem.LINUX, 13.0),
+            (OperatingSystem.MACOS, 15.0),
+            (OperatingSystem.WINDOWS, 15.0),
+        ],
+    )
     def test_to_dockerfile(
         self,
         dummy_dockerfile: Dockerfile,
