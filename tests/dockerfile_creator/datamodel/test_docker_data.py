@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-
+from dockerfile_creator.datamodel.constants import InstallCommands
 from dockerfile_creator.datamodel.docker_data import (
     Dockerfile,
     OperatingSystem,
@@ -28,7 +28,6 @@ class TestDockerfile:
             nuke_version=15.0,
         )
 
-    @pytest.mark.xfail()
     @pytest.mark.parametrize(
         (
             "test_operating_system",
@@ -56,23 +55,40 @@ class TestDockerfile:
 
         assert dummy_dockerfile.upstream_image == expected_upstream_container
 
-    @pytest.mark.xfail()
     @pytest.mark.parametrize(
         (
             "test_upstream_image",
+            "test_url",
             "expected_installation_command",
         ),
         [
-            (UpstreamImage.ROCKYLINUX_8, "command here"),
+            (
+                UpstreamImage.ROCKYLINUX_8,
+                "https://my/test/nuke_installation_file.tgz",
+                InstallCommands.LINUX.value.format(
+                    url="https://my/test/nuke_installation_file.tgz",
+                    filename="nuke_installation_file",
+                ),
+            ),
+            (
+                UpstreamImage.CENTOS_7,
+                "https://my/test/nuke_installation_file.tgz",
+                InstallCommands.LINUX.value.format(
+                    url="https://my/test/nuke_installation_file.tgz",
+                    filename="nuke_installation_file",
+                ),
+            ),
         ],
     )
     def test_get_installation_command(
         self,
         dummy_dockerfile: Dockerfile,
         test_upstream_image: UpstreamImage,
+        test_url: str,
         expected_installation_command: str,
     ) -> None:
         """Test the calculation of the installation command."""
+        dummy_dockerfile.nuke_source = test_url
         with patch(
             "dockerfile_creator.datamodel.docker_data.Dockerfile.upstream_image",
             test_upstream_image,

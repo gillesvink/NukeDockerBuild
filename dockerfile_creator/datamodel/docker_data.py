@@ -5,6 +5,10 @@
 
 from dataclasses import dataclass
 from enum import Enum
+import os
+from pathlib import Path
+
+from dockerfile_creator.datamodel.constants import InstallCommands
 
 
 class OperatingSystem(str, Enum):
@@ -30,3 +34,18 @@ class Dockerfile:
     operating_system: OperatingSystem
     nuke_version: float
     nuke_source: str
+
+    @property
+    def upstream_image(self) -> UpstreamImage:
+        """Return matching upstream image."""
+        if self.nuke_version < 15.0:
+            return UpstreamImage.CENTOS_7
+        return UpstreamImage.ROCKYLINUX_8
+
+    def get_installation_command(self) -> str:
+        """Return the installation command for this dockerfile."""
+        filename = os.path.splitext(os.path.basename(self.nuke_source))[0]
+        return InstallCommands.LINUX.value.format(
+            url=self.nuke_source,
+            filename=filename,
+        )
