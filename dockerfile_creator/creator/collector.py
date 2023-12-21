@@ -59,6 +59,11 @@ def get_dockerfiles(data: dict) -> list[Dockerfile]:
         installer_data = release_data.get("installer")
         version_number = _nuke_version_to_float(version)
 
+        # FIXME(gillesvink): this is temporarily, as Nuke 12 requires
+        # additional work.
+        if version_number < 13:
+            continue
+
         for os in ["mac", "linux", "windows"]:
             install_url = installer_data.get(f"{os}_x86")
             if not install_url:
