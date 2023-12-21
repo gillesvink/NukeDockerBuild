@@ -14,6 +14,14 @@ class OperatingSystem(str, Enum):
     LINUX: str = "linux"
 
 
+class UpstreamImage(str, Enum):
+    """Enumeration for possible upstream images."""
+
+    ROCKYLINUX_9: str = "rockylinux:9"
+    ROCKYLINUX_8: str = "rockylinux:8"
+    CENTOS_7: str = "centos:centos7"
+
+
 @dataclass
 class Dockerfile:
     """Dataclass to store all data for dockerfile."""
