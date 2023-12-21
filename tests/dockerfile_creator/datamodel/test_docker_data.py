@@ -136,7 +136,6 @@ class TestDockerfile:
         ):
             assert dummy_dockerfile.get_run_command() == expected_run_command
 
-    @pytest.mark.xfail()
     @pytest.mark.parametrize(
         ("test_operating_system", "test_nuke_version", "expected_path"),
         [
@@ -148,12 +147,12 @@ class TestDockerfile:
             (
                 OperatingSystem.MACOS,
                 14.1,
-                Path("dockerfiles/14.0/macos/Dockerfile"),
+                Path("dockerfiles/14.1/macos/Dockerfile"),
             ),
             (
                 OperatingSystem.WINDOWS,
                 13.2,
-                Path("dockerfiles/14.0/windows/Dockerfile"),
+                Path("dockerfiles/13.2/windows/Dockerfile"),
             ),
         ],
     )
@@ -170,7 +169,6 @@ class TestDockerfile:
 
         assert dummy_dockerfile.get_dockerfile_path() == expected_path
 
-    @pytest.mark.xfail()
     @pytest.mark.parametrize(
         ("test_operating_system", "test_nuke_version"),
         [
@@ -191,11 +189,10 @@ class TestDockerfile:
         dummy_dockerfile.nuke_version = test_nuke_version
 
         expected_dockerfile = (
-            "# Auto generated Dockerfile for Nuke compiling\n"
-            f"FROM {dummy_dockerfile.upstream_image}\n"
+            f"FROM {dummy_dockerfile.upstream_image.value}\n"
             "\n"
-            f"RUN {dummy_dockerfile.get_run_command()}\n"
-            f"RUN {dummy_dockerfile.get_installation_command()}"
+            f"{dummy_dockerfile.get_run_command()}\n"
+            f"{dummy_dockerfile.get_installation_command()}"
         )
 
         assert dummy_dockerfile.to_dockerfile() == expected_dockerfile

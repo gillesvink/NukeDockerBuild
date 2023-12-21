@@ -6,6 +6,7 @@
 import os
 from dataclasses import dataclass
 from math import floor
+from pathlib import Path
 
 from dockerfile_creator.datamodel.constants import (
     DEVTOOLSETS,
@@ -45,4 +46,19 @@ class Dockerfile:
 
         return SETUP_COMMANDS[self.upstream_image].format(
             devtoolset=devtoolset
+        )
+
+    def get_dockerfile_path(self) -> Path:
+        """Return relative path where dockerfile should be written to."""
+        return Path(
+            f"dockerfiles/{self.nuke_version}/{self.operating_system.value}"
+            "/Dockerfile"
+        )
+
+    def to_dockerfile(self) -> str:
+        """Convert current instance to a dockerfile string."""
+        return (
+            f"FROM {self.upstream_image.value}\n\n"
+            f"{self.get_run_command()}\n"
+            f"{self.get_installation_command()}"
         )
