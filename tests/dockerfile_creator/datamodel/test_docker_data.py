@@ -7,7 +7,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from dockerfile_creator.datamodel.constants import InstallCommands
+from dockerfile_creator.datamodel.constants import (
+    InstallCommands,
+    SETUP_COMMANDS,
+)
 from dockerfile_creator.datamodel.docker_data import (
     Dockerfile,
     OperatingSystem,
@@ -98,28 +101,40 @@ class TestDockerfile:
                 == expected_installation_command
             )
 
-    @pytest.mark.xfail()
     @pytest.mark.parametrize(
-        ("test_upstream_image", "expected_run_command"),
+        ("test_upstream_image", "test_nuke_version", "expected_run_command"),
         [
-            (UpstreamImage.ROCKYLINUX_8, "command here"),
+            (
+                UpstreamImage.ROCKYLINUX_8,
+                15.0,
+                SETUP_COMMANDS[UpstreamImage.ROCKYLINUX_8].format(devtoolset="gcc-toolset-11"),
+            ),
+            (
+                UpstreamImage.CENTOS_7,
+                14.0,
+                SETUP_COMMANDS[UpstreamImage.CENTOS_7].format(devtoolset="devtoolset-9"),
+            ),
+            (
+                UpstreamImage.CENTOS_7,
+                13.0,
+                SETUP_COMMANDS[UpstreamImage.CENTOS_7].format(devtoolset="devtoolset-6"),
+            ),
         ],
     )
     def test_get_run_command(
         self,
         dummy_dockerfile: Dockerfile,
         test_upstream_image: UpstreamImage,
+        test_nuke_version: float,
         expected_run_command: str,
     ) -> None:
-        """Test the calculation of the run command."""
+        """Test the calculation of the run command and follow vfx reference."""
+        dummy_dockerfile.nuke_version = test_nuke_version
         with patch(
             "dockerfile_creator.datamodel.docker_data.Dockerfile.upstream_image",
             test_upstream_image,
         ):
-            assert (
-                dummy_dockerfile.get_installation_command()
-                == expected_run_command
-            )
+            assert dummy_dockerfile.get_run_command() == expected_run_command
 
     @pytest.mark.xfail()
     @pytest.mark.parametrize(

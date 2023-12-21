@@ -3,28 +3,17 @@
 @maintainer: Gilles Vink
 """
 
-from dataclasses import dataclass
-from enum import Enum
 import os
-from pathlib import Path
+from dataclasses import dataclass
+from math import floor
 
-from dockerfile_creator.datamodel.constants import InstallCommands
-
-
-class OperatingSystem(str, Enum):
-    """Enumeration to store operating system type."""
-
-    WINDOWS: str = "windows"
-    MACOS: str = "macos"
-    LINUX: str = "linux"
-
-
-class UpstreamImage(str, Enum):
-    """Enumeration for possible upstream images."""
-
-    ROCKYLINUX_9: str = "rockylinux:9"
-    ROCKYLINUX_8: str = "rockylinux:8"
-    CENTOS_7: str = "centos:centos7"
+from dockerfile_creator.datamodel.constants import (
+    DEVTOOLSETS,
+    SETUP_COMMANDS,
+    InstallCommands,
+    OperatingSystem,
+    UpstreamImage,
+)
 
 
 @dataclass
@@ -48,4 +37,12 @@ class Dockerfile:
         return InstallCommands.LINUX.value.format(
             url=self.nuke_source,
             filename=filename,
+        )
+
+    def get_run_command(self) -> str:
+        """Return the run command for setting up the image."""
+        devtoolset = DEVTOOLSETS[floor(self.nuke_version)]
+
+        return SETUP_COMMANDS[self.upstream_image].format(
+            devtoolset=devtoolset
         )
