@@ -2,8 +2,12 @@
 
 @maintainer: Gilles Vink
 """
+from __future__ import annotations
 
 from enum import Enum
+
+JSON_DATA_SOURCE = "https://raw.githubusercontent.com/gillesvink/NukeVersionParser/main/nuke-minor-supported-releases.json"
+"""JSON data to use for fetching new Nuke releases."""
 
 
 class InstallCommands(str, Enum):
@@ -26,6 +30,15 @@ class OperatingSystem(str, Enum):
     MACOS: str = "macos"
     LINUX: str = "linux"
 
+    @classmethod
+    def from_shortname(cls, shortname: str) -> OperatingSystem:
+        """Return enum by provided shortname"""
+        for os_enum in cls:
+            if shortname.lower() in os_enum.name.lower():
+                return os_enum
+        msg = f"No matching enum for short name: {shortname}"
+        raise ValueError(msg)
+
 
 class UpstreamImage(str, Enum):
     """Enumeration for possible upstream images."""
@@ -41,7 +54,6 @@ DEVTOOLSETS = {
     13: "devtoolset-6",
 }
 """Matched devtoolset to Nuke major version."""
-
 
 SETUP_COMMANDS: dict = {
     UpstreamImage.ROCKYLINUX_8: (

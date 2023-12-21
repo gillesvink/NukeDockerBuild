@@ -7,9 +7,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+
 from dockerfile_creator.datamodel.constants import (
-    InstallCommands,
     SETUP_COMMANDS,
+    InstallCommands,
 )
 from dockerfile_creator.datamodel.docker_data import (
     Dockerfile,
@@ -27,7 +28,10 @@ class TestDockerfile:
 
         return Dockerfile(
             operating_system=OperatingSystem.LINUX,
-            nuke_source="https://thefoundry.s3.amazonaws.com/products/nuke/releases/15.0v2/Nuke15.0v2-linux-x86_64.tgz",
+            nuke_source=(
+                "https://thefoundry.s3.amazonaws.com/products/nuke/"
+                "releases/15.0v2/Nuke15.0v2-linux-x86_64.tgz"
+            ),
             nuke_version=15.0,
         )
 
@@ -93,7 +97,10 @@ class TestDockerfile:
         """Test the calculation of the installation command."""
         dummy_dockerfile.nuke_source = test_url
         with patch(
-            "dockerfile_creator.datamodel.docker_data.Dockerfile.upstream_image",
+            (
+                "dockerfile_creator.datamodel.docker_data.Dockerfile"
+                ".upstream_image"
+            ),
             test_upstream_image,
         ):
             assert (
@@ -107,17 +114,23 @@ class TestDockerfile:
             (
                 UpstreamImage.ROCKYLINUX_8,
                 15.0,
-                SETUP_COMMANDS[UpstreamImage.ROCKYLINUX_8].format(devtoolset="gcc-toolset-11"),
+                SETUP_COMMANDS[UpstreamImage.ROCKYLINUX_8].format(
+                    devtoolset="gcc-toolset-11"
+                ),
             ),
             (
                 UpstreamImage.CENTOS_7,
                 14.0,
-                SETUP_COMMANDS[UpstreamImage.CENTOS_7].format(devtoolset="devtoolset-9"),
+                SETUP_COMMANDS[UpstreamImage.CENTOS_7].format(
+                    devtoolset="devtoolset-9"
+                ),
             ),
             (
                 UpstreamImage.CENTOS_7,
                 13.0,
-                SETUP_COMMANDS[UpstreamImage.CENTOS_7].format(devtoolset="devtoolset-6"),
+                SETUP_COMMANDS[UpstreamImage.CENTOS_7].format(
+                    devtoolset="devtoolset-6"
+                ),
             ),
         ],
     )
@@ -131,7 +144,10 @@ class TestDockerfile:
         """Test the calculation of the run command and follow vfx reference."""
         dummy_dockerfile.nuke_version = test_nuke_version
         with patch(
-            "dockerfile_creator.datamodel.docker_data.Dockerfile.upstream_image",
+            (
+                "dockerfile_creator.datamodel.docker_data.Dockerfile"
+                ".upstream_image"
+            ),
             test_upstream_image,
         ):
             assert dummy_dockerfile.get_run_command() == expected_run_command
