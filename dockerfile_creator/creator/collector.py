@@ -2,16 +2,20 @@
 
 @maintainer: Gilles Vink
 """
-from itertools import chain
+import logging
+import re
+
+import requests
+
 from dockerfile_creator.datamodel.constants import (
     JSON_DATA_SOURCE,
     OperatingSystem,
 )
 from dockerfile_creator.datamodel.docker_data import Dockerfile
-import requests
-import re
 
 _VERSION_REGEX = re.compile("^[^v]*")
+
+logger = logging.getLogger(__name__)
 
 
 def fetch_json_data() -> dict:
@@ -20,6 +24,7 @@ def fetch_json_data() -> dict:
     if fetched_data.status_code != 200:
         msg = "Request returned 404. Please check the URL and try again."
         raise ValueError(msg)
+    logger.info("Fetched JSON data containing Nuke releases.")
     return fetched_data.json()
 
 
@@ -75,4 +80,7 @@ def get_dockerfiles(data: dict) -> list[Dockerfile]:
                     nuke_source=install_url,
                 )
             )
+    msg = f"Found {len(dockerfiles)} possible dockerfiles."
+    logger.info(msg)
+
     return dockerfiles
