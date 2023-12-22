@@ -25,7 +25,10 @@ def generate_dockerfiles() -> None:
     """
     dockerfiles_directory = os.getenv("DOCKERFILES_DIRECTORY")
     if not dockerfiles_directory:
-        msg = "DOCKERFILES_DIRECTORY environment not set. Cannot create dockerfiles."
+        msg = (
+            "DOCKERFILES_DIRECTORY environment not set. "
+            "Cannot create dockerfiles."
+        )
         raise ValueError(msg)
 
     json_data = fetch_json_data()

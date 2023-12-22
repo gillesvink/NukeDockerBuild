@@ -44,5 +44,5 @@ def write_dockerfiles(directory: Path, dockerfiles: list[Dockerfile]) -> None:
         write_path: Path = directory / dockerfile.get_dockerfile_path()
         write_path.parent.mkdir(parents=True, exist_ok=True)
         write_path.write_text(dockerfile.to_dockerfile())
-
-    logger.info(f"Wrote {len(dockerfiles)} new dockerfiles.")
+    msg = f"Created {len(dockerfiles)} new dockerfiles."
+    logger.info(msg)
