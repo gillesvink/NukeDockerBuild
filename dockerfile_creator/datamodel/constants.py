@@ -6,7 +6,10 @@ from __future__ import annotations
 
 from enum import Enum
 
-JSON_DATA_SOURCE = "https://raw.githubusercontent.com/gillesvink/NukeVersionParser/main/nuke-minor-supported-releases.json"
+JSON_DATA_SOURCE = (
+    "https://raw.githubusercontent.com/gillesvink/"
+    "NukeVersionParser/main/nuke-minor-supported-releases.json"
+)
 """JSON data to use for fetching new Nuke releases."""
 
 
@@ -14,12 +17,18 @@ class InstallCommands(str, Enum):
     """Installation commands as constants."""
 
     LINUX: str = (
-        "RUN \\n"
-        "  curl -o /tmp/{filename}.tgz {url}\n"
-        "  tar zxvf /tmp/{filename}.tgz\n"
-        "  mkdir /usr/local/nuke_install\n"
-        "  /tmp/{filename}.run --accept-foundry-eula "
-        "--prefix=/usr/local/nuke_install --exclude-subdir\n"
+        "RUN curl -o /tmp/{filename}.tgz {url} \\ \n"
+        "  && tar zxvf /tmp/{filename}.tgz -C /tmp/ \\ \n"
+        "  && mkdir /usr/local/nuke_install \\ \n"
+        "  && /tmp/{filename}.run --accept-foundry-eula "
+        "--prefix=/usr/local/nuke_install --exclude-subdir \\ \n"
+        "  && rm -rf /tmp/* \\ \n"
+        "  && cp -r /usr/local/nuke_install/Documentation/NDKExamples/"
+        "examples/ /nuke_tests/ \\ \n"
+        "  && rm -rf nukeCrashFeedback plugins configs Resources "
+        "resources lib pythonextensions translations bin "
+        "Documentation libtorch* libcudnn* libcublas* "
+        "libcusparse* libcusolver* libmkl* \\ \n"
     )
 
 
@@ -43,7 +52,6 @@ class OperatingSystem(str, Enum):
 class UpstreamImage(str, Enum):
     """Enumeration for possible upstream images."""
 
-    ROCKYLINUX_9: str = "rockylinux:9"
     ROCKYLINUX_8: str = "rockylinux:8"
     CENTOS_7: str = "centos:centos7"
 
@@ -57,16 +65,16 @@ DEVTOOLSETS = {
 
 SETUP_COMMANDS: dict = {
     UpstreamImage.ROCKYLINUX_8: (
-        "RUN \\n"
-        "  dnf install {devtoolset} &&\n"
-        "  dnf install cmake3 &&\n"
-        "  scl_source enable {devtoolset}"
+        "RUN dnf install {devtoolset} -y \\ \n"
+        "  && dnf install cmake3 -y \\ \n"
+        "  && dnf install mesa-libGLU-devel -y \\ \n"
+        "  && echo 'unset BASH_ENV PROMPT_COMMAND ENV && source "
+        "scl_source enable gcc-toolset-11' >> /usr/bin/scl_enable"
     ),
     UpstreamImage.CENTOS_7: (
-        "RUN \\n"
-        "  yum install {devtoolset} &&\n"
-        "  yum install cmake3 &&\n"
-        "  scl_source enable {devtoolset}"
+        "RUN yum install {devtoolset} -y \\ \n"
+        "  && yum install cmake3 -y \\ \n"
+        "  && scl_source enable {devtoolset}"
     ),
 }
 """Setup commands matched to their image."""

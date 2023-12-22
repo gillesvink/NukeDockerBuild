@@ -63,6 +63,36 @@ class TestDockerfile:
         assert dummy_dockerfile.upstream_image == expected_upstream_container
 
     @pytest.mark.parametrize(
+        ("test_operating_system", "expected_work_dir"),
+        [(OperatingSystem.LINUX, "/nuke_build_directory")],
+    )
+    def test_work_dir(
+        self,
+        dummy_dockerfile: Dockerfile,
+        test_operating_system: OperatingSystem,
+        expected_work_dir: str,
+    ) -> None:
+        """Test to return the correct working dir by operating system."""
+        dummy_dockerfile.operating_system = test_operating_system
+
+        assert dummy_dockerfile.work_dir == expected_work_dir
+
+    @pytest.mark.parametrize(
+        ("test_operating_system", "expected_install_directory"),
+        [(OperatingSystem.LINUX, "/usr/local/nuke_install")],
+    )
+    def test__nuke_install_directory(
+        self,
+        dummy_dockerfile: Dockerfile,
+        test_operating_system: OperatingSystem,
+        expected_install_directory: str,
+    ) -> None:
+        """Test to return the correct install directory."""
+        dummy_dockerfile.operating_system = test_operating_system
+
+        assert dummy_dockerfile.work_dir == expected_install_directory
+
+    @pytest.mark.parametrize(
         (
             "test_upstream_image",
             "test_url",
@@ -87,7 +117,7 @@ class TestDockerfile:
             ),
         ],
     )
-    def test_get_installation_command(
+    def test__get_installation_command(
         self,
         dummy_dockerfile: Dockerfile,
         test_upstream_image: UpstreamImage,
@@ -104,7 +134,7 @@ class TestDockerfile:
             test_upstream_image,
         ):
             assert (
-                dummy_dockerfile.get_installation_command()
+                dummy_dockerfile._get_nuke_installation_command()
                 == expected_installation_command
             )
 
@@ -134,7 +164,7 @@ class TestDockerfile:
             ),
         ],
     )
-    def test_get_run_command(
+    def test__get_run_command(
         self,
         dummy_dockerfile: Dockerfile,
         test_upstream_image: UpstreamImage,
@@ -150,7 +180,9 @@ class TestDockerfile:
             ),
             test_upstream_image,
         ):
-            assert dummy_dockerfile.get_run_command() == expected_run_command
+            assert (
+                dummy_dockerfile._get_setup_command() == expected_run_command
+            )
 
     @pytest.mark.parametrize(
         ("test_operating_system", "test_nuke_version", "expected_path"),
@@ -207,8 +239,10 @@ class TestDockerfile:
         expected_dockerfile = (
             f"FROM {dummy_dockerfile.upstream_image.value}\n"
             "\n"
-            f"{dummy_dockerfile.get_run_command()}\n"
-            f"{dummy_dockerfile.get_installation_command()}"
+            f"{dummy_dockerfile.labels}\n"
+            f"{dummy_dockerfile._get_nuke_installation_command()}\n"
+            f"{dummy_dockerfile._get_setup_command()}\n"
+            f"{dummy_dockerfile.work_dir}\n"
+            f"{dummy_dockerfile.environments}"
         )
-
         assert dummy_dockerfile.to_dockerfile() == expected_dockerfile
