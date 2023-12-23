@@ -63,7 +63,6 @@ class Dockerfile:
         label_prefix = "com.nukedockerbuild"
         labels = {
             f"{label_prefix}.version": 1.0,
-            f"{label_prefix}.tag": f"{self.nuke_version}-{self.operating_system.value}-1.0",
             f"{label_prefix}.release_date": datetime.now().strftime("%Y-%m-%d"),
             f"{label_prefix}.description": "Ready to use Docker image for building Nuke plugins.",
             f"{label_prefix}.license": "MIT",
