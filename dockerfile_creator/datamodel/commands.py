@@ -56,7 +56,7 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
             [
                 "echo 'Installing required packages.'",
                 "yum -y install epel-release",
-                "yum -y install centos-release-scl"
+                "yum -y install centos-release-scl",
                 "yum -y install {toolset}",
                 "yum -y install cmake3",
                 "yum -y install mesa-libGLU-devel",
