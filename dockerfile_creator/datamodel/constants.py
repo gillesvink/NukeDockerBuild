@@ -30,7 +30,6 @@ class UpstreamImage(str, Enum):
     ROCKYLINUX_8: str = "rockylinux:8"
     CENTOS_7_9: str = "centos:centos7.9.2009"
     CENTOS_7_4: str = "centos:centos7.4.1708"
-    CENTOS_6: str = "centos6.8"
 
 
 JSON_DATA_SOURCE = (
@@ -45,7 +44,6 @@ DEVTOOLSETS = {
     15: "gcc-toolset-11",
     14: "devtoolset-9",
     13: "devtoolset-6",
-    12: "devtoolset-4",
 }
 """Matched devtoolset to Nuke major version."""
 

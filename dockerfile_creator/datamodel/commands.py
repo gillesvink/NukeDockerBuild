@@ -55,11 +55,11 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
         DockerCommand(
             [
                 "echo 'Installing required packages.'",
-                "yum install -y epel-release",
-                "yum install -y yum install centos-release-scl-rh"
-                "yum install -y {toolset}",
-                "yum install -y cmake3",
-                "yum install -y mesa-libGLU-devel",
+                "yum -y install epel-release",
+                "yum -y install centos-release-scl"
+                "yum -y install {toolset}",
+                "yum -y install cmake3",
+                "yum -y install mesa-libGLU-devel",
             ]
         ),
     ],
@@ -74,7 +74,7 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
         ),
         DockerCommand(
             [
-                "echo 'Use vault for SC packages as Centos reached EOL.'",
+                "echo 'Use vault for SC packages as CentOS 7 reached EOL.'",
                 (
                     r"sed -i 's/7/7.4.1708/g; s|^#\s*\(baseurl=http://\)mirror"
                     r"|\1vault|g; /mirrorlist/d' "

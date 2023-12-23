@@ -39,8 +39,8 @@ class Dockerfile:
     def run_commands(self) -> str:
         """Return all run commands as a string."""
         commands = chain(
-            OS_COMMANDS.get(self.operating_system),
             IMAGE_COMMANDS.get(self.upstream_image),
+            OS_COMMANDS.get(self.operating_system),
         )
         formatted_commands = [
             command.to_docker_format() for command in commands
