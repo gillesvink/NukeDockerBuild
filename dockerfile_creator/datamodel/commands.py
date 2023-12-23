@@ -55,6 +55,7 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
         DockerCommand(
             [
                 "echo 'Installing required packages.'",
+                "ulimit -n 1024",
                 "yum -y install epel-release",
                 "yum -y install centos-release-scl",
                 "yum -y install {toolset}",
@@ -67,6 +68,7 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
         DockerCommand(
             [
                 "echo 'Installing required packages.'"
+                "ulimit -n 1024",
                 "yum -y install epel-release"
                 "yum -y install cmake3",
                 "yum -y install mesa-libGLU-devel",
@@ -85,6 +87,7 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
         DockerCommand(
             [
                 "echo 'Installing devtoolset.'",
+                "ulimit -n 1024",
                 "yum -y install centos-release-scl-rh "
                 "yum -y install {toolset}",
             ]
