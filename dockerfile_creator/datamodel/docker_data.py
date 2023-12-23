@@ -73,7 +73,7 @@ class Dockerfile:
             f"{label_prefix}.nuke_version": self.nuke_version,
             f"{label_prefix}.nuke_source": self.nuke_source,
         }
-        return "\n".join([f"LABEL {key}={value}" for key, value in labels.items()])
+        return "\n".join([f"LABEL '{key}'='{value}'" for key, value in labels.items()])
 
 
     @property

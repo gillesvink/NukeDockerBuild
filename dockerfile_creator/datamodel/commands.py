@@ -67,24 +67,24 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
     UpstreamImage.CENTOS_7_4: [
         DockerCommand(
             [
-                "echo 'Installing required packages.'"
+                "echo 'Installing required packages.'",
                 "ulimit -n 1024",
-                "yum -y install epel-release"
+                "yum -y install epel-release",
                 "yum -y install cmake3",
                 "yum -y install mesa-libGLU-devel",
             ]
         ),
         DockerCommand(
             [
+                "echo 'Installing devtoolset.'",
+                "ulimit -n 1024",
+                "yum -y install centos-release-scl-rh ",
                 "echo 'Use vault for SC packages as CentOS 7 reached EOL.'",
                 (
                     r"sed -i 's/7/7.4.1708/g; s|^#\s*\(baseurl=http://\)mirror"
                     r"|\1vault|g; /mirrorlist/d' "
                     "/etc/yum.repos.d/CentOS-SCLo-*.repo"
                 ),
-                "echo 'Installing devtoolset.'",
-                "ulimit -n 1024",
-                "yum -y install centos-release-scl-rh "
                 "yum -y install {toolset}",
             ]
         ),
@@ -110,8 +110,10 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 "echo 'Cleaning up Nuke to reduce image size.'",
                 "rm -rf /tmp/*",
                 f"cd {NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]}",
-                (f"cp -r {NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]}"
-                "/Documentation/NDKExamples/examples/ /nuke_tests/"),
+                (
+                    f"cp -r {NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]}"
+                    "/Documentation/NDKExamples/examples/ /nuke_tests/"
+                ),
                 f"rm -rf {REDUNDANT_NUKE_ITEMS}",
             ]
         ),
