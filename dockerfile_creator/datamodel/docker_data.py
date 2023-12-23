@@ -5,6 +5,7 @@
 
 import os
 from dataclasses import dataclass
+from datetime import datetime
 from itertools import chain
 from math import floor
 from pathlib import Path
@@ -59,7 +60,21 @@ class Dockerfile:
     @property
     def labels(self) -> str:
         """Return image labels as a string."""
-        return ""
+        label_prefix = "com.nukedockerbuild"
+        labels = {
+            f"{label_prefix}.version": 1.0,
+            f"{label_prefix}.release_date": datetime.now().strftime("%Y-%m-%d"),
+            f"{label_prefix}.description": "Ready to use Docker image for building Nuke plugins.",
+            f"{label_prefix}.license": "MIT",
+            f"{label_prefix}.maintainer": "gilles@vinkvfx.com",
+            f"{label_prefix}.source_code": "https://github.com/gillesvink/NukeDockerBuild",
+            f"{label_prefix}.based_on": self.upstream_image.value,
+            f"{label_prefix}.operating_system": self.operating_system.value,
+            f"{label_prefix}.nuke_version": self.nuke_version,
+            f"{label_prefix}.nuke_source": self.nuke_source,
+        }
+        return "\n".join([f"LABEL {key}={value}" for key, value in labels.items()])
+
 
     @property
     def environments(self) -> str:
