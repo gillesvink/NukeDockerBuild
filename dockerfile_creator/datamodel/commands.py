@@ -82,10 +82,6 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
                     r"|\1vault|g; /mirrorlist/d' "
                     "/etc/yum.repos.d/CentOS-SCLo-*.repo"
                 ),
-            ]
-        ),
-        DockerCommand(
-            [
                 "echo 'Installing devtoolset.'",
                 "ulimit -n 1024",
                 "yum -y install centos-release-scl-rh "
@@ -96,17 +92,12 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
 }
 """Commands related to each image."""
 
-
 OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
     OperatingSystem.LINUX: [
         DockerCommand(
             [
                 "echo 'Downloading Nuke from {url}'.",
                 "curl -o /tmp/{filename}.tgz {url}",
-            ]
-        ),
-        DockerCommand(
-            [
                 "echo 'Extracting and installing Nuke ({filename})'.",
                 "tar zxvf /tmp/{filename}.tgz -C /tmp",
                 f"mkdir {NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]}",
@@ -116,15 +107,11 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                     f"{NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]} "
                     "--exclude-subdir"
                 ),
-            ]
-        ),
-        DockerCommand(
-            [
                 "echo 'Cleaning up Nuke to reduce image size.'",
                 "rm -rf /tmp/*",
                 f"cd {NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]}",
-                f"cp -r {NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]}"
-                "/Documentation/NDKExamples/examples/ /nuke_tests/",
+                (f"cp -r {NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]}"
+                "/Documentation/NDKExamples/examples/ /nuke_tests/"),
                 f"rm -rf {REDUNDANT_NUKE_ITEMS}",
             ]
         ),
