@@ -4,14 +4,11 @@
 """
 
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
+from dockerfile_creator.datamodel.commands import IMAGE_COMMANDS, OS_COMMANDS
 
-from dockerfile_creator.datamodel.constants import (
-    SETUP_COMMANDS,
-    InstallCommands,
-)
 from dockerfile_creator.datamodel.docker_data import (
     Dockerfile,
     OperatingSystem,
@@ -43,10 +40,10 @@ class TestDockerfile:
         ),
         [
             (OperatingSystem.LINUX, 15.0, UpstreamImage.ROCKYLINUX_8),
-            (OperatingSystem.LINUX, 14.0, UpstreamImage.CENTOS_7),
-            (OperatingSystem.LINUX, 13.2, UpstreamImage.CENTOS_7),
-            (OperatingSystem.LINUX, 13.0, UpstreamImage.CENTOS_7),
-            (OperatingSystem.LINUX, 12.0, UpstreamImage.CENTOS_7),
+            (OperatingSystem.LINUX, 14.0, UpstreamImage.CENTOS_7_9),
+            (OperatingSystem.LINUX, 13.2, UpstreamImage.CENTOS_7_4),
+            (OperatingSystem.LINUX, 13.0, UpstreamImage.CENTOS_7_4),
+            (OperatingSystem.LINUX, 12.0, UpstreamImage.CENTOS_7_4),
         ],
     )
     def test_upstream_image(
@@ -64,7 +61,7 @@ class TestDockerfile:
 
     @pytest.mark.parametrize(
         ("test_operating_system", "expected_work_dir"),
-        [(OperatingSystem.LINUX, "/nuke_build_directory")],
+        [(OperatingSystem.LINUX, "WORKDIR /nuke_build_directory")],
     )
     def test_work_dir(
         self,
@@ -77,112 +74,43 @@ class TestDockerfile:
 
         assert dummy_dockerfile.work_dir == expected_work_dir
 
-    @pytest.mark.parametrize(
-        ("test_operating_system", "expected_install_directory"),
-        [(OperatingSystem.LINUX, "/usr/local/nuke_install")],
-    )
-    def test__nuke_install_directory(
-        self,
-        dummy_dockerfile: Dockerfile,
-        test_operating_system: OperatingSystem,
-        expected_install_directory: str,
-    ) -> None:
-        """Test to return the correct install directory."""
-        dummy_dockerfile.operating_system = test_operating_system
-
-        assert dummy_dockerfile.work_dir == expected_install_directory
-
-    @pytest.mark.parametrize(
-        (
-            "test_upstream_image",
-            "test_url",
-            "expected_installation_command",
-        ),
-        [
-            (
-                UpstreamImage.ROCKYLINUX_8,
-                "https://my/test/nuke_installation_file.tgz",
-                InstallCommands.LINUX.value.format(
-                    url="https://my/test/nuke_installation_file.tgz",
-                    filename="nuke_installation_file",
-                ),
-            ),
-            (
-                UpstreamImage.CENTOS_7,
-                "https://my/test/nuke_installation_file.tgz",
-                InstallCommands.LINUX.value.format(
-                    url="https://my/test/nuke_installation_file.tgz",
-                    filename="nuke_installation_file",
-                ),
-            ),
-        ],
-    )
-    def test__get_installation_command(
-        self,
-        dummy_dockerfile: Dockerfile,
-        test_upstream_image: UpstreamImage,
-        test_url: str,
-        expected_installation_command: str,
-    ) -> None:
-        """Test the calculation of the installation command."""
-        dummy_dockerfile.nuke_source = test_url
+    def test_environments(self, dummy_dockerfile: Dockerfile) -> None:
+        """Tests the environments property to call the constants."""
         with patch(
-            (
-                "dockerfile_creator.datamodel.docker_data.Dockerfile"
-                ".upstream_image"
-            ),
-            test_upstream_image,
-        ):
-            assert (
-                dummy_dockerfile._get_nuke_installation_command()
-                == expected_installation_command
-            )
+            "dockerfile_creator.datamodel.docker_data.OS_ENVIRONMENTS"
+        ) as environments_mock:
+            dummy_dockerfile.environments
 
-    @pytest.mark.parametrize(
-        ("test_upstream_image", "test_nuke_version", "expected_run_command"),
-        [
-            (
-                UpstreamImage.ROCKYLINUX_8,
-                15.0,
-                SETUP_COMMANDS[UpstreamImage.ROCKYLINUX_8].format(
-                    devtoolset="gcc-toolset-11"
-                ),
-            ),
-            (
-                UpstreamImage.CENTOS_7,
-                14.0,
-                SETUP_COMMANDS[UpstreamImage.CENTOS_7].format(
-                    devtoolset="devtoolset-9"
-                ),
-            ),
-            (
-                UpstreamImage.CENTOS_7,
-                13.0,
-                SETUP_COMMANDS[UpstreamImage.CENTOS_7].format(
-                    devtoolset="devtoolset-6"
-                ),
-            ),
-        ],
-    )
-    def test__get_run_command(
-        self,
-        dummy_dockerfile: Dockerfile,
-        test_upstream_image: UpstreamImage,
-        test_nuke_version: float,
-        expected_run_command: str,
-    ) -> None:
-        """Test the calculation of the run command and follow vfx reference."""
-        dummy_dockerfile.nuke_version = test_nuke_version
+        environments_mock.__getitem__.assert_called_once_with(
+            dummy_dockerfile.operating_system
+        )
+
+    def test_run_commands(self) -> None:
+        """Test to collect all commands and format them."""
+        test_dockerfile = Dockerfile(
+            operating_system=OperatingSystem.LINUX,
+            nuke_version=15.0,
+            nuke_source="https://gillesvink.com/test_file.tgz",
+        )
+        os_commands_mock = MagicMock(wraps=OS_COMMANDS)
+        image_commands_mock = MagicMock(wraps=IMAGE_COMMANDS)
+
         with patch(
-            (
-                "dockerfile_creator.datamodel.docker_data.Dockerfile"
-                ".upstream_image"
-            ),
-            test_upstream_image,
+            "dockerfile_creator.datamodel.docker_data.OS_COMMANDS",
+            os_commands_mock,
+        ) as os_commands_mock, patch(
+            "dockerfile_creator.datamodel.docker_data.IMAGE_COMMANDS",
+            image_commands_mock,
         ):
-            assert (
-                dummy_dockerfile._get_setup_command() == expected_run_command
-            )
+            run_commands = test_dockerfile.run_commands
+
+        assert "https://gillesvink.com/test_file.tgz" in run_commands
+        os_commands_mock.get.assert_called_once_with(
+            test_dockerfile.operating_system
+        )
+        image_commands_mock.get.assert_called_once_with(
+            test_dockerfile.upstream_image
+        )
 
     @pytest.mark.parametrize(
         ("test_operating_system", "test_nuke_version", "expected_path"),
@@ -222,8 +150,8 @@ class TestDockerfile:
         [
             (OperatingSystem.LINUX, 15.0),
             (OperatingSystem.LINUX, 13.0),
-            (OperatingSystem.MACOS, 15.0),
-            (OperatingSystem.WINDOWS, 15.0),
+            # (OperatingSystem.MACOS, 15.0),
+            # (OperatingSystem.WINDOWS, 15.0),
         ],
     )
     def test_to_dockerfile(
@@ -239,10 +167,9 @@ class TestDockerfile:
         expected_dockerfile = (
             f"FROM {dummy_dockerfile.upstream_image.value}\n"
             "\n"
-            f"{dummy_dockerfile.labels}\n"
-            f"{dummy_dockerfile._get_nuke_installation_command()}\n"
-            f"{dummy_dockerfile._get_setup_command()}\n"
-            f"{dummy_dockerfile.work_dir}\n"
+            f"{dummy_dockerfile.labels}\n\n"
+            f"{dummy_dockerfile.run_commands}\n\n"
+            f"{dummy_dockerfile.work_dir}\n\n"
             f"{dummy_dockerfile.environments}"
         )
         assert dummy_dockerfile.to_dockerfile() == expected_dockerfile

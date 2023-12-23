@@ -5,13 +5,18 @@
 
 import os
 from dataclasses import dataclass
+from itertools import chain
 from math import floor
 from pathlib import Path
 
+from dockerfile_creator.datamodel.commands import (
+    IMAGE_COMMANDS,
+    OS_COMMANDS,
+    OS_ENVIRONMENTS,
+    DockerEnvironments,
+)
 from dockerfile_creator.datamodel.constants import (
     DEVTOOLSETS,
-    SETUP_COMMANDS,
-    InstallCommands,
     OperatingSystem,
     UpstreamImage,
 )
@@ -28,15 +33,28 @@ class Dockerfile:
     @property
     def work_dir(self) -> str:
         """Return the work dir."""
-        return "/nuke_build_directory"
+        return "WORKDIR /nuke_build_directory"
 
     @property
     def run_commands(self) -> str:
         """Return all run commands as a string."""
-        return (
-            f"{self._get_nuke_installation_command()}\n"
-            f"{self._get_setup_command()}"
+        commands = chain(
+            OS_COMMANDS.get(self.operating_system),
+            IMAGE_COMMANDS.get(self.upstream_image),
         )
+        formatted_commands = [
+            command.to_docker_format() for command in commands
+        ]
+        formatted_commands = "\n\n".join(formatted_commands)
+        if self.operating_system == OperatingSystem.LINUX:
+            formatted_commands = formatted_commands.format(
+                toolset=DEVTOOLSETS[floor(self.nuke_version)],
+                filename=os.path.splitext(os.path.basename(self.nuke_source))[
+                    0
+                ],
+                url=self.nuke_source,
+            )
+        return formatted_commands
 
     @property
     def labels(self) -> str:
@@ -46,35 +64,19 @@ class Dockerfile:
     @property
     def environments(self) -> str:
         """Return all environments as a string."""
-        return ""
+        environments: DockerEnvironments = OS_ENVIRONMENTS[
+            self.operating_system
+        ]
+        return environments.to_docker_format()
 
     @property
     def upstream_image(self) -> UpstreamImage:
         """Return matching upstream image."""
-        if self.nuke_version < 15.0:
-            return UpstreamImage.CENTOS_7
-        return UpstreamImage.ROCKYLINUX_8
-
-    @property
-    def _nuke_install_directory(self) -> str:
-        """Return the nuke install directory."""
-        return "/usr/local/nuke_install"
-
-    def _get_nuke_installation_command(self) -> str:
-        """Return the installation command for this dockerfile."""
-        filename = os.path.splitext(os.path.basename(self.nuke_source))[0]
-        return InstallCommands.LINUX.value.format(
-            url=self.nuke_source,
-            filename=filename,
-        )
-
-    def _get_setup_command(self) -> str:
-        """Return the run command for setting up the image."""
-        devtoolset = DEVTOOLSETS[floor(self.nuke_version)]
-
-        return SETUP_COMMANDS[self.upstream_image].format(
-            devtoolset=devtoolset
-        )
+        if self.nuke_version >= 15.0:
+            return UpstreamImage.ROCKYLINUX_8
+        if self.nuke_version < 15.0 and self.nuke_version >= 14.0:
+            return UpstreamImage.CENTOS_7_9
+        return UpstreamImage.CENTOS_7_4
 
     def get_dockerfile_path(self) -> Path:
         """Return relative path where dockerfile should be written to."""
@@ -87,8 +89,8 @@ class Dockerfile:
         """Convert current instance to a dockerfile string."""
         return (
             f"FROM {self.upstream_image.value}\n\n"
-            f"{self.labels}\n"
-            f"{self.run_commands}\n"
-            f"{self.work_dir}\n"
+            f"{self.labels}\n\n"
+            f"{self.run_commands}\n\n"
+            f"{self.work_dir}\n\n"
             f"{self.environments}"
         )

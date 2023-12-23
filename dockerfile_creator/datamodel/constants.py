@@ -6,31 +6,6 @@ from __future__ import annotations
 
 from enum import Enum
 
-JSON_DATA_SOURCE = (
-    "https://raw.githubusercontent.com/gillesvink/"
-    "NukeVersionParser/main/nuke-minor-supported-releases.json"
-)
-"""JSON data to use for fetching new Nuke releases."""
-
-
-class InstallCommands(str, Enum):
-    """Installation commands as constants."""
-
-    LINUX: str = (
-        "RUN curl -o /tmp/{filename}.tgz {url} \\ \n"
-        "  && tar zxvf /tmp/{filename}.tgz -C /tmp/ \\ \n"
-        "  && mkdir /usr/local/nuke_install \\ \n"
-        "  && /tmp/{filename}.run --accept-foundry-eula "
-        "--prefix=/usr/local/nuke_install --exclude-subdir \\ \n"
-        "  && rm -rf /tmp/* \\ \n"
-        "  && cp -r /usr/local/nuke_install/Documentation/NDKExamples/"
-        "examples/ /nuke_tests/ \\ \n"
-        "  && rm -rf nukeCrashFeedback plugins configs Resources "
-        "resources lib pythonextensions translations bin "
-        "Documentation libtorch* libcudnn* libcublas* "
-        "libcusparse* libcusolver* libmkl* \\ \n"
-    )
-
 
 class OperatingSystem(str, Enum):
     """Enumeration to store operating system type."""
@@ -53,28 +28,40 @@ class UpstreamImage(str, Enum):
     """Enumeration for possible upstream images."""
 
     ROCKYLINUX_8: str = "rockylinux:8"
-    CENTOS_7: str = "centos:centos7"
+    CENTOS_7_9: str = "centos:centos7.9.2009"
+    CENTOS_7_4: str = "centos:centos7.4.1708"
+    CENTOS_6: str = "centos6.8"
+
+
+JSON_DATA_SOURCE = (
+    "https://raw.githubusercontent.com/gillesvink/"
+    "NukeVersionParser/main/nuke-minor-supported-releases.json"
+)
+"""JSON data to use for fetching new Nuke releases."""
 
 
 DEVTOOLSETS = {
+    16: "gcc-toolset-11",  # probably, as its mentioned in vfx ref
     15: "gcc-toolset-11",
     14: "devtoolset-9",
     13: "devtoolset-6",
+    12: "devtoolset-4",
 }
 """Matched devtoolset to Nuke major version."""
 
-SETUP_COMMANDS: dict = {
-    UpstreamImage.ROCKYLINUX_8: (
-        "RUN dnf install {devtoolset} -y \\ \n"
-        "  && dnf install cmake3 -y \\ \n"
-        "  && dnf install mesa-libGLU-devel -y \\ \n"
-        "  && echo 'unset BASH_ENV PROMPT_COMMAND ENV && source "
-        "scl_source enable gcc-toolset-11' >> /usr/bin/scl_enable"
-    ),
-    UpstreamImage.CENTOS_7: (
-        "RUN yum install {devtoolset} -y \\ \n"
-        "  && yum install cmake3 -y \\ \n"
-        "  && scl_source enable {devtoolset}"
-    ),
+NUKE_INSTALL_DIRECTORIES: dict[OperatingSystem, str] = {
+    OperatingSystem.LINUX: "/usr/local/nuke_install"
 }
-"""Setup commands matched to their image."""
+"""Install directory for Nuke per operating system."""
+
+NUKE_TESTS_DIRECTORIES: dict[OperatingSystem, str] = {
+    OperatingSystem.LINUX: "/nuke_tests/"
+}
+"""Tests directory for Nuke per operating system."""
+
+REDUNDANT_NUKE_ITEMS: str = (
+    "nukeCrashFeedback plugins configs Resources resources "
+    "lib pythonextensions translations bin Documentation "
+    "libtorch* libcudnn* libcublas* libcusparse* libcusolver* libmkl*"
+)
+"""Items that are applicable to being removed from Nuke."""
