@@ -63,7 +63,9 @@ class Dockerfile:
         label_prefix = "com.nukedockerbuild"
         labels = {
             f"{label_prefix}.version": 1.0,
-            f"{label_prefix}.release_date": datetime.now().strftime("%Y-%m-%d"),
+            f"{label_prefix}.release_date": datetime.now().strftime(
+                "%Y-%m-%d"
+            ),
             f"{label_prefix}.description": "Ready to use Docker image for building Nuke plugins.",
             f"{label_prefix}.license": "MIT",
             f"{label_prefix}.maintainer": "gilles@vinkvfx.com",
@@ -73,8 +75,14 @@ class Dockerfile:
             f"{label_prefix}.nuke_version": self.nuke_version,
             f"{label_prefix}.nuke_source": self.nuke_source,
         }
-        return "\n".join([f"LABEL '{key}'='{value}'" for key, value in labels.items()])
-
+        return "\n".join(
+            [
+                f"LABEL '{key}'='{value}'"
+                if isinstance(value, str)
+                else f"LABEL '{key}'={value}"
+                for key, value in labels.items()
+            ]
+        )
 
     @property
     def environments(self) -> str:
