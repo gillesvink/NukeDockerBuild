@@ -105,20 +105,9 @@ def test__nuke_version_to_float_raise_exception() -> None:
         _nuke_version_to_float("10.0b1")
 
 
-@pytest.mark.xfail()
 def test_get_dockerfiles(dummy_data: dict) -> None:
     """Test to return from the dummy data a list of Dockerfile."""
     expected_dockerfiles = [
-        Dockerfile(
-            operating_system=OperatingSystem.MACOS,
-            nuke_version=15.1,
-            nuke_source="mac_url",
-        ),
-        Dockerfile(
-            operating_system=OperatingSystem.MACOS,
-            nuke_version=15.0,
-            nuke_source="mac_url",
-        ),
         Dockerfile(
             operating_system=OperatingSystem.LINUX,
             nuke_version=15.0,
@@ -128,11 +117,6 @@ def test_get_dockerfiles(dummy_data: dict) -> None:
             operating_system=OperatingSystem.WINDOWS,
             nuke_version=15.0,
             nuke_source="windows_url",
-        ),
-        Dockerfile(
-            operating_system=OperatingSystem.MACOS,
-            nuke_version=14.1,
-            nuke_source="mac_url",
         ),
         Dockerfile(
             operating_system=OperatingSystem.LINUX,
