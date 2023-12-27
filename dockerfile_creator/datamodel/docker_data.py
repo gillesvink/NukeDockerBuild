@@ -37,7 +37,11 @@ class Dockerfile:
     @property
     def work_dir(self) -> str:
         """Return the work dir."""
-        return "WORKDIR /nuke_build_directory"
+        return (
+            "WORKDIR C:\\nuke_build_directory"
+            if self.operating_system == OperatingSystem.WINDOWS
+            else "WORKDIR /nuke_build_directory"
+        )
 
     @property
     def run_commands(self) -> str:
