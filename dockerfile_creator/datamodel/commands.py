@@ -144,6 +144,22 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 "del /q",
                 "rmdir C:\\temp /s /q",
             ],
+            minimum_version=14.0,
+        ),
+        DockerCommand(
+            [
+                "mkdir C:\\temp",
+                "curl -o C:\\temp{filename}.zip {url}",
+                "cd C:\\temp",
+                "tar -xf {filename}.zip",
+                "msiexec.exe /i {filename}.msi ACCEPT_FOUNDRY_EULA=ACCEPT "
+                f"/dir {NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]} /silent /l log.txt",
+                "ping -n 10 127.0.0.1",
+                f"cd {NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]}",
+                "del /q",
+                "rmdir C:\\temp /s /q",
+            ],
+            maximum_version=13.9,
         ),
         DockerCommand(
             [
@@ -151,7 +167,7 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                     "Add-AppxPackage -RegisterByFamilyName -MainPackage "
                     "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe"
                 ),
-                'winget install Microsoft.VisualStudio.{toolset}.BuildTools --force --override --wait --passive --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK" -y',
+                'winget install Microsoft.VisualStudio.{toolset}.BuildTools --force --override --wait --passive --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add "Microsoft.VisualStudio.Component.Windows10SDK" -y',
                 "winget install -e --id Kitware.CMake -y ",
             ]
         ),
