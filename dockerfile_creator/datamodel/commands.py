@@ -134,7 +134,7 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
         DockerCommand(
             [
                 "mkdir C:\\temp",
-                "curl -o C:\\temp{filename}.zip {url}",
+                "curl -o C:\\temp\\{filename}.zip {url}",
                 "cd C:\\temp",
                 "tar -xf {filename}.zip",
                 "msiexec.exe /i {filename}.msi ACCEPT_FOUNDRY_EULA=ACCEPT "
