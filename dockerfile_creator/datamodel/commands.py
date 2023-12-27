@@ -141,7 +141,7 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 f"INSTALL_ROOT={NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]} /qb /l log.txt",
                 "ping -n 10 127.0.0.1",  # let the process finish so wait.
                 f"cd {NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]}",
-                "del /q",
+                f"del /q {REDUNDANT_NUKE_ITEMS}",
                 "rmdir C:\\temp /s /q",
             ],
             minimum_version=14.0,
