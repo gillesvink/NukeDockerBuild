@@ -7,8 +7,12 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from dockerfile_creator.datamodel.commands import IMAGE_COMMANDS, OS_COMMANDS
 
+from dockerfile_creator.datamodel.commands import (
+    IMAGE_COMMANDS,
+    OS_COMMANDS,
+    DockerCommand,
+)
 from dockerfile_creator.datamodel.docker_data import (
     Dockerfile,
     OperatingSystem,
@@ -44,6 +48,11 @@ class TestDockerfile:
             (OperatingSystem.LINUX, 13.2, UpstreamImage.CENTOS_7_4),
             (OperatingSystem.LINUX, 13.0, UpstreamImage.CENTOS_7_4),
             (OperatingSystem.LINUX, 12.0, UpstreamImage.CENTOS_7_4),
+            (
+                OperatingSystem.WINDOWS,
+                12.0,
+                UpstreamImage.WINDOWS_SERVERCORE_LTSC2022,
+            ),
         ],
     )
     def test_upstream_image(
@@ -101,16 +110,62 @@ class TestDockerfile:
         ) as os_commands_mock, patch(
             "dockerfile_creator.datamodel.docker_data.IMAGE_COMMANDS",
             image_commands_mock,
-        ):
+        ), patch(
+            "dockerfile_creator.datamodel.docker_data.Dockerfile._remove_invalid_commands_for_version"
+        ) as remove_commands_mock:
             run_commands = test_dockerfile.run_commands
 
         assert "https://gillesvink.com/test_file.tgz" in run_commands
         os_commands_mock.get.assert_called_once_with(
-            test_dockerfile.operating_system
+            test_dockerfile.operating_system, []
         )
         image_commands_mock.get.assert_called_once_with(
-            test_dockerfile.upstream_image
+            test_dockerfile.upstream_image, []
         )
+        remove_commands_mock.assert_called_once()
+
+    @pytest.mark.parametrize(
+        ("test_nuke_version", "test_commands", "command_still_in_list"),
+        [
+            (
+                15.0,
+                [DockerCommand(commands=["test"])],
+                True,
+            ),
+            (
+                15.0,
+                [DockerCommand(commands=["test"], minimum_version=15.0)],
+                True,
+            ),
+            (
+                15.0,
+                [DockerCommand(commands=["test"], minimum_version=16.0)],
+                False,
+            ),
+            (
+                15.0,
+                [DockerCommand(commands=["test"], maximum_version=15.0)],
+                True,
+            ),
+            (
+                15.0,
+                [DockerCommand(commands=["test"], maximum_version=14.0)],
+                False,
+            ),
+        ],
+    )
+    def test_run_commands_depending_version(
+        self,
+        dummy_dockerfile: Dockerfile,
+        test_nuke_version: float,
+        test_commands: DockerCommand(),
+        command_still_in_list: list[str],
+    ) -> None:
+        """Test command to be isolated from list if not matching version."""
+        dummy_dockerfile.nuke_version = test_nuke_version
+        dummy_dockerfile._remove_invalid_commands_for_version(test_commands)
+
+        assert bool(test_commands) == command_still_in_list
 
     @pytest.mark.parametrize(
         ("test_operating_system", "test_nuke_version", "expected_path"),
@@ -150,8 +205,6 @@ class TestDockerfile:
         [
             (OperatingSystem.LINUX, 15.0),
             (OperatingSystem.LINUX, 13.0),
-            # (OperatingSystem.MACOS, 15.0),
-            # (OperatingSystem.WINDOWS, 15.0),
         ],
     )
     def test_to_dockerfile(

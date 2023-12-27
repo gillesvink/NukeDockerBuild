@@ -48,4 +48,4 @@ select = [
     "YTT",
 ]
 show-fixes = true
-target-version = "py312"
+target-version = "py311"

@@ -18,6 +18,11 @@ class DockerCommand:
     """Object to store a docker command."""
 
     commands: list[str] = field(default_factory=list)
+    """List of commands related to this RUN command."""
+    minimum_version: float | None = None
+    """Minimum version it needs to run this command."""
+    maximum_version: float | None = None
+    """Maximum version that is allowed to run this command."""
 
     def to_docker_format(self) -> str:
         """Return the object as a string in the docker RUN format."""
@@ -125,6 +130,28 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
             ]
         ),
     ],
+    OperatingSystem.WINDOWS: [
+        DockerCommand(
+            [
+                "mkdir C:\\temp"
+                "curl -o C:\\temp{filename}.zip {url}",
+                "cd C:\\temp",
+                "tar -xf {filename}.zip",
+                'msiexec.exe /i {filename}.msi ACCEPT_FOUNDRY_EULA=ACCEPT INSTALL_ROOT="C:\nuke_install" /qb /l log.txt',
+                "ping -n 10 127.0.0.1",
+                "cd C:\\nuke_install",
+                "del /q",
+                "rmdir C:\\temp /s /q",
+            ],
+        ),
+        DockerCommand(
+            [
+                "Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe",
+                'winget install Microsoft.VisualStudio.2022.BuildTools --force --override "--wait --passive --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK" -y',
+                "winget install -e --id Kitware.CMake -y ",
+            ]
+        ),
+    ],
 }
 """Commands related to each operating system."""
 
@@ -138,6 +165,13 @@ OS_ENVIRONMENTS: dict[OperatingSystem, DockerEnvironments] = {
             "ENV": "/usr/bin/scl_enable",
             "PROMPT_COMMAND": "/usr/bin/scl_enable",
         }
-    )
+    ),
+    OperatingSystem.WINDOWS: DockerEnvironments(
+        {
+            "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORIES[
+                OperatingSystem.WINDOWS
+            ],
+        }
+    ),
 }
 """Environment variables related to each operating system."""

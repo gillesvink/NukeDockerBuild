@@ -30,6 +30,9 @@ class UpstreamImage(str, Enum):
     ROCKYLINUX_8: str = "rockylinux:8"
     CENTOS_7_9: str = "centos:centos7.9.2009"
     CENTOS_7_4: str = "centos:centos7.4.1708"
+    WINDOWS_SERVERCORE_LTSC2022: str = (
+        "mcr.microsoft.com/windows/servercore:ltsc2022"
+    )
 
 
 JSON_DATA_SOURCE = (
@@ -48,18 +51,20 @@ DEVTOOLSETS = {
 """Matched devtoolset to Nuke major version."""
 
 NUKE_INSTALL_DIRECTORIES: dict[OperatingSystem, str] = {
-    OperatingSystem.LINUX: "/usr/local/nuke_install"
+    OperatingSystem.LINUX: "/usr/local/nuke_install",
+    OperatingSystem.WINDOWS: "C:\\nuke_install",
 }
 """Install directory for Nuke per operating system."""
 
 NUKE_TESTS_DIRECTORIES: dict[OperatingSystem, str] = {
-    OperatingSystem.LINUX: "/nuke_tests/"
+    OperatingSystem.LINUX: "/nuke_tests/",
+    OperatingSystem.WINDOWS: "C:\\nuke_tests\\",
 }
 """Tests directory for Nuke per operating system."""
 
 REDUNDANT_NUKE_ITEMS: str = (
-    "nukeCrashFeedback plugins configs Resources resources "
-    "lib pythonextensions translations bin Documentation "
-    "libtorch* libcudnn* libcublas* libcusparse* libcusolver* libmkl*"
+    "nukeCrashFeedback* *.exe DLLs bin plugins configs Resources resources "
+    "lib pythonextensions translations bin Documentation *torch* *cudnn* "
+    "*cublas* *cusparse* *cusolver* *mkl*"
 )
 """Items that are applicable to being removed from Nuke."""

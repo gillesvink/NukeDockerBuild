@@ -3,6 +3,7 @@
 @maintainer: Gilles Vink
 """
 
+from copy import copy
 import os
 from dataclasses import dataclass
 from datetime import datetime
@@ -14,6 +15,7 @@ from dockerfile_creator.datamodel.commands import (
     IMAGE_COMMANDS,
     OS_COMMANDS,
     OS_ENVIRONMENTS,
+    DockerCommand,
     DockerEnvironments,
 )
 from dockerfile_creator.datamodel.constants import (
@@ -40,9 +42,10 @@ class Dockerfile:
     def run_commands(self) -> str:
         """Return all run commands as a string."""
         commands = chain(
-            IMAGE_COMMANDS.get(self.upstream_image),
-            OS_COMMANDS.get(self.operating_system),
+            IMAGE_COMMANDS.get(self.upstream_image, []),
+            OS_COMMANDS.get(self.operating_system, []),
         )
+        self._remove_invalid_commands_for_version(commands)
         formatted_commands = [
             command.to_docker_format() for command in commands
         ]
@@ -56,6 +59,28 @@ class Dockerfile:
                 url=self.nuke_source,
             )
         return formatted_commands
+
+    def _remove_invalid_commands_for_version(
+        self, commands: list[DockerCommand]
+    ) -> None:
+        """Remove invalid commands for the Nuke Version.
+
+        This checks if the command has a min and max version specified.
+
+        Args:
+            commands: commands to check for Nuke version requirements
+        """
+        for command in copy(commands):
+            if (
+                command.maximum_version is not None
+                and command.maximum_version < self.nuke_version
+            ):
+                commands.remove(command)
+            if (
+                command.minimum_version is not None
+                and command.minimum_version > self.nuke_version
+            ):
+                commands.remove(command)
 
     @property
     def labels(self) -> str:
@@ -95,6 +120,8 @@ class Dockerfile:
     @property
     def upstream_image(self) -> UpstreamImage:
         """Return matching upstream image."""
+        if self.operating_system == OperatingSystem.WINDOWS:
+            return UpstreamImage.WINDOWS_SERVERCORE_LTSC2022
         if self.nuke_version >= 15.0:
             return UpstreamImage.ROCKYLINUX_8
         if self.nuke_version < 15.0 and self.nuke_version >= 14.0:
