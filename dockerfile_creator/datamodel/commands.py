@@ -139,7 +139,7 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 "tar -xf {filename}.zip",
                 "msiexec.exe /i {filename}.msi ACCEPT_FOUNDRY_EULA=ACCEPT "
                 f"INSTALL_ROOT={NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]} /qb /l log.txt",
-                "ping -n 10 127.0.0.1",
+                "ping -n 10 127.0.0.1",  # let the process finish so wait.
                 f"cd {NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]}",
                 "del /q",
                 "rmdir C:\\temp /s /q",
@@ -149,7 +149,7 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
         DockerCommand(
             [
                 "mkdir C:\\temp",
-                "curl -o C:\\temp{filename}.zip {url}",
+                "curl -o C:\\temp\\{filename}.zip {url}",
                 "cd C:\\temp",
                 "tar -xf {filename}.zip",
                 "msiexec.exe /i {filename}.msi ACCEPT_FOUNDRY_EULA=ACCEPT "
