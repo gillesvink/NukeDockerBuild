@@ -163,7 +163,9 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
         ),
         DockerCommand(
             [
-                r'"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString(\'https://community.chocolatey.org/install.ps1\'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"',
+                r'powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('
+                "'https://community.chocolatey.org/install.ps1'))"
+                r'" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"',
                 "choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y",
                 "choco install visualstudio{toolset}buildtools -y",
                 "choco install visualstudio{toolset}-workload-vctools --package-parameters '--includeRecommended' -y",
