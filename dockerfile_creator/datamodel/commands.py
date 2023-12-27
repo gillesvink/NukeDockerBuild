@@ -163,12 +163,10 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
         ),
         DockerCommand(
             [
-                (
-                    "Add-AppxPackage -RegisterByFamilyName -MainPackage "
-                    "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe"
-                ),
-                'winget install Microsoft.VisualStudio.{toolset}.BuildTools --force --override --wait --passive --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add "Microsoft.VisualStudio.Component.Windows10SDK" -y',
-                "winget install -e --id Kitware.CMake -y ",
+                r'"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString(\'https://community.chocolatey.org/install.ps1\'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"',
+                "choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y",
+                "choco install visualstudio{toolset}buildtools -y",
+                "choco install visualstudio{toolset}-workload-vctools --package-parameters '--includeRecommended' -y",
             ]
         ),
     ],
