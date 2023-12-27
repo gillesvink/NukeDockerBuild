@@ -47,8 +47,18 @@ DEVTOOLSETS = {
     15: "gcc-toolset-11",
     14: "devtoolset-9",
     13: "devtoolset-6",
+    12: "devtoolset-2",
 }
 """Matched devtoolset to Nuke major version."""
+
+VISUALSTUDIO_BUILDTOOLS = {
+    16: "2022",
+    15: "2022",
+    14: "2019",
+    13: "2017",
+    12: "2015",
+}
+"""Matched Visual Studio build toolset to Nuke major version."""
 
 NUKE_INSTALL_DIRECTORIES: dict[OperatingSystem, str] = {
     OperatingSystem.LINUX: "/usr/local/nuke_install",

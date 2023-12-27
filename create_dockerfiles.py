@@ -25,7 +25,7 @@ def generate_dockerfiles() -> None:
     """
     os.environ[
         "DOCKERFILES_DIRECTORY"
-    ] = "/home/gillesvink/Code/NukeDockerBuild/"
+    ] = "/Users/gillesvink/Code/NukeDockerBuild/"
     dockerfiles_directory = os.getenv("DOCKERFILES_DIRECTORY")
     if not dockerfiles_directory:
         msg = (

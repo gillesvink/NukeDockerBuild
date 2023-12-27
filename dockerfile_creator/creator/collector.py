@@ -69,7 +69,7 @@ def get_dockerfiles(data: dict) -> list[Dockerfile]:
         if version_number < 13:
             continue
 
-        for os in ["linux"]: # FIXME(gillesvink): add windows and mac
+        for os in ["linux", "windows"]:
             install_url = installer_data.get(f"{os}_x86")
             if not install_url:
                 continue

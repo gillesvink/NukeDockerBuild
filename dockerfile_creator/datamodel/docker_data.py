@@ -3,8 +3,8 @@
 @maintainer: Gilles Vink
 """
 
-from copy import copy
 import os
+from copy import copy
 from dataclasses import dataclass
 from datetime import datetime
 from itertools import chain
@@ -20,6 +20,7 @@ from dockerfile_creator.datamodel.commands import (
 )
 from dockerfile_creator.datamodel.constants import (
     DEVTOOLSETS,
+    VISUALSTUDIO_BUILDTOOLS,
     OperatingSystem,
     UpstreamImage,
 )
@@ -45,20 +46,18 @@ class Dockerfile:
             IMAGE_COMMANDS.get(self.upstream_image, []),
             OS_COMMANDS.get(self.operating_system, []),
         )
+        commands = list(commands)
         self._remove_invalid_commands_for_version(commands)
-        formatted_commands = [
-            command.to_docker_format() for command in commands
-        ]
-        formatted_commands = "\n\n".join(formatted_commands)
-        if self.operating_system == OperatingSystem.LINUX:
-            formatted_commands = formatted_commands.format(
-                toolset=DEVTOOLSETS[floor(self.nuke_version)],
-                filename=os.path.splitext(os.path.basename(self.nuke_source))[
-                    0
-                ],
-                url=self.nuke_source,
-            )
-        return formatted_commands
+        formatted_commands = "\n\n".join(
+            [command.to_docker_format() for command in commands]
+        )
+        return formatted_commands.format(
+            toolset=DEVTOOLSETS[floor(self.nuke_version)]
+            if self.operating_system == OperatingSystem.LINUX
+            else VISUALSTUDIO_BUILDTOOLS[floor(self.nuke_version)],
+            filename=os.path.splitext(os.path.basename(self.nuke_source))[0],
+            url=self.nuke_source,
+        )
 
     def _remove_invalid_commands_for_version(
         self, commands: list[DockerCommand]

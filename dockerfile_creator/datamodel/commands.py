@@ -133,21 +133,25 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
     OperatingSystem.WINDOWS: [
         DockerCommand(
             [
-                "mkdir C:\\temp"
+                "mkdir C:\\temp",
                 "curl -o C:\\temp{filename}.zip {url}",
                 "cd C:\\temp",
                 "tar -xf {filename}.zip",
-                'msiexec.exe /i {filename}.msi ACCEPT_FOUNDRY_EULA=ACCEPT INSTALL_ROOT="C:\nuke_install" /qb /l log.txt',
+                "msiexec.exe /i {filename}.msi ACCEPT_FOUNDRY_EULA=ACCEPT "
+                f"INSTALL_ROOT={NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]} /qb /l log.txt",
                 "ping -n 10 127.0.0.1",
-                "cd C:\\nuke_install",
+                f"cd {NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]}",
                 "del /q",
                 "rmdir C:\\temp /s /q",
             ],
         ),
         DockerCommand(
             [
-                "Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe",
-                'winget install Microsoft.VisualStudio.2022.BuildTools --force --override "--wait --passive --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK" -y',
+                (
+                    "Add-AppxPackage -RegisterByFamilyName -MainPackage "
+                    "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe"
+                ),
+                'winget install Microsoft.VisualStudio.{toolset}.BuildTools --force --override --wait --passive --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK" -y',
                 "winget install -e --id Kitware.CMake -y ",
             ]
         ),
