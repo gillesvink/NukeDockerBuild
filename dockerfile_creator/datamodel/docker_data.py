@@ -37,11 +37,7 @@ class Dockerfile:
     @property
     def entry_point(self) -> str | None:
         """Return entry point if necessary."""
-        return (
-            f'ENTRYPOINT ["/bin/bash", "-c", "source scl_source enable {DEVTOOLSETS[floor(self.nuke_version)]}"]'
-            if self.operating_system == OperatingSystem.LINUX
-            else ""
-        )
+        return ""
 
     @property
     def work_dir(self) -> str:

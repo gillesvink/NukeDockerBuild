@@ -120,6 +120,15 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                     "/Documentation/NDKExamples/examples/ /nuke_tests/"
                 ),
                 f"rm -rf {REDUNDANT_NUKE_ITEMS}",
+            ],
+        ),
+        DockerCommand(
+            [
+                "echo 'Setting devtoolset to {toolset}.'",
+                "echo 'unset BASH_ENV PROMPT_COMMAND ENV && source scl_source "
+                "enable {toolset}' >> /usr/bin/scl_enable",
+                "echo 'source scl_source enable {toolset}' >> /etc/bashrc",
+                "chmod +x /usr/bin/scl_enable",
             ]
         ),
     ],
@@ -178,6 +187,9 @@ OS_ENVIRONMENTS: dict[OperatingSystem, DockerEnvironments] = {
             "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORIES[
                 OperatingSystem.LINUX
             ],
+            "BASH_ENV": "/usr/bin/scl_enable",
+            "ENV": "/usr/bin/scl_enable",
+            "PROMPT_COMMAND": "/usr/bin/scl_enable",
         }
     ),
     OperatingSystem.WINDOWS: DockerEnvironments(
