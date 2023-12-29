@@ -68,7 +68,7 @@ NUKE_INSTALL_DIRECTORIES: dict[OperatingSystem, str] = {
 
 NUKE_TESTS_DIRECTORIES: dict[OperatingSystem, str] = {
     OperatingSystem.LINUX: "/nuke_tests/",
-    OperatingSystem.WINDOWS: "C:\\nuke_tests\\",
+    OperatingSystem.WINDOWS: "C:\\\\nuke_tests\\",
 }
 """Tests directory for Nuke per operating system."""
 

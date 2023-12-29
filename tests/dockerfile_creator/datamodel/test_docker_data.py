@@ -95,7 +95,7 @@ class TestDockerfile:
         ("test_operating_system", "expected_work_dir"),
         [
             (OperatingSystem.LINUX, "WORKDIR /nuke_build_directory"),
-            (OperatingSystem.WINDOWS, "WORKDIR C:\\nuke_build_directory"),
+            (OperatingSystem.WINDOWS, "WORKDIR C:\\\\nuke_build_directory"),
         ],
     )
     def test_work_dir(

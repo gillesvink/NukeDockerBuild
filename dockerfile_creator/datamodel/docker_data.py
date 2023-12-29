@@ -47,7 +47,7 @@ class Dockerfile:
     def work_dir(self) -> str:
         """Return the work dir."""
         return (
-            "WORKDIR C:\\nuke_build_directory"
+            "WORKDIR C:\\\\nuke_build_directory"
             if self.operating_system == OperatingSystem.WINDOWS
             else "WORKDIR /nuke_build_directory"
         )
