@@ -122,17 +122,11 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 f"rm -rf {REDUNDANT_NUKE_ITEMS}",
             ]
         ),
-        DockerCommand(
-            [
-                "echo 'Setting devtoolset to {toolset}.'",
-                "echo 'unset BASH_ENV PROMPT_COMMAND ENV && source scl_source "
-                "enable {toolset}' >> /usr/bin/scl_enable",
-            ]
-        ),
     ],
     OperatingSystem.WINDOWS: [
         DockerCommand(
-            [
+            minimum_version=14.0,
+            commands=[
                 "mkdir C:\\temp",
                 "curl -o C:\\temp\\{filename}.zip {url}",
                 "cd C:\\temp",
@@ -141,14 +135,15 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 f"INSTALL_ROOT={NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]} /qb /l log.txt",
                 "ping -n 10 127.0.0.1",  # let the process finish so wait.
                 f"cd {NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]}",
-                "xcopy \\Documentation\\NDKExamples\\examples\\ C:\\nuke_tests\\",
+                "mkdir C:\\nuke_tests\\",
+                "xcopy Documentation\\NDKExamples\\examples\\* C:\\nuke_tests\\ /E",
                 f"del /q {REDUNDANT_NUKE_ITEMS}",
                 "rmdir C:\\temp /s /q",
             ],
-            minimum_version=14.0,
         ),
         DockerCommand(
-            [
+            maximum_version=13.9,
+            commands=[
                 "mkdir C:\\temp",
                 "curl -o C:\\temp\\{filename}.zip {url}",
                 "cd C:\\temp",
@@ -157,11 +152,11 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 f"/dir {NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]} /silent /l log.txt",
                 "ping -n 10 127.0.0.1",
                 f"cd {NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]}",
-                "xcopy \\Documentation\\NDKExamples\\examples\\ C:\\nuke_tests\\"
+                "mkdir C:\\nuke_tests\\",
+                "xcopy Documentation\\NDKExamples\\examples\\* C:\\nuke_tests\\ /E",
                 "del /q",
                 "rmdir C:\\temp /s /q",
             ],
-            maximum_version=13.9,
         ),
         DockerCommand(
             [
@@ -183,9 +178,6 @@ OS_ENVIRONMENTS: dict[OperatingSystem, DockerEnvironments] = {
             "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORIES[
                 OperatingSystem.LINUX
             ],
-            "BASH_ENV": "/usr/bin/scl_enable",
-            "ENV": "/usr/bin/scl_enable",
-            "PROMPT_COMMAND": "/usr/bin/scl_enable",
         }
     ),
     OperatingSystem.WINDOWS: DockerEnvironments(

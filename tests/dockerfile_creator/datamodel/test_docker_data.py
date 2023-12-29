@@ -69,11 +69,33 @@ class TestDockerfile:
         assert dummy_dockerfile.upstream_image == expected_upstream_container
 
     @pytest.mark.parametrize(
+        ("test_operating_system", "expected_entry_point"),
+        [
+            (OperatingSystem.LINUX, 'ENTRYPOINT ["/bin/bash", "-c", "source scl_source enable test_data"]'),
+            (OperatingSystem.WINDOWS, ""),
+        ],
+    )
+    def test_entry_point(
+        self,
+        dummy_dockerfile: Dockerfile,
+        test_operating_system: str,
+        expected_entry_point: str,
+    ) -> None:
+        """Test entry point to return system related entry point."""
+        dummy_dockerfile.operating_system = test_operating_system
+        toolset_mock = MagicMock(spec=dict)
+        toolset_mock.__getitem__.return_value = "test_data"
+        with patch(
+            "dockerfile_creator.datamodel.docker_data.DEVTOOLSETS",
+            toolset_mock,
+        ):
+            assert dummy_dockerfile.entry_point == expected_entry_point
+
+    @pytest.mark.parametrize(
         ("test_operating_system", "expected_work_dir"),
         [
             (OperatingSystem.LINUX, "WORKDIR /nuke_build_directory"),
             (OperatingSystem.WINDOWS, "WORKDIR C:\\nuke_build_directory"),
-
         ],
     )
     def test_work_dir(
@@ -227,6 +249,7 @@ class TestDockerfile:
             f"{dummy_dockerfile.labels}\n\n"
             f"{dummy_dockerfile.run_commands}\n\n"
             f"{dummy_dockerfile.work_dir}\n\n"
-            f"{dummy_dockerfile.environments}"
+            f"{dummy_dockerfile.environments}\n\n"
+            f"{dummy_dockerfile.entry_point}"
         )
         assert dummy_dockerfile.to_dockerfile() == expected_dockerfile

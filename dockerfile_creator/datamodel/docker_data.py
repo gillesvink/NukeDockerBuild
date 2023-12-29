@@ -35,6 +35,15 @@ class Dockerfile:
     nuke_source: str
 
     @property
+    def entry_point(self) -> str | None:
+        """Return entry point if necessary."""
+        return (
+            f'ENTRYPOINT ["/bin/bash", "-c", "source scl_source enable {DEVTOOLSETS[floor(self.nuke_version)]}"]'
+            if self.operating_system == OperatingSystem.LINUX
+            else ""
+        )
+
+    @property
     def work_dir(self) -> str:
         """Return the work dir."""
         return (
@@ -92,7 +101,7 @@ class Dockerfile:
         labels = {
             f"{label_prefix}.version": 1.0,
             f"{label_prefix}.release_date": datetime.now().strftime(
-                "%Y-%m-%d"
+                "%d-%m-%Y"
             ),
             f"{label_prefix}.description": "Ready to use Docker image for building Nuke plugins.",
             f"{label_prefix}.license": "MIT",
@@ -145,5 +154,6 @@ class Dockerfile:
             f"{self.labels}\n\n"
             f"{self.run_commands}\n\n"
             f"{self.work_dir}\n\n"
-            f"{self.environments}"
+            f"{self.environments}\n\n"
+            f"{self.entry_point}"
         )
