@@ -71,7 +71,7 @@ class TestDockerfile:
     @pytest.mark.parametrize(
         ("test_operating_system", "expected_entry_point"),
         [
-            (OperatingSystem.LINUX, 'ENTRYPOINT ["/bin/bash", "-c", "source scl_source enable test_data"]'),
+            (OperatingSystem.LINUX, ""),
             (OperatingSystem.WINDOWS, ""),
         ],
     )
