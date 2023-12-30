@@ -13,8 +13,8 @@ The :latest tag is missing on purpose, as this does not make any sense in this s
 
 TODO: Data to be added
 
-| Tag | Locked Tag | Nuke Version | Target OS | Upstream Image | Image Size |
-|-----|------------|--------------|------------------|-------|------|
+| Tag | Locked Tag | Nuke Version | Target OS | Upstream Image | Date Added | Image Size
+|-----|------------|--------------|------------------|-------|------|-------|
 |     |            |              |                  |       |      |
 |     |            |              |                  |       |      |
 |     |            |              |                  |       |      |
