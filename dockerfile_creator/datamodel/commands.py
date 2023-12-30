@@ -175,7 +175,8 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 "choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y",
                 "choco install visualstudio{toolset}buildtools -y",
                 "choco install visualstudio{toolset}-workload-vctools --package-parameters '--includeRecommended' -y",
-            ]
+            ],
+            minimum_version=13.0,
         ),
     ],
 }
