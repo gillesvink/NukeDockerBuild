@@ -102,6 +102,13 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
     OperatingSystem.LINUX: [
         DockerCommand(
             [
+                "echo 'Updating image for latest package versions.'",
+                "ulimit -n 1024",
+                "yum -y update && yum clean all",
+            ]
+        ),
+        DockerCommand(
+            [
                 "echo 'Downloading Nuke from {url}'.",
                 "curl -o /tmp/{filename}.tgz {url}",
                 "echo 'Extracting and installing Nuke ({filename})'.",
