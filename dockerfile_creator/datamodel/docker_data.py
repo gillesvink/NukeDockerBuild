@@ -47,9 +47,11 @@ class Dockerfile:
     @property
     def run_commands(self) -> str:
         """Return all run commands as a string."""
-        commands = chain(
-            IMAGE_COMMANDS.get(self.upstream_image, []),
-            OS_COMMANDS.get(self.operating_system, []),
+        commands = list(
+            chain(
+                IMAGE_COMMANDS.get(self.upstream_image, []),
+                OS_COMMANDS.get(self.operating_system, []),
+            )
         )
         commands = list(commands)
         self._remove_invalid_commands_for_version(commands)
@@ -67,21 +69,25 @@ class Dockerfile:
     @property
     def labels(self) -> str:
         """Return image labels as a string."""
-        label_prefix = "com.nukedockerbuild"
+        label_prefix = "org.opencontainers"
         labels = {
             f"{label_prefix}.version": 1.0,
-            f"{label_prefix}.release_date": datetime.now().strftime(
-                "%d-%m-%Y"
+            f"{label_prefix}.image.created": datetime.now().strftime(
+                "%Y-%m-%d"
             ),
-            f"{label_prefix}.description": "Ready to use Docker image for building Nuke plugins.",
+            f"{label_prefix}.image.authors": "gilles@vinkvfx.com",
+            f"{label_prefix}.image.description": "Ready to use Docker image for building Nuke plugins.",
             f"{label_prefix}.license": "MIT",
-            f"{label_prefix}.maintainer": "gilles@vinkvfx.com",
-            f"{label_prefix}.source_code": "https://github.com/gillesvink/NukeDockerBuild",
+            f"{label_prefix}.url": "https://github.com/gillesvink/NukeDockerBuild",
+        }
+        label_prefix = "com.nukedockerbuild"
+        additional_labels = {
             f"{label_prefix}.based_on": self.upstream_image.value,
             f"{label_prefix}.operating_system": self.operating_system.value,
             f"{label_prefix}.nuke_version": self.nuke_version,
             f"{label_prefix}.nuke_source": self.nuke_source,
         }
+        labels.update(additional_labels)
         return "\n".join(
             [
                 f"LABEL '{key}'='{value}'"

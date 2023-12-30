@@ -150,7 +150,7 @@ class TestDockerfile:
             f"LABEL 'com.nukedockerbuild.nuke_version'={test_nuke_version}"
             in retrieved_labels
         )
-        assert "LABEL 'com.nukedockerbuild.version'=1.0" in retrieved_labels
+        assert "LABEL 'org.opencontainers.version'=1.0" in retrieved_labels
         assert (
             f"LABEL 'com.nukedockerbuild.operating_system'='{test_operating_system.value}'"
             in retrieved_labels
