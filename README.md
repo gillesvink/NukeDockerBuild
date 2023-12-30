@@ -6,6 +6,11 @@ The images produced here will include everything you need to build Nuke plugins.
 
 It is mostly meant for automatic deployment using CI/CD. However, it can also be used locally to quickly compile plugins without the need to install anything (except Docker itself 😉)
 
+## Image size
+Thats an issue of this approach, there are quite some files necessary in the images. However, it is optimized quite a lot. This means that only necessary files to compile plugins are kept. For example in Nuke 13 the image is only 830 mb.
+
+Unfortunately for Windows the base image + the Visual Studio build tools is quite huge. These images are around 15gb.
+
 ## How is this updated? ⬆️
 Since Nuke requires every minor release to be compiled natively, it needs to have a docker image as well for each minor version.
 
