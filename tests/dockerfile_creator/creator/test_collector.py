@@ -130,3 +130,31 @@ def test_get_dockerfiles(dummy_data: dict) -> None:
         ),
     ]
     assert get_dockerfiles(dummy_data) == expected_dockerfiles
+
+
+def test_get_dockerfiles_but_skip_12() -> None:
+    """Test to not include version 12 as this is not valid for images."""
+    dummy_data = {
+        "15": {
+            "15.0v2": {
+                "installer": {
+                    "linux_x86": "linux_url",
+                },
+            },
+        },
+        "12": {
+            "12.0v2": {
+                "installer": {
+                    "linux_x86": "linux_url",
+                },
+            },
+        },
+    }
+    expected_dockerfiles = [
+        Dockerfile(
+            operating_system=OperatingSystem.LINUX,
+            nuke_version=15.0,
+            nuke_source="linux_url",
+        ),
+    ]
+    assert get_dockerfiles(dummy_data) == expected_dockerfiles

@@ -20,7 +20,7 @@ class OperatingSystem(str, Enum):
         for os_enum in cls:
             if shortname.lower() in os_enum.name.lower():
                 return os_enum
-        msg = f"No matching enum for short name: {shortname}"
+        msg = f"No matching enum for short name: '{shortname}'."
         raise ValueError(msg)
 
 

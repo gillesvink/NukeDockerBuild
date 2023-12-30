@@ -3,7 +3,6 @@
 @maintainer: Gilles Vink
 """
 
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -50,6 +49,11 @@ class TestDockerfile:
             (OperatingSystem.LINUX, 12.0, UpstreamImage.CENTOS_7_4),
             (
                 OperatingSystem.WINDOWS,
+                15.0,
+                UpstreamImage.WINDOWS_SERVERCORE_LTSC2022,
+            ),
+            (
+                OperatingSystem.WINDOWS,
                 12.0,
                 UpstreamImage.WINDOWS_SERVERCORE_LTSC2022,
             ),
@@ -69,27 +73,30 @@ class TestDockerfile:
         assert dummy_dockerfile.upstream_image == expected_upstream_container
 
     @pytest.mark.parametrize(
-        ("test_operating_system", "expected_entry_point"),
+        ("test_operating_system", "test_version", "expected_toolset"),
         [
-            (OperatingSystem.LINUX, ""),
-            (OperatingSystem.WINDOWS, ""),
+            (OperatingSystem.LINUX, 15.0, "gcc-toolset-11"),
+            (OperatingSystem.LINUX, 15.1, "gcc-toolset-11"),
+            (OperatingSystem.LINUX, 14.9, "devtoolset-9"),
+            (OperatingSystem.LINUX, 13.0, "devtoolset-6"),
+            (OperatingSystem.LINUX, 13.0, "devtoolset-6"),
+            (OperatingSystem.WINDOWS, 15.0, "2022"),
+            (OperatingSystem.WINDOWS, 15.1, "2022"),
+            (OperatingSystem.WINDOWS, 14.9, "2019"),
+            (OperatingSystem.WINDOWS, 13.0, "2017"),
         ],
     )
-    def test_entry_point(
+    def test__get_toolset(
         self,
         dummy_dockerfile: Dockerfile,
         test_operating_system: str,
-        expected_entry_point: str,
+        test_version: float,
+        expected_toolset: str,
     ) -> None:
-        """Test entry point to return system related entry point."""
+        """Test to return the expected toolset by version and os."""
         dummy_dockerfile.operating_system = test_operating_system
-        toolset_mock = MagicMock(spec=dict)
-        toolset_mock.__getitem__.return_value = "test_data"
-        with patch(
-            "dockerfile_creator.datamodel.docker_data.DEVTOOLSETS",
-            toolset_mock,
-        ):
-            assert dummy_dockerfile.entry_point == expected_entry_point
+        dummy_dockerfile.nuke_version = test_version
+        assert dummy_dockerfile._get_toolset() == expected_toolset
 
     @pytest.mark.parametrize(
         ("test_operating_system", "expected_work_dir"),
@@ -120,6 +127,35 @@ class TestDockerfile:
             dummy_dockerfile.operating_system
         )
 
+    @pytest.mark.parametrize(
+        ("test_operating_system", "test_nuke_version"),
+        [
+            (OperatingSystem.LINUX, 15.0),
+            (OperatingSystem.LINUX, 13.0),
+        ],
+    )
+    def test_labels(
+        self,
+        dummy_dockerfile: Dockerfile,
+        test_operating_system: OperatingSystem,
+        test_nuke_version: float,
+    ) -> None:
+        """Test to return the necessary labels to be returned."""
+        dummy_dockerfile.operating_system = test_operating_system
+        dummy_dockerfile.nuke_version = test_nuke_version
+
+        retrieved_labels = dummy_dockerfile.labels
+
+        assert (
+            f"LABEL 'com.nukedockerbuild.nuke_version'={test_nuke_version}"
+            in retrieved_labels
+        )
+        assert "LABEL 'com.nukedockerbuild.version'=1.0" in retrieved_labels
+        assert (
+            f"LABEL 'com.nukedockerbuild.operating_system'='{test_operating_system.value}'"
+            in retrieved_labels
+        )
+
     def test_run_commands(self) -> None:
         """Test to collect all commands and format them."""
         test_dockerfile = Dockerfile(
@@ -137,7 +173,8 @@ class TestDockerfile:
             "dockerfile_creator.datamodel.docker_data.IMAGE_COMMANDS",
             image_commands_mock,
         ), patch(
-            "dockerfile_creator.datamodel.docker_data.Dockerfile._remove_invalid_commands_for_version"
+            "dockerfile_creator.datamodel.docker_data.Dockerfile."
+            "_remove_invalid_commands_for_version"
         ) as remove_commands_mock:
             run_commands = test_dockerfile.run_commands
 
@@ -189,42 +226,11 @@ class TestDockerfile:
     ) -> None:
         """Test command to be isolated from list if not matching version."""
         dummy_dockerfile.nuke_version = test_nuke_version
-        dummy_dockerfile._remove_invalid_commands_for_version(test_commands)
+        dummy_dockerfile._remove_invalid_commands_for_version(
+            test_commands
+        )
 
         assert bool(test_commands) == command_still_in_list
-
-    @pytest.mark.parametrize(
-        ("test_operating_system", "test_nuke_version", "expected_path"),
-        [
-            (
-                OperatingSystem.LINUX,
-                15.0,
-                Path("dockerfiles/15.0/linux/Dockerfile"),
-            ),
-            (
-                OperatingSystem.MACOS,
-                14.1,
-                Path("dockerfiles/14.1/macos/Dockerfile"),
-            ),
-            (
-                OperatingSystem.WINDOWS,
-                13.2,
-                Path("dockerfiles/13.2/windows/Dockerfile"),
-            ),
-        ],
-    )
-    def test_get_dockerfile_path(
-        self,
-        dummy_dockerfile: Dockerfile,
-        test_operating_system: OperatingSystem,
-        test_nuke_version: float,
-        expected_path: Path,
-    ) -> None:
-        """Test to return from data object expected path."""
-        dummy_dockerfile.operating_system = test_operating_system
-        dummy_dockerfile.nuke_version = test_nuke_version
-
-        assert dummy_dockerfile.get_dockerfile_path() == expected_path
 
     @pytest.mark.parametrize(
         ("test_operating_system", "test_nuke_version"),
@@ -249,7 +255,6 @@ class TestDockerfile:
             f"{dummy_dockerfile.labels}\n\n"
             f"{dummy_dockerfile.run_commands}\n\n"
             f"{dummy_dockerfile.work_dir}\n\n"
-            f"{dummy_dockerfile.environments}\n\n"
-            f"{dummy_dockerfile.entry_point}"
+            f"{dummy_dockerfile.environments}"
         )
         assert dummy_dockerfile.to_dockerfile() == expected_dockerfile

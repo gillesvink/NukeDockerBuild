@@ -1,7 +1,11 @@
 """Tests for the script that creates the dockerfiles."""
 from pathlib import Path
+from unittest.mock import MagicMock
+
+import pytest
 
 from dockerfile_creator.creator.create_dockerfiles import (
+    _get_dockerfile_path,
     _keep_only_new_dockerfiles,
     write_dockerfiles,
 )
@@ -46,3 +50,36 @@ def test_write_dockerfiles(tmp_path) -> None:
 
     assert expected_path.is_file()
     assert expected_path.read_text() == test_dockerfile.to_dockerfile()
+
+
+@pytest.mark.parametrize(
+    ("test_operating_system", "test_nuke_version", "expected_path"),
+    [
+        (
+            OperatingSystem.LINUX,
+            15.0,
+            Path("dockerfiles/15.0/linux/Dockerfile"),
+        ),
+        (
+            OperatingSystem.MACOS,
+            14.1,
+            Path("dockerfiles/14.1/macos/Dockerfile"),
+        ),
+        (
+            OperatingSystem.WINDOWS,
+            13.2,
+            Path("dockerfiles/13.2/windows/Dockerfile"),
+        ),
+    ],
+)
+def test__get_dockerfile_path(
+    test_operating_system: OperatingSystem,
+    test_nuke_version: float,
+    expected_path: Path,
+) -> None:
+    """Test to return from data object expected path."""
+    dockerfile_mock = MagicMock(spec=Dockerfile)
+    dockerfile_mock.operating_system = test_operating_system
+    dockerfile_mock.nuke_version = test_nuke_version
+
+    assert _get_dockerfile_path(dockerfile_mock) == expected_path

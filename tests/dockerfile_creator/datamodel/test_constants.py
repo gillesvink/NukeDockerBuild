@@ -22,3 +22,11 @@ def test_operating_system_from_shortname(
 ) -> None:
     """Test to retrieve OperatingSystem from provided short name."""
     assert OperatingSystem.from_shortname(test_shortname) == expected_os
+
+
+def test_operating_system_from_shortname_with_invalid_name() -> None:
+    """Test to retrieve OperatingSystem from provided short name."""
+    with pytest.raises(ValueError, match="No matching enum for short name: 'winwows'."):
+        assert OperatingSystem.from_shortname("winwows")
+
+

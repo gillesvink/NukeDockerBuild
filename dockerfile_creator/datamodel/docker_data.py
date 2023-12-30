@@ -2,6 +2,7 @@
 
 @maintainer: Gilles Vink
 """
+from __future__ import annotations
 
 import os
 from copy import copy
@@ -35,11 +36,6 @@ class Dockerfile:
     nuke_source: str
 
     @property
-    def entry_point(self) -> str | None:
-        """Return entry point if necessary."""
-        return ""
-
-    @property
     def work_dir(self) -> str:
         """Return the work dir."""
         return (
@@ -57,38 +53,16 @@ class Dockerfile:
         )
         commands = list(commands)
         self._remove_invalid_commands_for_version(commands)
+
         formatted_commands = "\n\n".join(
             [command.to_docker_format() for command in commands]
         )
+
         return formatted_commands.format(
-            toolset=DEVTOOLSETS[floor(self.nuke_version)]
-            if self.operating_system == OperatingSystem.LINUX
-            else VISUALSTUDIO_BUILDTOOLS[floor(self.nuke_version)],
+            toolset=self._get_toolset(),
             filename=os.path.splitext(os.path.basename(self.nuke_source))[0],
             url=self.nuke_source,
         )
-
-    def _remove_invalid_commands_for_version(
-        self, commands: list[DockerCommand]
-    ) -> None:
-        """Remove invalid commands for the Nuke Version.
-
-        This checks if the command has a min and max version specified.
-
-        Args:
-            commands: commands to check for Nuke version requirements
-        """
-        for command in copy(commands):
-            if (
-                command.maximum_version is not None
-                and command.maximum_version < self.nuke_version
-            ):
-                commands.remove(command)
-            if (
-                command.minimum_version is not None
-                and command.minimum_version > self.nuke_version
-            ):
-                commands.remove(command)
 
     @property
     def labels(self) -> str:
@@ -136,13 +110,6 @@ class Dockerfile:
             return UpstreamImage.CENTOS_7_9
         return UpstreamImage.CENTOS_7_4
 
-    def get_dockerfile_path(self) -> Path:
-        """Return relative path where dockerfile should be written to."""
-        return Path(
-            f"dockerfiles/{self.nuke_version}/{self.operating_system.value}"
-            "/Dockerfile"
-        )
-
     def to_dockerfile(self) -> str:
         """Convert current instance to a dockerfile string."""
         return (
@@ -150,6 +117,35 @@ class Dockerfile:
             f"{self.labels}\n\n"
             f"{self.run_commands}\n\n"
             f"{self.work_dir}\n\n"
-            f"{self.environments}\n\n"
-            f"{self.entry_point}"
+            f"{self.environments}"
         )
+
+    def _get_toolset(self) -> str:
+        """Return the toolset needed for this Dockerfile."""
+        return (
+            DEVTOOLSETS[floor(self.nuke_version)]
+            if self.operating_system == OperatingSystem.LINUX
+            else VISUALSTUDIO_BUILDTOOLS[floor(self.nuke_version)]
+        )
+
+    def _remove_invalid_commands_for_version(
+        self, commands: list[DockerCommand]
+    ) -> None:
+        """Remove invalid commands for the Nuke Version.
+
+        This checks if the command has a min and max version specified.
+
+        Args:
+            commands: commands to check for Nuke version requirements
+        """
+        for command in copy(commands):
+            if (
+                command.maximum_version is not None
+                and command.maximum_version < self.nuke_version
+            ):
+                commands.remove(command)
+            if (
+                command.minimum_version is not None
+                and command.minimum_version > self.nuke_version
+            ):
+                commands.remove(command)

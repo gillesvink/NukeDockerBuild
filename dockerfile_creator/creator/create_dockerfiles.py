@@ -6,10 +6,10 @@ from __future__ import annotations
 
 import copy
 import logging
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pathlib import Path
 
     from dockerfile_creator.datamodel.docker_data import Dockerfile
 
@@ -26,7 +26,7 @@ def _keep_only_new_dockerfiles(
         dockerfiles: dockerfiles list to modify and check.
     """
     for dockerfile in copy.deepcopy(dockerfiles):
-        full_path: Path = directory / dockerfile.get_dockerfile_path()
+        full_path: Path = directory / _get_dockerfile_path(dockerfile)
         if not full_path.is_file():
             continue
         dockerfiles.remove(dockerfile)
@@ -42,8 +42,23 @@ def write_dockerfiles(directory: Path, dockerfiles: list[Dockerfile]) -> None:
     _keep_only_new_dockerfiles(directory, dockerfiles)
 
     for dockerfile in dockerfiles:
-        write_path: Path = directory / dockerfile.get_dockerfile_path()
+        write_path: Path = directory / _get_dockerfile_path(dockerfile)
         write_path.parent.mkdir(parents=True, exist_ok=True)
         write_path.write_text(dockerfile.to_dockerfile())
     msg = f"Created {len(dockerfiles)} new dockerfiles."
     logger.info(msg)
+
+
+def _get_dockerfile_path(dockerfile: Dockerfile) -> Path:
+    """Get relative path where dockerfile should be written to.
+
+    Args:
+        dockerfile: the dockerfile to retrieve the data from.
+
+    Returns:
+        string containing relative path to dockerfile.
+    """
+    return Path(
+        f"dockerfiles/{dockerfile.nuke_version}/{dockerfile.operating_system.value}"
+        "/Dockerfile"
+    )

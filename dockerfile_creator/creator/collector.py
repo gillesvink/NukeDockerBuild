@@ -2,6 +2,8 @@
 
 @maintainer: Gilles Vink
 """
+from __future__ import annotations
+
 import logging
 import re
 
@@ -64,8 +66,7 @@ def get_dockerfiles(data: dict) -> list[Dockerfile]:
         installer_data = release_data.get("installer")
         version_number = _nuke_version_to_float(version)
 
-        # FIXME(gillesvink): this is temporarily, as Nuke 12 requires
-        # additional work.
+        # As everything below Nuke 13 is considered EOL. Skipping it.
         if version_number < 13:
             continue
 
