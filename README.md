@@ -9,7 +9,9 @@ It is mostly meant for automatic deployment using CI/CD. However, it can also be
 ## 🏷 Tags
 Current images that are available to use. Note that there also is the locked tag available. This image will never be updated. The default latest tag will possibly be updated, making sure you are using the latest things added automatically.
 
-The :latest tag is missing on purpose, as this does not make any sense in this scenario. A nuke version needs to be chosen to compile to, thus needing to specify the tag which image to use for which Nuke version.
+**Note**: the invdividual :latest tag is not managed and created, as it does not make sense for this purpose. However, a latest tag for each Nuke version is provided. Which will be in this format: `{nuke_version}-{os}-latest`. For example `15.0-linux-latest`.
+
+You can also use the locked tag, which will be `15.0-linux-1.0` for example.
 
 TODO: Data to be added
 
