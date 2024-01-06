@@ -1,0 +1,63 @@
+name: Test and create dockerfiles
+run-name: Testing and create dockerfiles pipeline for NukeDockerBuild
+
+on:
+  push:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12' 
+
+      - name: Move to correct location
+        run: cd ${GITHUB_WORKSPACE}
+
+      - name: Install pip requirements
+        run: pip install -r requirements.txt
+
+      - name: Run pytest
+        run: pytest
+
+
+  parser:
+    needs: pytest
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12' 
+
+      - name: Move to correct location
+        run: cd ${GITHUB_WORKSPACE}
+
+      - name: Install pip requirements
+        run: pip install -r requirements.txt
+  
+      - name: Run parser
+        run: |
+          export DOCKERFILES_DIRECTORY=${GITHUB_WORKSPACE}
+          python create_dockerfiles.py
+
+      - name: Push data
+        run: |
+          git config user.name 'Github Actions'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git branch
+          git pull
+          if [[ -n $(git status -s) ]]; then
+            git commit -a -m  "Parse new data."
+            git push
+          else
+            echo "No changes to commit."
+          fi
+            
+      
