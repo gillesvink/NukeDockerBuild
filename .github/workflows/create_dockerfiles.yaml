@@ -26,7 +26,7 @@ jobs:
         run: pytest
 
 
-  parser:
+  dockerfile_creator:
     needs: pytest
     runs-on: ubuntu-latest
 
@@ -42,7 +42,7 @@ jobs:
       - name: Install pip requirements
         run: pip install -r requirements.txt
   
-      - name: Run parser
+      - name: Run dockerfile creator
         run: |
           export DOCKERFILES_DIRECTORY=${GITHUB_WORKSPACE}
           python create_dockerfiles.py
