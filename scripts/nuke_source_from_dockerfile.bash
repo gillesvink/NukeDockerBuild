@@ -42,7 +42,7 @@ ${nuke_temp_files}/${filename%.*}.run --accept-foundry-eula --prefix=${target_fo
 echo "Keep only source files"
 mkdir ${target_folder}/tests
 cp -r ${target_folder}/Documentation/NDKExamples/examples/* ${target_folder}/tests
-find ${target_folder} -mindepth 1 -maxdepth 1 ! -name "tests" ! -name "cmake" ! -name "include" ! -name "*Fdk*" ! -name "*Fn*" ! -name "*Ndk*" ! -name "*DD*" ! -name "source" -exec rm -rf {} \;
+find ${target_folder} -mindepth 1 -maxdepth 1 ! -name "tests" ! -name "cmake" ! -name "include" ! -name "*Fdk*" ! -name "*Fn*" ! -name "*Ndk*" ! -name "*DDI*" ! -name "source" -exec rm -rf {} \;
 
 echo "Clean nuke temp files"
 rm -rf ${nuke_temp_files}
