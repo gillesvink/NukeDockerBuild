@@ -49,7 +49,7 @@ jobs:
         run: |
           mkdir /tmp/nuke_source_files
           bash "${GITHUB_WORKSPACE}/scripts/nuke_source_from_dockerfile.bash" "${{ matrix.files }}" /tmp/nuke_source_files
-          tar -czvf /tmp/nuke_source_files.tar -C /tmp nuke_source_files
+          tar -czvf /tmp/nuke_source_files.tar.gz -C /tmp nuke_source_files
 
       - name: Set artifact name output
         id: artifact_name
@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nuke_source_files_${{ steps.artifact_name.outputs.unique_name}}
-          path: /tmp/nuke_source_files.tar
+          path: /tmp/nuke_source_files.tar.gz
 
 
 
