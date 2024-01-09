@@ -33,6 +33,8 @@ jobs:
   get_nuke_sources:
     runs-on: ubuntu-latest
     needs: [changed_dockerfiles]
+    outputs:
+      nuke_source_artifact: ${{ steps.artifact_name.outputs.nuke_source_artifact}}
     strategy:
       matrix: 
         files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
@@ -50,6 +52,7 @@ jobs:
           tar -czvf /tmp/nuke_source_files.tar.gz -C /tmp nuke_source_files
 
       - name: Set artifact name output
+        id: artifact_name
         run: |
           artifact_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
           artifact_name="nuke_source_files_$artifact_name"
@@ -58,7 +61,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ needs.get_nuke_sources.outputs.nuke_source_artifact }}
+          name: ${{ steps.artifact_name.outputs.nuke_source_artifact}}
           path: /tmp/nuke_source_files.tar.gz
 
 
