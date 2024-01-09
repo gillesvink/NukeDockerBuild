@@ -90,7 +90,7 @@ jobs:
 
       - name: Prepare source files
         run: |
-          echo "dockerfile_directory=${{ github.workspace }}/${ matrix.files }" >> $GITHUB_ENV
+          echo "dockerfile_directory=${{ github.workspace }}/${{ matrix.files }}" >> $GITHUB_ENV
           tar -xzf /tmp/nuke_source_files.tar.gz -C ${{ env.dockerfile_directory}}
 
       - name: Build and export
