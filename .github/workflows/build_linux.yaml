@@ -45,11 +45,11 @@ jobs:
           echo ${{ matrix.files}}
           mkdir /tmp/nuke_source_files
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: nuke-source-files
-          path: /tmp/nuke_source_files_${{ GITHUB_SHA }}.tar.gz
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: nuke-source-files
+      #     path: /tmp/nuke_source_files_${{ GITHUB_SHA }}.tar.gz
 
   # build:
   #   runs-on: ubuntu-latest
