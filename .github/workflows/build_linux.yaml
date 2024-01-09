@@ -58,7 +58,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.nuke_source_artifact }}
+          name: ${{ needs.get_nuke_sources.outputs.nuke_source_artifact }}
           path: /tmp/nuke_source_files.tar.gz
 
 
