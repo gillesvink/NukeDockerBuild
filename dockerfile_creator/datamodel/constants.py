@@ -71,6 +71,3 @@ NUKE_TESTS_DIRECTORIES: dict[OperatingSystem, str] = {
     OperatingSystem.WINDOWS: "C:\\\\nuke_tests\\",
 }
 """Tests directory for Nuke per operating system."""
-
-KEEP_SOURCE_FILES: list = ["tests", "cmake", "include", "source", "*Fdk*"]
-"""Files that should be kept for compiling purposes."""
