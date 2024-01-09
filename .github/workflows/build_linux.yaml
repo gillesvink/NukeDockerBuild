@@ -25,7 +25,7 @@ jobs:
           json: true
           escape_json: false
           files: |
-             **Dockerfile
+             **/Dockerfile
 
       - name: Show changed dockerfiles
         run: echo '${{ steps.changed_dockerfiles.outputs.all_changed_files }}'
