@@ -13,7 +13,7 @@ LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/pro
 
 ARG NUKE_SOURCE_FILES
 COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
-COPY cmake /usr/local/nuke_install/
+COPY cmake /usr/local/nuke_install/cmake
 
 RUN echo 'Installing required packages.' \
   && ulimit -n 1024 \
