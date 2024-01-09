@@ -88,7 +88,6 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
                 "yum -y install {toolset}",
             ]
         ),
-        DockerCommand(),
     ],
 }
 """Commands related to each image."""
