@@ -154,7 +154,7 @@ jobs:
         run: |
           NUKE_VERSION=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.nuke_version"}}' nukedockerbuild:latest)
           OPERATING_SYSTEM=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.operating_system"}}' nukedockerbuild:latest)
-          VERSION=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.version"}}' nukedockerbuild:latest)
+          VERSION=$(docker inspect -f '{{index .Config.Labels "org.opencontainers.version"}}' nukedockerbuild:latest)
 
           TAG=${NUKE_VERSION}-${OPERATING_SYSTEM}
 
