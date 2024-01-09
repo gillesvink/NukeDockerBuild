@@ -1,0 +1,133 @@
+name: Build, test and push linux Dockerfiles
+run-name: linux build
+
+on:
+  push:
+    paths:
+      - "dockerfiles/**/linux/Dockerfile"
+
+jobs:
+  changed_dockerfiles:
+    name: Get changed files
+    runs-on: ubuntu-latest
+
+    outputs:
+      matrix: ${{ steps.changed-files.outputs.all_changed_files }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed_dockerfiles
+        uses: ./
+        with:
+          json: true
+          escape_json: false
+      - name: Show changed dockerfiles
+        run: echo '${{ steps.changed_dockerfiles.outputs.all_changed_files }}'
+
+  get_nuke_sources:
+    runs-on: ubuntu-latest
+    needs: [changed_dockerfiles]
+    strategy:
+      matrix: 
+        files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
+      max-parallel: 1
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Collect Nuke source files
+        run: |
+          echo ${{ matrix.files}}
+          mkdir /tmp/nuke_source_files
+          bash ${GITHUB_WORKSPACE}/scripts/nuke_source_from_dockerfile.bash ${{ matrix.files }} /tmp/nuke_source_files
+          tar -czvf /tmp/nuke_source_files_${{ GITHUB_SHA }}.tar.gz /tmp/nuke_source_files
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuke-source-files
+          path: /tmp/nuke_source_files_${{ GITHUB_SHA }}.tar.gz
+
+  build:
+    runs-on: ubuntu-latest
+    needs: get_nuke_sources
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and export
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./dockerfiles/13.2/linux/Dockerfile
+          tags: nukedockerbuild:latest
+          outputs: type=docker,dest=/tmp/nukedockerbuild.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nukedockerbuild
+          path: /tmp/nukedockerbuild.tar
+
+  test_build:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - uses: actions/download-artifact@v4
+        with:
+          name: nukedockerbuild
+          path: /tmp/nukedockerbuild.tar
+      - name: Load image
+        run: docker load --input /tmp/nukedockerbuild.tar
+      - name: Test image
+        run: docker run nukedockerbuild:latest bash -c "cd /nuke_tests/ && cmake3 . && make"
+
+  # deploy:
+  #   needs: test_build
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     PUSH_LOCATION: "github.com/gillesvink/nukedockerbuild"
+  #   steps:
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
+
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: nukedockerbuild
+  #         path: /tmp/nukedockerbuild.tar
+
+  #     - name: Load image
+  #       run: docker load --input /tmp/nukedockerbuild.tar
+
+  #     - name: Login to GitHub Container Registry
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Set image tag
+  #       run: |
+  #         NUKE_VERSION=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.nuke_version"}}' nukedockerbuild:latest)
+  #         OPERATING_SYSTEM=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.operating_system"}}' nukedockerbuild:latest)
+  #         VERSION=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.version"}}' nukedockerbuild:latest)
+
+  #         TAG=${NUKE_VERSION}-${OPERATING_SYSTEM}
+
+  #         docker tag nukedockerbuild:latest ${PUSH_LOCATION}:${TAG}-${VERSION}
+  #         docker tag nukedockerbuild:latest ${PUSH_LOCATION}:${TAG}-latest
+  #         docker rmi nukedockerbuild:latest
+
+  #         docker image push ${PUSH_LOCATION}:${TAG}-${VERSION}
+  #         docker image push ${PUSH_LOCATION}:${TAG}-latest
