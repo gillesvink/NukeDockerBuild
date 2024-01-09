@@ -91,7 +91,7 @@ jobs:
       - name: Prepare source files
         run: |
           dockerfile_directory=$(dirname ${{ matrix.files }})
-          tar -xzf /tmp/nuke_source_files -C dockerfile_directory
+          tar -xzf /tmp/nuke_source_files.tar.gz -C dockerfile_directory
 
       - name: Build and export
         uses: docker/build-push-action@v5
