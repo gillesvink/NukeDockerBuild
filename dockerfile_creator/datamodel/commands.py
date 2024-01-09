@@ -75,10 +75,15 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
                 "echo 'Installing required packages.'",
                 "ulimit -n 1024",
                 "yum -y install epel-release",
-                "yum -y install centos-release-scl-rh ",
                 "yum -y install cmake3",
                 "yum -y install mesa-libGLU-devel",
+            ]
+        ),
+        DockerCommand(
+            [
                 "echo 'Installing devtoolset.'",
+                "ulimit -n 1024",
+                "yum -y install centos-release-scl-rh ",
                 "echo 'Use vault for SC packages as CentOS 7 reached EOL.'",
                 (
                     r"sed -i 's/7/7.4.1708/g; s|^#\s*\(baseurl=http://\)mirror"
@@ -94,13 +99,6 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
 
 OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
     OperatingSystem.LINUX: [
-        DockerCommand(
-            [
-                "echo 'Updating image for latest package versions.'",
-                "ulimit -n 1024",
-                "yum -y update && yum clean all",
-            ]
-        ),
         DockerCommand(
             [
                 "echo 'Setting devtoolset to {toolset}.'",
