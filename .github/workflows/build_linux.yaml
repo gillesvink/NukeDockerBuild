@@ -85,7 +85,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: nuke_source_files_${{ needs.get_nuke_sources.outputs.unique_name}}
+          name: nuke_source_files_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: /tmp/
 
       - name: Prepare source files
@@ -116,7 +116,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - uses: actions/download-artifact@v4
         with:
-          name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name}}
+          name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name  }}
           path: /tmp/
       - name: Load image
         run: docker load --input /tmp/nukedockerbuild.tar
@@ -134,7 +134,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name}}
+          name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name  }}
           path: /tmp/
 
       - name: Load image
