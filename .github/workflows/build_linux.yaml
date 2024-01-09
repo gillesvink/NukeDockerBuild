@@ -49,11 +49,18 @@ jobs:
           bash ${GITHUB_WORKSPACE}/scripts/nuke_source_from_dockerfile.bash ${{ matrix.files }} /tmp/nuke_source_files
           tar -czvf /tmp/nuke_source_files.tar.gz /tmp/nuke_source_files
 
+      - name: Set artifact name output
+        run: |
+          artifact_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
+          artifact_name="nuke_source_files_$artifact_name"
+          echo "::set-output name=nuke_source_artifact::$artifact_name"
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: nuke_source_files_${{ matrix.files}}
+          name: ${{ steps.replace.outputs.nuke_source_artifact }}
           path: /tmp/nuke_source_files.tar.gz
+
 
   # build:
   #   runs-on: ubuntu-latest
