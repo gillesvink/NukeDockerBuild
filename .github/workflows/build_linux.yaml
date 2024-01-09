@@ -20,7 +20,7 @@ jobs:
 
       - name: Get changed files
         id: changed_dockerfiles
-        uses: ./
+        uses: tj-actions/changed-files@v41
         with:
           json: true
           escape_json: false
