@@ -90,8 +90,9 @@ jobs:
 
       - name: Prepare source files
         run: |
-          echo "dockerfile_directory=${{ github.workspace }}/${{ matrix.files }}" >> $GITHUB_ENV
-          tar -xzf /tmp/nuke_source_files.tar.gz -C ${{ env.dockerfile_directory}}
+          DOCKERFILE_DIRECTORY=${{ github.workspace }}/${{ matrix.files }}
+          echo "dockerfile_directory=${DOCKERFILE_DIRECTORY}" >> $GITHUB_ENV
+          tar -xzf /tmp/nuke_source_files.tar.gz -C ${{ env.dockerfile_directory }}
 
       - name: Build and export
         uses: docker/build-push-action@v5
@@ -105,7 +106,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name}}
+          name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: /tmp/nukedockerbuild.tar
 
   test_build:
