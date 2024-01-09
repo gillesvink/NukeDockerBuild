@@ -90,12 +90,12 @@ jobs:
 
       - name: Prepare source files
         run: |
-          tar -xzf /tmp/nuke_source_files.tar.gz -C ${GITHUB_WORKSPACE}
+          tar -xzf /tmp/nuke_source_files.tar.gz -C ${{GITHUB_WORKSPACE}}/$(dirname ${{ matrix.files }})
 
       - name: Build and export
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ${{GITHUB_WORKSPACE}}/$(dirname ${{ matrix.files }})
           file: ${{ matrix.files }}
           tags: nukedockerbuild:latest
           outputs: type=docker,dest=/tmp/nukedockerbuild.tar
