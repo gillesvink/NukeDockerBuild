@@ -123,7 +123,7 @@ jobs:
       - name: Load image
         run: docker load --input /tmp/nukedockerbuild.tar
       - name: Test image
-        run: docker run nukedockerbuild:latest bash -c "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build"
+        run: docker run nukedockerbuild:latest bash -c "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build"
 
   deploy:
     needs: [test_build, get_nuke_sources]
