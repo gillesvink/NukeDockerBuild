@@ -129,7 +129,7 @@ jobs:
     needs: [test_build, get_nuke_sources]
     runs-on: ubuntu-latest
     env:
-      PUSH_LOCATION: "github.com/gillesvink/nukedockerbuild"
+      PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
