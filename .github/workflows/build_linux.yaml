@@ -86,12 +86,13 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: nuke_source_files_${{ needs.get_nuke_sources.outputs.unique_name}}
-          path: /tmp/nuke_source_files.tar
+          path: /tmp/
 
       - name: Prepare source files
         run: |
+          ls -l /tmp
           dockerfile_directory=$(dirname ${{ matrix.files }})
-          tar -xzf /tmp/nuke_source_files.tar -C ${dockerfile_directory}
+          tar -xzf /tmp/nuke_source_files.tar.gz -C ${dockerfile_directory}
 
       - name: Build and export
         uses: docker/build-push-action@v5
