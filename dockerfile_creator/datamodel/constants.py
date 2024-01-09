@@ -72,9 +72,5 @@ NUKE_TESTS_DIRECTORIES: dict[OperatingSystem, str] = {
 }
 """Tests directory for Nuke per operating system."""
 
-REDUNDANT_NUKE_ITEMS: str = (
-    "nukeCrashFeedback* *.exe DLLs bin plugins configs Resources resources "
-    "lib pythonextensions translations bin Documentation *torch* *cudnn* "
-    "*cublas* *cusparse* *cusolver* *mkl*"
-)
-"""Items that are applicable to being removed from Nuke."""
+KEEP_SOURCE_FILES: list = ["tests", "cmake", "include", "source", "*Fdk*"]
+"""Files that should be kept for compiling purposes."""

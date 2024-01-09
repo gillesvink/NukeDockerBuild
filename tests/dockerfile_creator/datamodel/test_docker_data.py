@@ -12,6 +12,7 @@ from dockerfile_creator.datamodel.commands import (
     OS_COMMANDS,
     DockerCommand,
 )
+from dockerfile_creator.datamodel.constants import NUKE_INSTALL_DIRECTORIES
 from dockerfile_creator.datamodel.docker_data import (
     Dockerfile,
     OperatingSystem,
@@ -79,7 +80,6 @@ class TestDockerfile:
             (OperatingSystem.LINUX, 15.1, "gcc-toolset-11"),
             (OperatingSystem.LINUX, 14.9, "devtoolset-9"),
             (OperatingSystem.LINUX, 13.0, "devtoolset-6"),
-            (OperatingSystem.LINUX, 13.0, "devtoolset-6"),
             (OperatingSystem.WINDOWS, 15.0, "2022"),
             (OperatingSystem.WINDOWS, 15.1, "2022"),
             (OperatingSystem.WINDOWS, 14.9, "2019"),
@@ -128,10 +128,10 @@ class TestDockerfile:
         )
 
     @pytest.mark.parametrize(
-        ("test_operating_system", "test_nuke_version"),
+        ("test_operating_system", "test_nuke_version", "test_nuke_source"),
         [
-            (OperatingSystem.LINUX, 15.0),
-            (OperatingSystem.LINUX, 13.0),
+            (OperatingSystem.LINUX, 15.0, "hello"),
+            (OperatingSystem.LINUX, 13.0, "github.com"),
         ],
     )
     def test_labels(
@@ -139,10 +139,13 @@ class TestDockerfile:
         dummy_dockerfile: Dockerfile,
         test_operating_system: OperatingSystem,
         test_nuke_version: float,
+        test_nuke_source: str,
+
     ) -> None:
         """Test to return the necessary labels to be returned."""
         dummy_dockerfile.operating_system = test_operating_system
         dummy_dockerfile.nuke_version = test_nuke_version
+        dummy_dockerfile.nuke_source = test_nuke_source
 
         retrieved_labels = dummy_dockerfile.labels
 
@@ -153,6 +156,10 @@ class TestDockerfile:
         assert "LABEL 'org.opencontainers.version'=1.0" in retrieved_labels
         assert (
             f"LABEL 'com.nukedockerbuild.operating_system'='{test_operating_system.value}'"
+            in retrieved_labels
+        )
+        assert (
+            f"LABEL 'com.nukedockerbuild.nuke_source'='{test_nuke_source}'"
             in retrieved_labels
         )
 
@@ -176,9 +183,8 @@ class TestDockerfile:
             "dockerfile_creator.datamodel.docker_data.Dockerfile."
             "_remove_invalid_commands_for_version"
         ) as remove_commands_mock:
-            run_commands = test_dockerfile.run_commands
+            test_dockerfile.run_commands
 
-        assert "https://gillesvink.com/test_file.tgz" in run_commands
         os_commands_mock.get.assert_called_once_with(
             test_dockerfile.operating_system, []
         )
@@ -237,6 +243,7 @@ class TestDockerfile:
         [
             (OperatingSystem.LINUX, 15.0),
             (OperatingSystem.LINUX, 13.0),
+            (OperatingSystem.WINDOWS, 13.0),
         ],
     )
     def test_to_dockerfile(
@@ -253,6 +260,9 @@ class TestDockerfile:
             f"FROM {dummy_dockerfile.upstream_image.value}\n"
             "\n"
             f"{dummy_dockerfile.labels}\n\n"
+            "ARG NUKE_SOURCE_FILES\n"
+            "COPY $NUKE_SOURCE_FILES "
+            f"{NUKE_INSTALL_DIRECTORIES[dummy_dockerfile.operating_system]}\n\n"
             f"{dummy_dockerfile.run_commands}\n\n"
             f"{dummy_dockerfile.work_dir}\n\n"
             f"{dummy_dockerfile.environments}"
