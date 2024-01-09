@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      matrix: ${{ steps.changed-files.outputs.all_changed_files }}
+      matrix: ${{ steps.changed_dockerfiles.outputs.all_changed_files }}
 
     steps:
       - name: Checkout
@@ -33,7 +33,7 @@ jobs:
     strategy:
       matrix: 
         files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
-      max-parallel: 1
+      max-parallel: 4
       fail-fast: false
 
     steps:
