@@ -91,13 +91,14 @@ jobs:
       - name: Prepare source files
         run: |
           DOCKERFILE_DIRECTORY=$(dirname ${{ github.workspace }}/${{ matrix.files }})
+          echo "Directory set to $DOCKERFILE_DIRECTORY"
           echo "dockerfile_directory=${DOCKERFILE_DIRECTORY}" >> "$GITHUB_ENV"
-          tar -xzf /tmp/nuke_source_files.tar.gz -C $dockerfile_directory
+          tar -xzf /tmp/nuke_source_files.tar.gz -C $DOCKERFILE_DIRECTORY
 
       - name: Build and export
         uses: docker/build-push-action@v5
         with:
-          context: $dockerfile_directory
+          context: ${{ env.dockerfile_directory }}
           file: ${{ matrix.files }}
           tags: nukedockerbuild:latest
           outputs: type=docker,dest=/tmp/nukedockerbuild.tar
