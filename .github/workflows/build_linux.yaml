@@ -1,8 +1,6 @@
 name: Build, test and push linux Dockerfiles
 run-name: Linux builds
 
-permissions: write-all
-
 on:
   push:
     paths:
@@ -130,6 +128,7 @@ jobs:
   deploy:
     needs: [test_build, get_nuke_sources]
     runs-on: ubuntu-latest
+    permissions: write-all
     env:
       PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
     steps:
