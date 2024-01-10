@@ -93,14 +93,20 @@ jobs:
           name: nuke_source_files_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: C:\temp
 
+      - name: Prepare source files
+        run: |
+          $dockerfileDirectory=[System.IO.Path]::GetDirectoryName("${{ github.workspace }}\${{ matrix.files }}")
+          echo "Directory set to $dockerfileDirectory"
+
+          echo "dockerfile_directory=$dockerfileDirectory" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          Expand-Archive -Path "c:\temp\nuke_source_files.zip" -DestinationPath "$dockerfileDirectory"
+
       - name: Build and export
-        uses: docker/build-push-action@v5.1.0
-        with:
-          context: ${{ env.dockerfile_directory }}
-          file: ${{ matrix.files }}
-          tags: nukedockerbuild:latest
-          outputs: type=docker,dest=C:\temp\nukedockerbuild.tar
-          build-args: NUKE_SOURCE_FILES=nuke_source_files
+        shell: pwsh
+        run: |
+          cd ${{ env.dockerfile_directory }}
+          docker build . --tag nukedockerbuild:latest --build-arg="NUKE_SOURCE_FILES=nuke_source_files"
+          docker save nukedockerbuild:latest | gzip > nukedockerbuild.tar.gz
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
