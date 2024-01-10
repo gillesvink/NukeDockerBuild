@@ -33,6 +33,7 @@ jobs:
   get_nuke_sources:
     runs-on: windows-latest
     needs: [changed_dockerfiles]
+    timeout-minutes: 30
     outputs:
       unique_name: ${{ steps.artifact_name.outputs.unique_name}}
     strategy:
@@ -94,6 +95,7 @@ jobs:
           path: C:\temp
 
       - name: Prepare source files
+        shell: pwsh
         run: |
           $dockerfileDirectory=[System.IO.Path]::GetDirectoryName("${{ github.workspace }}\${{ matrix.files }}")
           echo "Directory set to $dockerfileDirectory"

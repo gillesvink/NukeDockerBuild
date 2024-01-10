@@ -1,3 +1,5 @@
+[![Tests](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/create_dockerfiles.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/create_dockerfiles.yaml) [![Linux builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_linux.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_linux.yaml) [![Windows builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_windows.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_windows.yaml) 
+
 # 🐬 NukeDockerBuild 
 > Ready to use Docker containers to build Nuke plugins for Linux and Windows.
 
