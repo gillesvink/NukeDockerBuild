@@ -98,17 +98,8 @@ jobs:
           name: nuke_source_files_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: C:\temp
 
-      - name: Prepare source files
-        shell: pwsh
-        run: |
-          $dockerfileDirectory=[System.IO.Path]::GetDirectoryName("${{ github.workspace }}\${{ matrix.files }})")
-          Write-Host "Directory set to $dockerfileDirectory"
-
-          echo "dockerfile_directory=$dockerfileDirectory" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-          Expand-Archive -Path "C:\temp\nuke_source_files.zip" -DestinationPath "$dockerfileDirectory"
-
       - name: Build and export
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v5.1.0
         with:
           context: ${{ env.dockerfile_directory }}
           file: ${{ matrix.files }}
