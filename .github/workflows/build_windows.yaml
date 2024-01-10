@@ -1,4 +1,4 @@
-name: Build, test and push linux Dockerfiles
+name: Build, test and push Windows Dockerfiles
 run-name: Windows builds
 
 on:
@@ -48,8 +48,8 @@ jobs:
       - name: Collect Nuke source files
         shell: pwsh
         run: |
-          $sourceFilesPath = C:\temp\nuke_source_files
-          $targetZipPath = C:\temp\nuke_source_files.zip
+          $sourceFilesPath = "C:\temp\nuke_source_files"
+          $targetZipPath = "C:\temp\nuke_source_files.zip"
 
           Write-Host "Create temp dir for source files '$sourceFilesPath'"
           New-Item -Type Directory -Path $sourceFilesPath | Out-Null
