@@ -50,14 +50,18 @@ jobs:
         run: |
           $sourceFilesPath = Join-Path $Env:Temp "nuke_source_files"
           $targetZipPath = Join-Path $Env:Temp "nuke_source_files.zip"
-
+          Write-Host "Create temp dir for source files '$sourceFilesPath'"
           New-Item -Type Directory -Path $sourceFilesPath | Out-Null
+          Write-Host "Starting collecting of source files'"
           ${{ github.workspace }}\scripts\nuke_source_from_dockerfile.ps1 "${{ matrix.files }}" "$sourceFilesPath"
+          Write-Host "Compressing files into zip'"
           Compress-Archive -Path $sourceFilesPath -DestinationPath $targetZipPath
+          Write-Host "Wrote to $targetZipPath'"
           echo "nuke_source_files=$targetZipPath" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Set artifact name output
         id: artifact_name
+        shell: pwsh
         run: |
           $artifactName = (${{ matrix.files }} -replace '/', '_')
           echo "unique_name=$artifactName" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
