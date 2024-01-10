@@ -57,7 +57,7 @@ jobs:
           Write-Host "Starting collecting of source files'"
           ${{ github.workspace }}\scripts\nuke_source_from_dockerfile.ps1 "${{ matrix.files }}" "$sourceFilesPath"
 
-          Write-Host "Compressing files into zip'"
+          Write-Host "Compressing files into zip"
           Compress-Archive -Path $sourceFilesPath -DestinationPath $targetZipPath
 
 
@@ -90,6 +90,8 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          version: latest
 
       - uses: actions/download-artifact@v4
         with:
