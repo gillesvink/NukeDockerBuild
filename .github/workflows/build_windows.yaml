@@ -112,7 +112,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name }}
-          path: C:\temp\nukedockerbuild.tar
+          path: C:\temp\nukedockerbuild.tar.gz
 
   # test_build:
   #   needs: [build, get_nuke_sources]
