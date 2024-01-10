@@ -103,8 +103,7 @@ jobs:
           Write-Host "Directory set to $dockerfileDirectory"
 
           echo "dockerfile_directory=$dockerfileDirectory" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-          tar -xzf C:\tmp\nuke_source_files.tar.gz -C $dockerfileDirectory
-          
+          Expand-Archive -Path "C:\temp\nuke_source_files.zip" -DestinationPath "$dockerfileDirectory"
 
       - name: Build and export
         uses: docker/build-push-action@v5
