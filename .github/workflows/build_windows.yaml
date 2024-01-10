@@ -64,7 +64,7 @@ jobs:
         shell: pwsh
         run: |
           $artifactName = (${{ matrix.files }} -replace '/', '_')
-          Write-Out "Got artifact name $artifactName"
+          Write-Host "Got artifact name $artifactName"
           echo "unique_name=$artifactName" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Upload artifact
