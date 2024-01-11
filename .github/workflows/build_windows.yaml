@@ -1,4 +1,4 @@
-name: Build, test and push Windows Dockerfiles
+name: Build Windows
 run-name: Windows builds
 
 on:

@@ -1,4 +1,4 @@
-name: Build, test and push linux Dockerfiles
+name: Build Linux
 run-name: Linux builds
 
 on:
