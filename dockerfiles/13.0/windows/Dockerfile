@@ -18,7 +18,9 @@ COPY cmake C:\\nuke_install\\cmake
 RUN powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin" \
   && choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y \
   && choco install visualstudio2017buildtools -y \
-  && choco install visualstudio2017-workload-vctools --package-parameters '--includeRecommended' -y
+  && choco install visualstudio2017-workload-vctools --package-parameters '--includeRecommended' -y \
+  && powershell -Command "Remove-Item -Path "$env:TEMP\*" -Force -Recurse" \
+  && powershell -Command "Remove-Item -Path "C:\ProgramData\Package Cache\*" -Force -Recurse'
 
 WORKDIR C:\\nuke_build_directory
 
