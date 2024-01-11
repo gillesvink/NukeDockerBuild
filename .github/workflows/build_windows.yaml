@@ -50,7 +50,7 @@ jobs:
         shell: pwsh
         run: |
           $cacheKey = ('${{ matrix.files }}' -replace '/', '_')
-          $cacheKey = "nuke_source_files_$cacheKey_${{ hashFiles('**/scripts/nuke_source_from_dockerfile.ps1') }}"
+          $cacheKey = "nuke_source_files_${cacheKey}_${{ hashFiles('**/scripts/nuke_source_from_dockerfile.ps1') }}"
           Write-Host "Got cache key '$cacheKey'"
           echo "cache_key=$cacheKey" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
