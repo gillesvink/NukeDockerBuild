@@ -30,12 +30,13 @@ jobs:
       - name: Show changed dockerfiles
         run: echo '${{ steps.changed_dockerfiles.outputs.all_changed_files }}'
 
-  get_nuke_sources:
+
+  build:
+    name: Build, test and push image
     runs-on: windows-latest
     needs: [changed_dockerfiles]
-    timeout-minutes: 30
-    outputs:
-      unique_name: ${{ steps.cache_key.outputs.cache_key}}
+    env:
+      PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
     strategy:
       matrix: 
         files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
@@ -45,21 +46,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get cache key
-        id: cache_key
+      - name: Get cache name output
         shell: pwsh
         run: |
           $cacheKey = ('${{ matrix.files }}' -replace '/', '_')
-          $cacheKey = "nuke_source_files_${cacheKey}_${{ hashFiles('**/scripts/nuke_source_from_dockerfile.ps1') }}"
           Write-Host "Got cache key '$cacheKey'"
-          echo "cache_key=$cacheKey" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "cache_key=$cacheKey" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Get Nuke source files cache
         id: cache_nuke_source
         uses: actions/cache@v3
         with:
           path: C:\temp\nuke_source_files
-          key: ${{ steps.cache_key.outputs.cache_key}}
+          key: ${{ env.cache_key }}_${{ hashFiles('**/scripts/nuke_source_from_dockerfile.ps1') }}
 
       - name: Collect Nuke source files
         if: steps.cache_nuke_source.outputs.cache-hit != 'true'
@@ -73,28 +72,6 @@ jobs:
 
           Write-Host "Starting collecting of source files'"
           ${{ github.workspace }}\scripts\nuke_source_from_dockerfile.ps1 "${{ matrix.files }}" "$sourceFilesPath"
-
-  build:
-    name: Build, test and push image
-    runs-on: windows-latest
-    needs: [changed_dockerfiles, get_nuke_sources]
-    env:
-      PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
-    strategy:
-      matrix: 
-        files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
-      fail-fast: false
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Get Nuke source files cache
-        id: cache_nuke_source
-        uses: actions/cache@v3
-        with:
-          path: C:\temp\nuke_source_files
-          key: ${{ needs.get_nuke_sources.outputs.cache_key }}
 
       - name: Prepare source files
         shell: pwsh
