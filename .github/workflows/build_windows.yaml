@@ -89,6 +89,7 @@ jobs:
           docker build . --tag nukedockerbuild:latest --build-arg="NUKE_SOURCE_FILES=nuke_source_files"
 
       - name: Test image
+        shell: pwsh
         run: docker run --rm nukedockerbuild:latest powershell -Command "cd c:\nuke_install\tests ; cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; cmake --build build"
 
       - name: Login to GitHub Container Registry
@@ -100,10 +101,12 @@ jobs:
 
       - name: Set image tag
         # if: github.ref == 'refs/heads/main'
+        shell: pwsh
+
         run: |
-          $nukeVersion=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.nuke_version"}}' nukedockerbuild:latest)
-          $operatingSystem=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.operating_system"}}' nukedockerbuild:latest)
-          $version=$(docker inspect -f '{{index .Config.Labels "org.opencontainers.version"}}' nukedockerbuild:latest)
+          $nukeVersion = docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.nuke_version"}}' nukedockerbuild:latest
+          $operatingSystem = docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.operating_system"}}' nukedockerbuild:latest
+          $version = docker inspect -f '{{index .Config.Labels "org.opencontainers.version"}}' nukedockerbuild:latest
 
           $tag=$nukeVersion-$operatingSystem
 
