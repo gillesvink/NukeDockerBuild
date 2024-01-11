@@ -62,7 +62,7 @@ VISUALSTUDIO_BUILDTOOLS = {
 
 NUKE_INSTALL_DIRECTORIES: dict[OperatingSystem, str] = {
     OperatingSystem.LINUX: "/usr/local/nuke_install",
-    OperatingSystem.WINDOWS: "C:\\nuke_install",
+    OperatingSystem.WINDOWS: "C:\\\\nuke_install",
 }
 """Install directory for Nuke per operating system."""
 
