@@ -19,7 +19,7 @@ RUN powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[S
   && choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y \
   && choco install visualstudio2017buildtools -y \
   && choco install visualstudio2017-workload-vctools --package-parameters '--includeRecommended' -y \
-  && powershell -Command "Remove-Item -Path `$env:TEMP\* -Force -Recurse" \
+  && powershell -Command "Remove-Item -Path `"$env:TEMP\*`" -Force -Recurse" \
   && powershell -Command "Remove-Item -Path 'C:\ProgramData\Package Cache\*' -Force -Recurse"
 
 WORKDIR C:\\nuke_build_directory
