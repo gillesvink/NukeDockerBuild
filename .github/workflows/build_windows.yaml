@@ -43,6 +43,9 @@ jobs:
       fail-fast: false
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Get cache name output
         shell: pwsh
         run: |
@@ -70,8 +73,6 @@ jobs:
           Write-Host "Starting collecting of source files'"
           ${{ github.workspace }}\scripts\nuke_source_from_dockerfile.ps1 "${{ matrix.files }}" "$sourceFilesPath"
 
-      - name: Checkout
-        uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         with:
