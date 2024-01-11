@@ -50,7 +50,7 @@ if ($version -lt 14.0) {
 Write-Host "Keep only source files"
 New-Item -ItemType Directory -Force -Path (Join-Path $targetFolder "tests") | Out-Null
 Copy-Item -Path (Join-Path $targetFolder "Documentation\NDKExamples\examples\*") -Destination (Join-Path $targetFolder "tests") -Recurse
-Get-ChildItem -Path $targetFolder -Exclude "tests", "cmake", "include", "source", "*Fdk*", "*Fn*", "*DDI*" | Remove-Item -Recurse -Force
+Get-ChildItem -Path $targetFolder -Exclude "tests", "cmake", "include", "source", "*Fdk*", "*Fn*", "*DDI*", "*RIPFramework*" | Remove-Item -Recurse -Force
 
 Write-Host "Clean nuke temp files"
 Remove-Item -Path $nukeTempFiles -Recurse -Force

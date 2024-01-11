@@ -22,4 +22,4 @@ RUN powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[S
 
 WORKDIR C:\\nuke_build_directory
 
-ENV CMAKE_PREFIX_PATH=C:\nuke_install
+ENV CMAKE_PREFIX_PATH=C:\\nuke_install
