@@ -58,7 +58,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: C:\temp\nuke_source_files
-          key: source_files_${{ env.cache_key }}
+          key: source_files_${{ env.cache_key }}_hashFiles('**/scripts/nuke_source_from_dockerfile.ps1')
 
       - name: Collect Nuke source files
         if: steps.cache_nuke_source.outputs.cache-hit != 'true'
