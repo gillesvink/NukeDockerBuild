@@ -10,5 +10,6 @@ add_library(Murmur3::Murmur3 SHARED IMPORTED)
 set_target_properties(Murmur3::Murmur3
     PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES ${_IMPORT_PREFIX}/include
-        IMPORTED_LOCATION ${_IMPORT_PREFIX}/libMurmur3.so
+        IMPORTED_LOCATION "${_IMPORT_PREFIX}/Murmur3.dll"
+        IMPORTED_IMPLIB "${_IMPORT_PREFIX}/Murmur3.lib"
 )

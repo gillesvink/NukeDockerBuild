@@ -14,7 +14,7 @@ set_target_properties(Nuke::NDK
     PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES ${_IMPORT_PREFIX}/include
         INTERFACE_COMPILE_FEATURES cxx_std_14
-        INTERFACE_LINK_LIBRARIES ${_IMPORT_PREFIX}/libDDImage.so
+        INTERFACE_LINK_LIBRARIES "OpenGL::GL;${_IMPORT_PREFIX}/DDImage.lib;${_IMPORT_PREFIX}/RIPFramework.lib;${_IMPORT_PREFIX}/glew32.lib;${_IMPORT_PREFIX}/tbb.lib;${_IMPORT_PREFIX}/tbbmalloc.lib"
 )
 
 
