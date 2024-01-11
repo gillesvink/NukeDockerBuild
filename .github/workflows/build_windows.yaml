@@ -58,7 +58,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: C:\temp\nuke_source_files
-          key: source_files_${{ env.cache_key }}_hashFiles('**/scripts/nuke_source_from_dockerfile.ps1')
+          key: ${{ env.cache_key }}_${{ hashFiles('**/scripts/nuke_source_from_dockerfile.ps1') }}
 
       - name: Collect Nuke source files
         if: steps.cache_nuke_source.outputs.cache-hit != 'true'
@@ -72,12 +72,6 @@ jobs:
 
           Write-Host "Starting collecting of source files'"
           ${{ github.workspace }}\scripts\nuke_source_from_dockerfile.ps1 "${{ matrix.files }}" "$sourceFilesPath"
-
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: nuke_source_files_${{ needs.get_nuke_sources.outputs.unique_name }}
-          path: C:\temp
 
       - name: Prepare source files
         shell: pwsh
