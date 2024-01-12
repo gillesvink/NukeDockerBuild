@@ -110,7 +110,7 @@ jobs:
           $operatingSystem = $dockerJSON | Select-Object -ExpandProperty "com.nukedockerbuild.operating_system"
           $version = $dockerJSON | Select-Object -ExpandProperty "org.opencontainers.version"
 
-          $tag=$nukeVersion-$operatingSystem
+          $tag="$nukeVersion-$operatingSystem"
 
           docker tag nukedockerbuild:latest ${{ env.PUSH_LOCATION }}:$tag-$version
           docker tag nukedockerbuild:latest ${{ env.PUSH_LOCATION }}:$tag-latest
