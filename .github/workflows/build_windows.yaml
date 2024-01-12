@@ -35,6 +35,7 @@ jobs:
     name: Build, test and push image
     runs-on: windows-latest
     needs: [changed_dockerfiles]
+    permissions: write-all
     env:
       PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
     strategy:
@@ -104,9 +105,10 @@ jobs:
         shell: pwsh
 
         run: |
-          $nukeVersion = docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.nuke_version"}}' nukedockerbuild:latest
-          $operatingSystem = docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.operating_system"}}' nukedockerbuild:latest
-          $version = docker inspect -f '{{index .Config.Labels "org.opencontainers.version"}}' nukedockerbuild:latest
+          $dockerJSON = docker inspect --format '{{json .Config.Labels}}' nukedockerbuild:latest | ConvertFrom-Json
+          $nukeVersion = $dockerJSON | Select-Object -ExpandProperty "com.nukedockerbuild.nuke_version"
+          $operatingSystem = $dockerJSON | Select-Object -ExpandProperty "com.nukedockerbuild.operating_system"
+          $version = $dockerJSON | Select-Object -ExpandProperty "org.opencontainers.version"
 
           $tag=$nukeVersion-$operatingSystem
 
