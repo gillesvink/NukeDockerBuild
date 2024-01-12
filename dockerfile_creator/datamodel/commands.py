@@ -118,8 +118,8 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 "choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y",
                 "choco install visualstudio{toolset}buildtools -y",
                 "choco install visualstudio{toolset}-workload-vctools --package-parameters '--includeRecommended' -y",
-                'powershell -Command "Remove-Item -Path "$env:TEMP\\*" -Force -Recurse"',
-                'powershell -Command "Remove-Item -Path "C:\\ProgramData\Package Cache\*" -Force -Recurse'
+                'powershell -Command "Remove-Item -Path \\\"$env:TEMP\\*\\\" -Force -Recurse"',
+                'powershell -Command "Remove-Item -Path \'C:\\ProgramData\\Package Cache\\*\' -Force -Recurse"'
             ],
             minimum_version=13.0,
         ),
