@@ -91,13 +91,15 @@ jobs:
 
       - name: Test image
         shell: pwsh
-        run: docker run --rm -v "C:\test_builds:C:\nuke_install\tests" nukedockerbuild:latest powershell -Command "cd c:\nuke_install\tests ; cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; cmake --build build"
+        run: |
+          mkdir C:\nuke_build_directory
+          docker run --rm -v "C:\nuke_build_directory:C:\nuke_build_directory" nukedockerbuild:latest powershell -Command "cd c:\nuke_install\tests ; cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; cmake --build build ; Copy-Item 'build' -Destination 'C:\nuke_build_directory'"
 
-      - name: Create artifacts of test build
+      - name: Create artifact of test build
         uses: actions/upload-artifact@v4
         with:
           name: test_build_${{ needs.get_nuke_sources.outputs.unique_name }}
-          path: C:\test_builds
+          path: C:\nuke_build_directory
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
