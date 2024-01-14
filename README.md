@@ -14,7 +14,7 @@ Current images that are available to use. Note that there also is the locked tag
 
 You can also use the locked tag, which will be `15.0-linux-1.0` for example.
 
-TODO: Data to be added
+TODO: Data to be added to table (will be next up, needs automatic process)
 
 | Tag | Locked Tag | Nuke Version | Target OS | Upstream Image | Date Added | Image Size
 |-----|------------|--------------|------------------|-------|------|-------|
@@ -58,7 +58,7 @@ docker run --rm `
     cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; `
     cmake --build build --config Release"
 ```
-#### CMD (Command Prompt)
+##### CMD (Command Prompt)
 ```bash
 docker run --rm ^
     ghcr.io/gillesvink/nukedockerbuild:15.0-windows-latest ^
@@ -112,6 +112,8 @@ The images depend on the specs provided by the [NDK documentation](https://learn
 If you like to see how images are made, feel free to look at the dockerfiles in the [dockerfiles directory](dockerfiles). They are all grouped under their respective Nuke version as the target OS. Also all builds are public in the Github Actions CI process.
 
 Nuke will always be installed at `/usr/local/nuke_install` on Linux and `C:\nuke_install` on Windows. The entry directory if you execute this image will be `/nuke_build_directory` on Linux and `C:\nuke_build_directory` on Windows.
+
+The image also has the `NUKE_VERSION` environment set, this will always contain the version that is available in the image. For example `15.0`
 
 ### Linux
 All Linux images are based on Red Hat based images. This means [Rocky Linux](https://hub.docker.com/_/rockylinux) for Nuke 15+ and [CentOS](https://hub.docker.com/_/centos) for anything lower than 15. As [Foundry is using Rocky](https://learn.foundry.com/nuke/content/release_notes/15.0/nuke_15.0v1_releasenotes.html), I choose to stick to that as well. However it is basically identical to Alma.
