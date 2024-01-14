@@ -164,7 +164,7 @@ jobs:
   build_slim:
     name: Build slim
 
-    needs: [test_build_base, get_nuke_sources]
+    needs: [test_build, get_nuke_sources]
     runs-on: ubuntu-latest
 
     steps:

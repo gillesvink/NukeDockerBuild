@@ -35,6 +35,12 @@ jobs:
     runs-on: windows-latest
     needs: [changed_dockerfiles]
 
+    strategy:
+      matrix: 
+        files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
+      fail-fast: false
+
+
     outputs:
       unique_name: ${{ steps.unique_name.outputs.unique_name}}
       cache_key: ${{ steps.unique_name.outputs.cache_key}}
@@ -48,7 +54,7 @@ jobs:
           Write-Host "Got unique name '$uniqueName'"
           echo "cache_key=$uniqueName" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
-          $cacheKey = "${cacheKey}__${{ hashFiles('**/scripts/nuke_source_from_dockerfile.ps1') }}"
+          $cacheKey = "${cacheKey}_${{ hashFiles('**/scripts/nuke_source_from_dockerfile.ps1') }}"
           Write-Host "Got unique name '$uniqueName'"
           echo "cache_key=$cacheKey" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
