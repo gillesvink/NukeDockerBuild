@@ -198,7 +198,7 @@ jobs:
           mkdir /tmp/tests/
           mkdir /tmp/tests/base
 
-          docker run -v /tmp/tests/slim:/usr/local/nuke_install/tests/build nukedockerbuild:latest bash -c \
+          docker run -v /tmp/tests/base:/usr/local/nuke_install/tests/build nukedockerbuild:latest bash -c \
             "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build"
 
       - name: Test slim
