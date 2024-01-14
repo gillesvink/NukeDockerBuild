@@ -76,7 +76,7 @@ jobs:
         run: tar -czvf /tmp/nuke_source_files.tar.gz -C /tmp nuke_source_files
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: nuke_source_files_${{ steps.unique_name.outputs.unique_name}}
           path: /tmp/nuke_source_files.tar.gz
@@ -120,7 +120,7 @@ jobs:
           build-args: NUKE_SOURCE_FILES=nuke_source_files
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: /tmp/nukedockerbuild.tar.gz
@@ -155,7 +155,7 @@ jobs:
         run: tar -czvf /tmp/test_run.tar.gz /tmp/tests
 
       - name: Upload tests artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: tests_run_base_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: /tmp/test_run.tar.gz
@@ -199,7 +199,7 @@ jobs:
           docker save nukedockerbuild.slim:latest > /tmp/nukedockerbuild_slim.tar.gz
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: docker_image_slim_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: /tmp/nukedockerbuild_slim.tar.gz
@@ -235,7 +235,7 @@ jobs:
         run: tar -czvf /tmp/test_run.tar.gz /tmp/tests
 
       - name: Upload tests artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: tests_run_slim_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: /tmp/test_run.tar.gz
