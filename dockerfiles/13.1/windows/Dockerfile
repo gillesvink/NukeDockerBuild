@@ -8,8 +8,8 @@ LABEL 'org.opencontainers.license'='MIT'
 LABEL 'org.opencontainers.url'='https://github.com/gillesvink/NukeDockerBuild'
 LABEL 'com.nukedockerbuild.based_on'='mcr.microsoft.com/windows/servercore:ltsc2022'
 LABEL 'com.nukedockerbuild.operating_system'='windows'
-LABEL 'com.nukedockerbuild.nuke_version'=13.0
-LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/13.0v10/Nuke13.0v10-win-x86_64.zip'
+LABEL 'com.nukedockerbuild.nuke_version'=13.1
+LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/13.1v5/Nuke13.1v5-win-x86_64.zip'
 
 ARG NUKE_SOURCE_FILES
 COPY $NUKE_SOURCE_FILES C:\\nuke_install
@@ -25,4 +25,4 @@ RUN powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[S
 WORKDIR C:\\nuke_build_directory
 
 ENV CMAKE_PREFIX_PATH=C:\\nuke_install
-ENV NUKE_VERSION=13.0
+ENV NUKE_VERSION=13.1
