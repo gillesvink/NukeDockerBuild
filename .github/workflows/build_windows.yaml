@@ -24,7 +24,7 @@ jobs:
         with:
           json: true
           escape_json: false
-          files: |2
+          files: |
              **/windows/Dockerfile
 
       - name: Show changed dockerfiles
@@ -41,6 +41,7 @@ jobs:
       fail-fast: false
 
     outputs:
+      filename: ${{ steps.unique_name.outputs.filename}}
       unique_name: ${{ steps.unique_name.outputs.unique_name}}
       cache_key: ${{ steps.unique_name.outputs.cache_key}}
 
@@ -52,6 +53,7 @@ jobs:
         id: unique_name
         shell: pwsh
         run: |
+          echo "filename=${{ matrix.files }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
           $uniqueName = ('${{ matrix.files }}' -replace '/', '_')
           Write-Host "Got unique name '$uniqueName'"
           echo "unique_name=$uniqueName" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
@@ -92,7 +94,7 @@ jobs:
   build:
     name: Build, test and push image
     runs-on: windows-latest
-    needs: [changed_dockerfiles, get_nuke_sources]
+    needs: [get_nuke_sources]
     permissions: write-all
     env:
       PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
@@ -113,7 +115,7 @@ jobs:
       - name: Prepare source files
         shell: pwsh
         run: |
-          $dockerfileDirectory=[System.IO.Path]::GetDirectoryName("${{ github.workspace }}\${{ matrix.files }}")
+          $dockerfileDirectory=[System.IO.Path]::GetDirectoryName("${{ github.workspace }}\${{ needs.get_nuke_sources.outputs.filename }}")
           echo "Directory set to $dockerfileDirectory"
 
           Expand-Archive -Path C:\temp\nuke_source_files.zip -DestinationPath $dockerfileDirectory -Force
@@ -137,7 +139,7 @@ jobs:
               cmake --build C:\nuke_build_directory --config Release"
 
       - name: Create artifact of test build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test_build_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: C:\nuke_build_directory
