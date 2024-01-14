@@ -152,13 +152,13 @@ jobs:
             "cd /usr/local/nuke_install/tests && cmake3 . -B /nuke_build_directory && cmake3 --build /nuke_build_directory"
 
       - name: Prepare test results for upload
-        run: tar -czvf /tmp/test_runs.tar.gz /tmp/tests
+        run: tar -czvf /tmp/test_run.tar.gz /tmp/tests
 
       - name: Upload tests artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: tests_runs_base_${{ needs.get_nuke_sources.outputs.unique_name }}
-          path: /tmp/test_runs.tar.gz
+          name: tests_run_base_${{ needs.get_nuke_sources.outputs.unique_name }}
+          path: /tmp/test_run.tar.gz
 
 
   build_slim:
@@ -232,13 +232,13 @@ jobs:
             "cd /usr/local/nuke_install/tests && cmake3 . -B /nuke_build_directory && cmake3 --build /nuke_build_directory"
 
       - name: Prepare test results for upload
-        run: tar -czvf /tmp/test_runs.tar.gz /tmp/tests
+        run: tar -czvf /tmp/test_run.tar.gz /tmp/tests
 
       - name: Upload tests artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: tests_runs_${{ needs.get_nuke_sources.outputs.unique_name }}
-          path: /tmp/test_runs.tar.gz
+          name: tests_run_slim_${{ needs.get_nuke_sources.outputs.unique_name }}
+          path: /tmp/test_run.tar.gz
 
   deploy:
     name: Deploy
