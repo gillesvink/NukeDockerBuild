@@ -101,7 +101,7 @@ I wish... However, Apple does not support containerized applications as its miss
 ## 📦 Image size
 This depends on the image you choose to use. Windows itself has quite large images, because it is relying on the server core image. Besides that the build tools are also quite big. As a result of that the Windows images are around 9gb.
 
-Linux however can be optimized a lot more. The base system is around 1.2GB. However here are also slim images available. These are around only 400mb (while only a Nuke install would already be around 10gb). Note that these slim images only provide functionality to compile plugins. The rest of the system is basically gone. If you plan to extend these images please choose the usual image, and not the slim version.
+Linux however can be optimized a lot more. The base system is around 400 MB compressed and 1.2 GB uncompressed. However here are also slim images available. These are around only 150 MB compressed, 400 MB uncompressed (while only a Nuke install would already be around 10gb). Note that these slim images only provide functionality to compile plugins. The rest of the system is basically gone. If you plan to extend these images please choose the usual image, and not the slim version.
 
 ### Slim
 These images only include everything that is absolutely necessary for compiling purposes, the rest is erased. If [SlimToolkit](https://slimtoolkit.org/) will support Windows eventually, Slim images are then planned to be available as well for Windows.
@@ -114,7 +114,7 @@ If you like to see how images are made, feel free to look at the dockerfiles in 
 Nuke will always be installed at `/usr/local/nuke_install` on Linux and `C:\nuke_install` on Windows. The entry directory if you execute this image will be `/nuke_build_directory` on Linux and `C:\nuke_build_directory` on Windows.
 
 ### Linux
-All Linux images are based on Red Hat based images. This means [Rocky Linux](https://hub.docker.com/_/rockylinux) for Nuke 15+ and [CentOS](https://hub.docker.com/_/centos) for anything lower than 15. As Foundry is using Rocky, I choose to stick to that as well. However it is basically identical to Alma.
+All Linux images are based on Red Hat based images. This means [Rocky Linux](https://hub.docker.com/_/rockylinux) for Nuke 15+ and [CentOS](https://hub.docker.com/_/centos) for anything lower than 15. As [Foundry is using Rocky](https://learn.foundry.com/nuke/content/release_notes/15.0/nuke_15.0v1_releasenotes.html), I choose to stick to that as well. However it is basically identical to Alma.
 
 ### Windows
 For Windows the [Server Core ltsc2022](https://hub.docker.com/_/microsoft-windows-servercore) image is used. Besides that, for package installation the [Chocolatey package registry](https://community.chocolatey.org/packages) is used to install both the VS Build Tools as well as CMake.
