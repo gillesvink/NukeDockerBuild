@@ -46,6 +46,9 @@ jobs:
       cache_key: ${{ steps.unique_name.outputs.cache_key}}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Get cache name output
         id: unique_name
         shell: pwsh
