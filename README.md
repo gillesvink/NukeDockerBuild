@@ -53,7 +53,7 @@ docker run --rm ghcr.io/gillesvink/nukedockerbuild:15.0-linux-slim-latest bash -
 ##### Powershell
 ```bash
 docker run --rm `
-    ghcr.io/gillesvink/nukedockerbuild:15.0-windows-latest `
+    ghcr.io/gillesvink/nukedockerbuild:13.0-windows-latest `
     powershell -Command "cd C:\nuke_install\tests ; `
     cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; `
     cmake --build build --config Release"
