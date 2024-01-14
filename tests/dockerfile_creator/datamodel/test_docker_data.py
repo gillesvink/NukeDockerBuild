@@ -11,6 +11,7 @@ from dockerfile_creator.datamodel.commands import (
     IMAGE_COMMANDS,
     OS_COMMANDS,
     DockerCommand,
+    DockerEnvironments,
 )
 from dockerfile_creator.datamodel.constants import NUKE_INSTALL_DIRECTORIES
 from dockerfile_creator.datamodel.docker_data import (
@@ -118,13 +119,22 @@ class TestDockerfile:
 
     def test_environments(self, dummy_dockerfile: Dockerfile) -> None:
         """Tests the environments property to call the constants."""
+        os_environments_mock = MagicMock(spec=dict)
+        os_environments_mock.__getitem__.return_value = DockerEnvironments(
+            {"test": "test"}
+        )
         with patch(
-            "dockerfile_creator.datamodel.docker_data.OS_ENVIRONMENTS"
+            "dockerfile_creator.datamodel.docker_data.OS_ENVIRONMENTS",
+            os_environments_mock,
         ) as environments_mock:
-            dummy_dockerfile.environments
+            collected_environments = dummy_dockerfile.environments
 
         environments_mock.__getitem__.assert_called_once_with(
             dummy_dockerfile.operating_system
+        )
+        assert (
+            f"NUKE_VERSION={dummy_dockerfile.nuke_version}"
+            in collected_environments
         )
 
     @pytest.mark.parametrize(
@@ -140,7 +150,6 @@ class TestDockerfile:
         test_operating_system: OperatingSystem,
         test_nuke_version: float,
         test_nuke_source: str,
-
     ) -> None:
         """Test to return the necessary labels to be returned."""
         dummy_dockerfile.operating_system = test_operating_system
@@ -232,9 +241,7 @@ class TestDockerfile:
     ) -> None:
         """Test command to be isolated from list if not matching version."""
         dummy_dockerfile.nuke_version = test_nuke_version
-        dummy_dockerfile._remove_invalid_commands_for_version(
-            test_commands
-        )
+        dummy_dockerfile._remove_invalid_commands_for_version(test_commands)
 
         assert bool(test_commands) == command_still_in_list
 

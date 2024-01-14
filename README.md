@@ -3,7 +3,7 @@
 # 🐬 NukeDockerBuild 
 > Ready to use Docker containers to build Nuke plugins for Linux and Windows.
 
-The images produced here will include everything you need to build Nuke plugins. This includes the compiler for C++ (GCC on Linux, Visual Studio on Windows), [CMake](https://cmake.org/) and the Nuke files required to compile.
+The images produced here will include everything you need to build Nuke plugins. This includes the compiler for C++ ([gcc-toolsets](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/12) on Linux, [Visual Studio](https://visualstudio.microsoft.com/downloads/) on Windows), [CMake](https://cmake.org/) and the Nuke files required to compile.
 
 It is mostly meant for automatic deployment using CI/CD. However, it can also be used locally to quickly compile plugins without the need to install anything (except Docker itself 😉).
 
@@ -109,7 +109,7 @@ These images only include everything that is absolutely necessary for compiling 
 ## ⚙️ Technical info
 The images depend on the specs provided by the [NDK documentation](https://learn.foundry.com/nuke/developers/13.2/ndkdevguide/intro/pluginbuildinginstallation.html) and the [VFX reference platform](https://vfxplatform.com/).
 
-If you like to see how images are made, feel free to look at the dockerfiles in the dockerfiles directory. They are all grouped under their respective Nuke version as the target OS. Also all builds are public in the Github Actions CI process.
+If you like to see how images are made, feel free to look at the dockerfiles in the [dockerfiles directory](dockerfiles). They are all grouped under their respective Nuke version as the target OS. Also all builds are public in the Github Actions CI process.
 
 Nuke will always be installed at `/usr/local/nuke_install` on Linux and `C:\nuke_install` on Windows. The entry directory if you execute this image will be `/nuke_build_directory` on Linux and `C:\nuke_build_directory` on Windows.
 
@@ -117,7 +117,7 @@ Nuke will always be installed at `/usr/local/nuke_install` on Linux and `C:\nuke
 All Linux images are based on Red Hat based images. This means [Rocky Linux](https://hub.docker.com/_/rockylinux) for Nuke 15+ and [CentOS](https://hub.docker.com/_/centos) for anything lower than 15. As Foundry is using Rocky, I choose to stick to that as well. However it is basically identical to Alma.
 
 ### Windows
-For Windows the [Server Core ltsc2022](https://hub.docker.com/_/microsoft-windows-servercore) image is used. Besides that, for package installation the [Chocolatey package registry](https://community.chocolatey.org/packages) is used to install both the build tools as cmake.
+For Windows the [Server Core ltsc2022](https://hub.docker.com/_/microsoft-windows-servercore) image is used. Besides that, for package installation the [Chocolatey package registry](https://community.chocolatey.org/packages) is used to install both the VS Build Tools as well as CMake.
 
 ## ❤️ Thanks
 Thanks to everyone who contributed anything to the images that are used in these dockerfiles and to the maintainers of all plugins used! Without all the open source code applications that are available this would never have been possible.

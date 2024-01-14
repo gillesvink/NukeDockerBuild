@@ -100,10 +100,17 @@ class Dockerfile:
     @property
     def environments(self) -> str:
         """Return all environments as a string."""
-        environments: DockerEnvironments = OS_ENVIRONMENTS[
+        os_environments: DockerEnvironments = OS_ENVIRONMENTS[
             self.operating_system
         ]
-        return environments.to_docker_format()
+        general_environments = DockerEnvironments(
+            {"NUKE_VERSION": self.nuke_version}
+        )
+
+        return "\n".join(
+            environments.to_docker_format()
+            for environments in [os_environments, general_environments]
+        )
 
     @property
     def upstream_image(self) -> UpstreamImage:
