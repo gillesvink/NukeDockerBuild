@@ -68,6 +68,13 @@ jobs:
         run: |
           mkdir /tmp/nuke_source_files
           bash "${GITHUB_WORKSPACE}/scripts/nuke_source_from_dockerfile.bash" "${{ matrix.files }}" /tmp/nuke_source_files
+          tar -czvf /tmp/nuke_source_files.tar.gz -C /tmp nuke_source_files
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuke_source_files_${{ steps.unique_name.outputs.unique_name}}
+          path: /tmp/nuke_source_files.tar.gz
 
   build:
     runs-on: ubuntu-latest
@@ -84,11 +91,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - uses: actions/cache/restore@v3
-        id: cache
+      - uses: actions/download-artifact@v4
         with:
+          name: nuke_source_files_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: /tmp/
-          key: ${{ needs.get_nuke_sources.outputs.cache_key }}
 
       - name: Prepare source files
         run: |
@@ -153,7 +159,7 @@ jobs:
 
 
   test_build:
-    needs: [build, get_nuke_sources]
+    needs: [build, build_slim, get_nuke_sources]
     runs-on: ubuntu-latest
 
     steps:
@@ -177,9 +183,22 @@ jobs:
 
       - name: Test images
         run: |
-          docker run nukedockerbuild:latest bash -c "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build"
-          docker run nukedockerbuild.slim:latest bash -c "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build"
+          mkdir /tests/base
+          mkdir /tests/slim
 
+          docker run -v /tests/base:/nuke_build_directory nukedockerbuild:latest bash -c \
+            "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build && cp -r build/* /nuke_build_directory"
+
+          docker run -v /tests/slim:/nuke_build_directory nukedockerbuild.slim:latest bash -c \
+          "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build && cp -r build/* /nuke_build_directory"
+
+          tar -czvf /tmp/test_runs.tar.gz /tests
+
+      - name: Upload tests artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests_runs_${{ needs.get_nuke_sources.outputs.unique_name }}
+          path: /tmp/test_runs.tar.gz
 
   deploy:
     needs: [test_build, get_nuke_sources]
