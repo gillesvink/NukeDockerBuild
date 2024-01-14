@@ -1,4 +1,0 @@
-# Some space saving ignores as we don't need everything from the Nuke installation
-nukeCrashFeedback*
-**/Documentation/
-**/plugins
