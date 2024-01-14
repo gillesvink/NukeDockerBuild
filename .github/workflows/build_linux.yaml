@@ -124,11 +124,47 @@ jobs:
         with:
           name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: /tmp/nukedockerbuild.tar.gz
+          
+  test_build:
+    name: Test base
+
+    needs: [build, get_nuke_sources]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name  }}
+          path: /tmp/
+
+      - name: Load image
+        run: |
+          docker load --input /tmp/nukedockerbuild.tar.gz
+
+      - name: Tests
+        run: |
+          mkdir /tmp/tests/
+
+          docker run -v /tmp/tests:/nuke_build_directory nukedockerbuild:latest bash -c \
+            "cd /usr/local/nuke_install/tests && cmake3 . -B /nuke_build_directory && cmake3 --build /nuke_build_directory"
+
+      - name: Prepare test results for upload
+        run: tar -czvf /tmp/test_runs.tar.gz /tmp/tests
+
+      - name: Upload tests artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests_runs_base_${{ needs.get_nuke_sources.outputs.unique_name }}
+          path: /tmp/test_runs.tar.gz
+
 
   build_slim:
     name: Build slim
 
-    needs: [build, get_nuke_sources]
+    needs: [test_build_base, get_nuke_sources]
     runs-on: ubuntu-latest
 
     steps:
@@ -156,6 +192,7 @@ jobs:
             --preserve-path /opt/rh \
             --preserve-path /usr/share/cmake \
             --preserve-path /usr/share/cmake3 \
+            --preserve-path /usr/lib64 \
             --preserve-path /usr/include/ \
             --preserve-path /usr/local/nuke_install/
 
@@ -168,40 +205,26 @@ jobs:
           path: /tmp/nukedockerbuild_slim.tar.gz
 
 
-  test_build:
-    name: Tests
+  test_slim:
+    name: Test slim
 
-    needs: [build, build_slim, get_nuke_sources]
+    needs: [build_slim, get_nuke_sources]
     runs-on: ubuntu-latest
 
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name  }}
-          path: /tmp/
       
       - uses: actions/download-artifact@v4
         with:
           name: docker_image_slim_${{ needs.get_nuke_sources.outputs.unique_name  }}
           path: /tmp/
 
-      - name: Load images
+      - name: Load image
         run: |
-          docker load --input /tmp/nukedockerbuild.tar.gz
           docker load --input /tmp/nukedockerbuild_slim.tar.gz
 
-      - name: Test base
-        run: |
-          mkdir /tmp/tests/
-          mkdir /tmp/tests/base
-
-          docker run -v /tmp/tests/base:/nuke_build_directory nukedockerbuild:latest bash -c \
-            "cd /usr/local/nuke_install/tests && cmake3 . -B /nuke_build_directory && cmake3 --build /nuke_build_directory"
-
-      - name: Test slim
+      - name: Run tests
         run: |
           mkdir /tmp/tests/slim
 
@@ -220,7 +243,7 @@ jobs:
   deploy:
     name: Deploy
 
-    needs: [test_build, get_nuke_sources]
+    needs: [test_build, test_slim, get_nuke_sources]
     runs-on: ubuntu-latest
     # if: github.ref == 'refs/heads/main'
     permissions: write-all
