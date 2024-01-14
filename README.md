@@ -104,7 +104,7 @@ This depends on the image you choose to use. Windows itself has quite large imag
 Linux however can be optimized a lot more. The base system is around 900 mb. However here are also slim images available. These are around only 200mb. Note that these slim images only provide functionality to compile plugins. The rest of the system is basically gone. If you plan to extend these images please choose the usual image, and not the slim version.
 
 ### Slim
-These images only include everything that is absolutely necessary for compiling purposes, the rest is erased. If [Slimtoolkit](https://slimtoolkit.org/) will support Windows eventually, Slim images are then planned to be available as well for Windows.
+These images only include everything that is absolutely necessary for compiling purposes, the rest is erased. If [SlimToolkit](https://slimtoolkit.org/) will support Windows eventually, Slim images are then planned to be available as well for Windows.
 
 ## ⚙️ Technical info
 The images depend on the specs provided by the [NDK documentation](https://learn.foundry.com/nuke/developers/13.2/ndkdevguide/intro/pluginbuildinginstallation.html) and the [VFX reference platform](https://vfxplatform.com/).
