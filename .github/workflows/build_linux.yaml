@@ -112,7 +112,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ${{ env.dockerfile_directory }}
-          file: ${{ needs.get_nuke_sources.outputs.unique_name }}
+          file: ${{ needs.get_nuke_sources.outputs.filename }}
           tags: nukedockerbuild:latest
           outputs: type=docker,dest=/tmp/nukedockerbuild.tar.gz
           build-args: NUKE_SOURCE_FILES=nuke_source_files
