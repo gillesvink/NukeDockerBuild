@@ -52,10 +52,10 @@ jobs:
         run: |
           $uniqueName = ('${{ matrix.files }}' -replace '/', '_')
           Write-Host "Got unique name '$uniqueName'"
-          echo "cache_key=$uniqueName" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "unique_name=$uniqueName" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
           $cacheKey = "${cacheKey}_${{ hashFiles('**/scripts/nuke_source_from_dockerfile.ps1') }}"
-          Write-Host "Got unique name '$uniqueName'"
+          Write-Host "Got cache key '$cacheKey'"
           echo "cache_key=$cacheKey" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Get Nuke source files cache
