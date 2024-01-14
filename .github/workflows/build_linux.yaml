@@ -245,7 +245,7 @@ jobs:
 
     needs: [test_build, test_slim, get_nuke_sources]
     runs-on: ubuntu-latest
-    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     permissions: write-all
     env:
       PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
@@ -276,7 +276,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set image tag
+      - name: Set tag and push
         run: |
           NUKE_VERSION=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.nuke_version"}}' nukedockerbuild:latest)
           OPERATING_SYSTEM=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.operating_system"}}' nukedockerbuild:latest)
