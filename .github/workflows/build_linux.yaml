@@ -8,7 +8,8 @@ on:
 
 jobs:
   changed_dockerfiles:
-    name: Get changed files
+    name: Get target dockerfiles
+
     runs-on: ubuntu-latest
 
     outputs:
@@ -31,6 +32,8 @@ jobs:
         run: echo '${{ steps.changed_dockerfiles.outputs.all_changed_files }}'
 
   get_nuke_sources:
+    name: Collect and upload Nuke sources
+
     runs-on: ubuntu-latest
     needs: [changed_dockerfiles]
     outputs:
@@ -80,6 +83,8 @@ jobs:
           path: /tmp/nuke_source_files.tar.gz
 
   build:
+    name: Build base
+
     runs-on: ubuntu-latest
     needs: [changed_dockerfiles, get_nuke_sources]
     strategy:
@@ -122,6 +127,8 @@ jobs:
           path: /tmp/nukedockerbuild.tar.gz
 
   build_slim:
+    name: Build slim
+
     needs: [build, get_nuke_sources]
     runs-on: ubuntu-latest
 
@@ -162,6 +169,8 @@ jobs:
 
 
   test_build:
+    name: Tests
+
     needs: [build, build_slim, get_nuke_sources]
     runs-on: ubuntu-latest
 
@@ -186,8 +195,8 @@ jobs:
 
       - name: Test images
         run: |
-          mkdir /tests/base
-          mkdir /tests/slim
+          mkdir -p /tests/base
+          mkdir -p /tests/slim
 
           docker run -v /tests/base:/nuke_build_directory nukedockerbuild:latest bash -c \
             "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build && cp -r build/* /nuke_build_directory"
@@ -204,9 +213,11 @@ jobs:
           path: /tmp/test_runs.tar.gz
 
   deploy:
+    name: Deploy
+
     needs: [test_build, get_nuke_sources]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/main'
     permissions: write-all
     env:
       PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
