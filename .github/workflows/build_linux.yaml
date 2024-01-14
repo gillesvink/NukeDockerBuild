@@ -75,7 +75,6 @@ jobs:
       - name: Create artifact tar
         run: tar -czvf /tmp/nuke_source_files.tar.gz -C /tmp nuke_source_files
 
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -153,7 +152,7 @@ jobs:
           slim build \
             --target nukedockerbuild:latest \
             --http-probe=false \
-            --exec "bash -c 'cd /usr/local/nuke_install/tests/ && echo $CMAKE_PREFIX_PATH $NUKE_VERSION && cmake3 . -B build && cmake3 --build build'" \
+            --exec "bash -c 'cd /usr/local/nuke_install/tests/ && cp && echo $CMAKE_PREFIX_PATH $NUKE_VERSION && cmake3 . -B build && cmake3 --build build'" \
             --preserve-path /opt/rh \
             --preserve-path /usr/share/cmake \
             --preserve-path /usr/share/cmake3 \

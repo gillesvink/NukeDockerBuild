@@ -30,36 +30,34 @@ jobs:
       - name: Show changed dockerfiles
         run: echo '${{ steps.changed_dockerfiles.outputs.all_changed_files }}'
 
-
-  build:
-    name: Build, test and push image
+  get_nuke_sources:
+    name: Collect Nuke source files
     runs-on: windows-latest
     needs: [changed_dockerfiles]
-    permissions: write-all
-    env:
-      PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
-    strategy:
-      matrix: 
-        files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
-      fail-fast: false
+
+    outputs:
+      unique_name: ${{ steps.unique_name.outputs.unique_name}}
+      cache_key: ${{ steps.unique_name.outputs.cache_key}}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Get cache name output
+        id: unique_name
         shell: pwsh
         run: |
-          $cacheKey = ('${{ matrix.files }}' -replace '/', '_')
-          Write-Host "Got cache key '$cacheKey'"
-          echo "cache_key=$cacheKey" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          $uniqueName = ('${{ matrix.files }}' -replace '/', '_')
+          Write-Host "Got unique name '$uniqueName'"
+          echo "cache_key=$uniqueName" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+          $cacheKey = "${cacheKey}__${{ hashFiles('**/scripts/nuke_source_from_dockerfile.ps1') }}"
+          Write-Host "Got unique name '$uniqueName'"
+          echo "cache_key=$cacheKey" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Get Nuke source files cache
         id: cache_nuke_source
         uses: actions/cache@v3
         with:
           path: C:\temp\nuke_source_files
-          key: ${{ env.cache_key }}_${{ hashFiles('**/scripts/nuke_source_from_dockerfile.ps1') }}
+          key: ${{ steps.unique_name.outputs.cache_key }}
 
       - name: Collect Nuke source files
         if: steps.cache_nuke_source.outputs.cache-hit != 'true'
@@ -74,14 +72,45 @@ jobs:
           Write-Host "Starting collecting of source files'"
           ${{ github.workspace }}\scripts\nuke_source_from_dockerfile.ps1 "${{ matrix.files }}" "$sourceFilesPath"
 
+      - name: Create artifact tar
+        run: Compress-Archive -Path C:\temp\nuke_source_files -DestinationPath C:\temp\nuke_source_files.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuke_source_files_${{ steps.unique_name.outputs.unique_name}}
+          path: C:\temp\nuke_source_files.zip
+
+  build:
+    name: Build, test and push image
+    runs-on: windows-latest
+    needs: [changed_dockerfiles, get_nuke_sources]
+    permissions: write-all
+    env:
+      PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
+    strategy:
+      matrix: 
+        files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: nuke_source_files_${{ needs.get_nuke_sources.outputs.unique_name }}
+          path: C:\temp
+
       - name: Prepare source files
         shell: pwsh
         run: |
           $dockerfileDirectory=[System.IO.Path]::GetDirectoryName("${{ github.workspace }}\${{ matrix.files }}")
           echo "Directory set to $dockerfileDirectory"
 
+          Expand-Archive -Path C:\temp\nuke_source_files.zip -DestinationPath $dockerfileDirectory -Force
+
           echo "dockerfile_directory=$dockerfileDirectory" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-          Copy-Item -Path "c:\temp\nuke_source_files" -Destination "$dockerfileDirectory" -Recurse
 
       - name: Build and export
         shell: pwsh
