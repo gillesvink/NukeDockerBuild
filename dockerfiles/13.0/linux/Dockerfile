@@ -1,6 +1,6 @@
 FROM centos:centos7.4.1708
 
-LABEL 'org.opencontainers.version'=0.2
+LABEL 'org.opencontainers.version'=0.1
 LABEL 'org.opencontainers.image.created'='2024-01-09'
 LABEL 'org.opencontainers.image.authors'='gilles@vinkvfx.com'
 LABEL 'org.opencontainers.image.description'='Ready to use Docker image for building Nuke plugins.'
