@@ -45,7 +45,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get artifact name output
+      - name: Get cache name output and unique name
         id: unique_name
         run: |
           unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
@@ -53,12 +53,14 @@ jobs:
           cache_key=${unique_name}_${{ hashFiles('**/scripts/nuke_source_from_dockerfile.bash') }}
           echo "cache_key=${cache_key}" >> $GITHUB_OUTPUT
 
+          echo "Got key '$cache_key'"
+
       - name: Get Nuke source files cache
         id: cache_nuke_source
         uses: actions/cache@v3
         with:
           path: /tmp/nuke_source_files
-          key: ${{ env.cache_key }}
+          key: ${{ steps.unique_name.outputs.cache_key }}
           
       - name: Collect Nuke source files
         if: steps.cache_nuke_source.outputs.cache-hit != 'true'
