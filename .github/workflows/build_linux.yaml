@@ -197,7 +197,7 @@ jobs:
       - name: Test base
         run: |
           mkdir /tmp/tests/
-          mkdir /tmp/tests/slim
+          mkdir /tmp/tests/base
 
           docker run -v /tmp/tests/base:/nuke_build_directory nukedockerbuild:latest bash -c \
             "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build && cp -r build/* /nuke_build_directory"
