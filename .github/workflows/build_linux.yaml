@@ -152,7 +152,7 @@ jobs:
           slim build \
             --target nukedockerbuild:latest \
             --http-probe=false \
-            --exec "bash -c 'cd /usr/local/nuke_install/tests/ && echo $CMAKE_PREFIX_PATH $NUKE_VERSION && cmake3 . -B build && cmake3 --build build'" \
+            --exec "bash -c 'cd /usr/local/nuke_install/tests/ && echo $CMAKE_PREFIX_PATH $NUKE_VERSION && cmake3 . -B /nuke_build_directory && cmake3 --build /nuke_build_directory'" \
             --preserve-path /opt/rh \
             --preserve-path /usr/share/cmake \
             --preserve-path /usr/share/cmake3 \
@@ -198,15 +198,15 @@ jobs:
           mkdir /tmp/tests/
           mkdir /tmp/tests/base
 
-          docker run -v /tmp/tests/base:/usr/local/nuke_install/tests/build nukedockerbuild:latest bash -c \
-            "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build"
+          docker run -v /tmp/tests/base:/nuke_build_directory nukedockerbuild:latest bash -c \
+            "cd /usr/local/nuke_install/tests && cmake3 . -B /nuke_build_directory && cmake3 --build /nuke_build_directory"
 
       - name: Test slim
         run: |
           mkdir /tmp/tests/slim
 
-          docker run -v /tmp/tests/slim:/usr/local/nuke_install/tests/build nukedockerbuild.slim:latest bash -c \
-            "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build"
+          docker run -v /tmp/tests/slim:/nuke_build_directory nukedockerbuild.slim:latest bash -c \
+            "cd /usr/local/nuke_install/tests && cmake3 . -B /nuke_build_directory && cmake3 --build /nuke_build_directory"
 
       - name: Prepare test results for upload
         run: tar -czvf /tmp/test_runs.tar.gz /tmp/tests
