@@ -78,7 +78,7 @@ jobs:
         run: tar -czvf /tmp/nuke_source_files.tar.gz -C /tmp nuke_source_files
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nuke_source_files_${{ steps.unique_name.outputs.unique_name}}
           path: /tmp/nuke_source_files.tar.gz
@@ -118,7 +118,7 @@ jobs:
           build-args: NUKE_SOURCE_FILES=nuke_source_files
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker_image_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: /tmp/nukedockerbuild.tar.gz
