@@ -195,16 +195,17 @@ jobs:
 
       - name: Test images
         run: |
-          mkdir -p /tests/base
-          mkdir -p /tests/slim
+          mkdir /tmp/tests/
+          mkdir /tmp/tests/base
+          mkdir /tmp/tests/slim
 
-          docker run -v /tests/base:/nuke_build_directory nukedockerbuild:latest bash -c \
+          docker run -v /tmp/tests/base:/nuke_build_directory nukedockerbuild:latest bash -c \
             "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build && cp -r build/* /nuke_build_directory"
 
-          docker run -v /tests/slim:/nuke_build_directory nukedockerbuild.slim:latest bash -c \
+          docker run -v /tmp/tests/slim:/nuke_build_directory nukedockerbuild.slim:latest bash -c \
           "cd /usr/local/nuke_install/tests && cmake3 . -B build && cmake3 --build build && cp -r build/* /nuke_build_directory"
 
-          tar -czvf /tmp/test_runs.tar.gz /tests
+          tar -czvf /tmp/test_runs.tar.gz /tmp/tests
 
       - name: Upload tests artifacts
         uses: actions/upload-artifact@v4
