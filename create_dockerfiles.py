@@ -23,10 +23,7 @@ def generate_dockerfiles() -> None:
     Note:
         make sure to set the DOCKERFILES_DIRECTORY env.
     """
-    os.environ[
-        "DOCKERFILES_DIRECTORY"
-    ] = "/Users/gillesvink/Code/NukeDockerBuild/"
-    dockerfiles_directory = os.getenv("DOCKERFILES_DIRECTORY")
+    dockerfiles_directory = os.environ["DOCKERFILES_DIRECTORY"]
     if not dockerfiles_directory:
         msg = (
             "DOCKERFILES_DIRECTORY environment not set. "

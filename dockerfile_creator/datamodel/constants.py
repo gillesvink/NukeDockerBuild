@@ -62,7 +62,7 @@ VISUALSTUDIO_BUILDTOOLS = {
 
 NUKE_INSTALL_DIRECTORIES: dict[OperatingSystem, str] = {
     OperatingSystem.LINUX: "/usr/local/nuke_install",
-    OperatingSystem.WINDOWS: "C:\\nuke_install",
+    OperatingSystem.WINDOWS: "C:\\\\nuke_install",
 }
 """Install directory for Nuke per operating system."""
 
@@ -71,10 +71,3 @@ NUKE_TESTS_DIRECTORIES: dict[OperatingSystem, str] = {
     OperatingSystem.WINDOWS: "C:\\\\nuke_tests\\",
 }
 """Tests directory for Nuke per operating system."""
-
-REDUNDANT_NUKE_ITEMS: str = (
-    "nukeCrashFeedback* *.exe DLLs bin plugins configs Resources resources "
-    "lib pythonextensions translations bin Documentation *torch* *cudnn* "
-    "*cublas* *cusparse* *cusolver* *mkl*"
-)
-"""Items that are applicable to being removed from Nuke."""

@@ -8,7 +8,6 @@ from dataclasses import dataclass, field
 
 from dockerfile_creator.datamodel.constants import (
     NUKE_INSTALL_DIRECTORIES,
-    REDUNDANT_NUKE_ITEMS,
     OperatingSystem,
     UpstreamImage,
 )
@@ -102,36 +101,6 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
     OperatingSystem.LINUX: [
         DockerCommand(
             [
-                "echo 'Updating image for latest package versions.'",
-                "ulimit -n 1024",
-                "yum -y update && yum clean all",
-            ]
-        ),
-        DockerCommand(
-            [
-                "echo 'Downloading Nuke from {url}'.",
-                "curl -o /tmp/{filename}.tgz {url}",
-                "echo 'Extracting and installing Nuke ({filename})'.",
-                "tar zxvf /tmp/{filename}.tgz -C /tmp",
-                f"mkdir {NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]}",
-                (
-                    "/tmp/{filename}.run "
-                    "--accept-foundry-eula --prefix="
-                    f"{NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]} "
-                    "--exclude-subdir"
-                ),
-                "echo 'Cleaning up Nuke to reduce image size.'",
-                "rm -rf /tmp/*",
-                f"cd {NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]}",
-                (
-                    f"cp -r {NUKE_INSTALL_DIRECTORIES[OperatingSystem.LINUX]}"
-                    "/Documentation/NDKExamples/examples/ /nuke_tests/"
-                ),
-                f"rm -rf {REDUNDANT_NUKE_ITEMS}",
-            ],
-        ),
-        DockerCommand(
-            [
                 "echo 'Setting devtoolset to {toolset}.'",
                 "echo 'unset BASH_ENV PROMPT_COMMAND ENV && source scl_source "
                 "enable {toolset}' >> /usr/bin/scl_enable",
@@ -142,40 +111,6 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
     ],
     OperatingSystem.WINDOWS: [
         DockerCommand(
-            minimum_version=14.0,
-            commands=[
-                "mkdir C:\\temp",
-                "curl -o C:\\temp\\{filename}.zip {url}",
-                "cd C:\\temp",
-                "tar -xf {filename}.zip",
-                "msiexec.exe /i {filename}.msi ACCEPT_FOUNDRY_EULA=ACCEPT "
-                f"INSTALL_ROOT={NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]} /qb /l log.txt",
-                "ping -n 10 127.0.0.1",  # let the process finish so wait.
-                f"cd {NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]}",
-                "mkdir C:\\nuke_tests\\",
-                "xcopy Documentation\\NDKExamples\\examples\\* C:\\nuke_tests\\ /E",
-                f"del /q {REDUNDANT_NUKE_ITEMS}",
-                "rmdir C:\\temp /s /q",
-            ],
-        ),
-        DockerCommand(
-            maximum_version=13.9,
-            commands=[
-                "mkdir C:\\temp",
-                "curl -o C:\\temp\\{filename}.zip {url}",
-                "cd C:\\temp",
-                "tar -xf {filename}.zip",
-                "msiexec.exe /i {filename}.msi ACCEPT_FOUNDRY_EULA=ACCEPT "
-                f"/dir {NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]} /silent /l log.txt",
-                "ping -n 10 127.0.0.1",
-                f"cd {NUKE_INSTALL_DIRECTORIES[OperatingSystem.WINDOWS]}",
-                "mkdir C:\\nuke_tests\\",
-                "xcopy Documentation\\NDKExamples\\examples\\* C:\\nuke_tests\\ /E",
-                "del /q",
-                "rmdir C:\\temp /s /q",
-            ],
-        ),
-        DockerCommand(
             [
                 r'powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('
                 "'https://community.chocolatey.org/install.ps1'))"
@@ -183,6 +118,8 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 "choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y",
                 "choco install visualstudio{toolset}buildtools -y",
                 "choco install visualstudio{toolset}-workload-vctools --package-parameters '--includeRecommended' -y",
+                'powershell -Command "Remove-Item -Path \\\"$env:TEMP\\*\\\" -Force -Recurse"',
+                'powershell -Command "Remove-Item -Path \'C:\\ProgramData\\Package Cache\\*\' -Force -Recurse"'
             ],
             minimum_version=13.0,
         ),

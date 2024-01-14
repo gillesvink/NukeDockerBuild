@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from itertools import chain
 from math import floor
-from pathlib import Path
 
 from dockerfile_creator.datamodel.commands import (
     IMAGE_COMMANDS,
@@ -21,6 +20,7 @@ from dockerfile_creator.datamodel.commands import (
 )
 from dockerfile_creator.datamodel.constants import (
     DEVTOOLSETS,
+    NUKE_INSTALL_DIRECTORIES,
     VISUALSTUDIO_BUILDTOOLS,
     OperatingSystem,
     UpstreamImage,
@@ -100,10 +100,17 @@ class Dockerfile:
     @property
     def environments(self) -> str:
         """Return all environments as a string."""
-        environments: DockerEnvironments = OS_ENVIRONMENTS[
+        os_environments: DockerEnvironments = OS_ENVIRONMENTS[
             self.operating_system
         ]
-        return environments.to_docker_format()
+        general_environments = DockerEnvironments(
+            {"NUKE_VERSION": self.nuke_version}
+        )
+
+        return "\n".join(
+            environments.to_docker_format()
+            for environments in [os_environments, general_environments]
+        )
 
     @property
     def upstream_image(self) -> UpstreamImage:
@@ -121,6 +128,9 @@ class Dockerfile:
         return (
             f"FROM {self.upstream_image.value}\n\n"
             f"{self.labels}\n\n"
+            "ARG NUKE_SOURCE_FILES\n"
+            "COPY $NUKE_SOURCE_FILES "
+            f"{NUKE_INSTALL_DIRECTORIES[self.operating_system]}\n\n"
             f"{self.run_commands}\n\n"
             f"{self.work_dir}\n\n"
             f"{self.environments}"
