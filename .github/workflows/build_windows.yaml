@@ -137,7 +137,7 @@ jobs:
               cmake --build C:\nuke_build_directory --config Release"
 
       - name: Create artifact of test build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: test_build_${{ needs.get_nuke_sources.outputs.unique_name }}
           path: C:\nuke_build_directory
