@@ -131,10 +131,11 @@ jobs:
         shell: pwsh
         run: |
           mkdir C:\nuke_build_directory
-          docker run -v --isolation=process "C:\nuke_build_directory:C:\nuke_build_directory" nukedockerbuild:latest powershell -Command `
-            "cd c:\nuke_install\tests ; `
-            cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B C:\nuke_build_directory ; `
-            cmake --build C:\nuke_build_directory --config Release
+          docker run -v C:\nuke_build_directory:C:\nuke_build_directory `
+              nukedockerbuild:latest `
+              powershell -Command "cd C:\nuke_install\tests ; `
+              cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B C:\nuke_build_directory ; `
+              cmake --build C:\nuke_build_directory --config Release"
 
       - name: Create artifact of test build
         uses: actions/upload-artifact@v4
