@@ -88,7 +88,7 @@ jobs:
   build:
     name: Build, test and push image
     runs-on: windows-latest
-    needs: [get_nuke_sources]
+    needs: [changed_dockerfiles, get_nuke_sources]
     permissions: write-all
     env:
       PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
@@ -118,7 +118,7 @@ jobs:
       - name: Prepare source files
         shell: pwsh
         run: |
-          $dockerfileDirectory=[System.IO.Path]::GetDirectoryName("${{ github.workspace }}\${{ env.filename }}")
+          $dockerfileDirectory=[System.IO.Path]::GetDirectoryName("${{ github.workspace }}\${{ matrix.files }}")
           echo "Directory set to $dockerfileDirectory"
 
           Expand-Archive -Path C:\temp\nuke_source_files.zip -DestinationPath $dockerfileDirectory -Force
