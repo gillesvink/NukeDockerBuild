@@ -40,11 +40,11 @@ Write-Host "Install Nuke to $targetFolder"
 if ($version -lt 14.0) {
     $installer = (Join-Path $nukeTempFiles ($filename -replace '\.zip', '.exe'))
     Write-Host "Using older installation instructions"
-    Start-Process -FilePath "$installer" -ArgumentList "/S /ACCEPT-FOUNDRY-EULA /D=$targetFolder" -Wait
+    Start-Process -FilePath "$installer" -ArgumentList "/S", "/ACCEPT-FOUNDRY-EULA", "/D=$targetFolder" -Wait
 } else {
     $installer = (Join-Path $nukeTempFiles ($filename -replace '\.zip', '.msi'))
     Write-Host "Using new installation instructions"
-    Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $installer ACCEPT_FOUNDRY_EULA=ACCEPT INSTALL_ROOT=`$targetFolder` /qb /l log.txt" -Wait
+    Start-Process -FilePath "msiexec.exe" -ArgumentList "/i", "$installer", "ACCEPT_FOUNDRY_EULA=ACCEPT", "INSTALL_ROOT=`"$targetFolder`"", "/qb", "/l", "log.txt" -Wait
 }
 
 Write-Host "Keep only source files"
