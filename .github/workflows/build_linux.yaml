@@ -87,7 +87,7 @@ jobs:
 
     strategy:
       matrix: 
-        files: ${{ fromJSON(needs.get_nuke_sources.outputs.matrix) }}
+        files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
       fail-fast: false
 
     steps:
