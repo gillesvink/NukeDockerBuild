@@ -12,7 +12,7 @@ import requests
 
 from table_retriever.datamodel.constants import GithubData
 
-TIMEOUT: int = 3
+TIMEOUT: int = 10
 """General timeout for requests."""
 
 logger = logging.getLogger(__name__)
