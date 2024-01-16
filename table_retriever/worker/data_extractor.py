@@ -2,7 +2,7 @@
 
 @maintainer: Gilles Vink
 """
-
+from __future__ import annotations
 
 from table_retriever.datamodel.table_data import DockerImageData
 

@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 import operator
 from copy import copy
 from typing import TYPE_CHECKING
 
 import pandas as pd
-import logging
 
 if TYPE_CHECKING:
     from table_retriever.datamodel.table_data import DockerImageData
