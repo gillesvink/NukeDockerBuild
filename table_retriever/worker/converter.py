@@ -33,18 +33,14 @@ def _convert_data_to_dataframe(
     data = {
         "Tag": [],
         "Locked Tag": [],
-        "Nuke Version": [],
-        "OS": [],
         "Upstream Image": [],
         "Date Added": [],
         "Image Size (GB)": [],
     }
 
     for image_data in docker_data:
-        data["Tag"].append(image_data.tag)
-        data["Locked Tag"].append(image_data.locked_tag)
-        data["Nuke Version"].append(image_data.nuke_version)
-        data["OS"].append(image_data.target_os)
+        data["Tag"].append(f"`{image_data.tag}`")
+        data["Locked Tag"].append(f"`{image_data.locked_tag}`")
         data["Upstream Image"].append(image_data.upstream_image)
         data["Date Added"].append(image_data.data_added)
         data["Image Size (GB)"].append(image_data.image_size)

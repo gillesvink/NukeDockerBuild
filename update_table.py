@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 def update_table() -> None:
     """Function that handles updating of the provided file."""
-    readme_path = os.getenv("README_PATH")
+    readme_path = "/home/gillesvink/Code/NukeDockerBuild/README.md"
     if not readme_path:
         msg = "README_PATH environment has not been set."
         raise ValueError(msg)

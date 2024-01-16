@@ -78,7 +78,7 @@ jobs:
       - name: Install pip requirements
         run: pip install -r requirements.txt
   
-      - name: Run dockerfile creator
+      - name: Run table updater
         run: |
           export README_PATH=${GITHUB_WORKSPACE}/README.md
           python update_table.py

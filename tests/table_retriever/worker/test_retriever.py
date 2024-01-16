@@ -42,7 +42,7 @@ class TestGetRequestedData:
             _get_requested_data(url="hello")
 
         requests_mock.get.assert_called_once_with(
-            url="hello", headers=header_mock(), timeout=3
+            url="hello", headers=header_mock(), timeout=10
         )
 
     @staticmethod
@@ -78,7 +78,7 @@ class TestGetHeader:
 
         requests_mock.get.assert_called_once_with(
             url=f"https://ghcr.io/token?scope=repository:{GithubData.REPOSITORY.value}:pull",
-            timeout=3,
+            timeout=10,
         )
         assert collected_header == {"Authorization": "Bearer 123"}
 
