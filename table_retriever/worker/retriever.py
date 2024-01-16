@@ -34,7 +34,7 @@ def _filter_tags(tags: set[str]) -> list[str]:
     """Filter provided tags to keep only the highest versions.
 
     Args:
-        tags: tags to process and remove duplicats.
+        tags: tags to process and remove duplicates.
 
     Returns:
         filtered list of tags.
