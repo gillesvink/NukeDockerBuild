@@ -14,6 +14,7 @@ Current images that are available to use. Note that there also is the locked tag
 
 You can also use the locked tag, which will be `15.0-linux-1.0` for example.
 
+<!-- TABLE_START -->
 TODO: Data to be added to table (will be next up, needs automatic process)
 
 | Tag | Locked Tag | Nuke Version | Target OS | Upstream Image | Date Added | Image Size
@@ -21,6 +22,7 @@ TODO: Data to be added to table (will be next up, needs automatic process)
 |     |            |              |                  |       |      |
 |     |            |              |                  |       |      |
 |     |            |              |                  |       |      |
+<!-- TABLE_END -->
 
 
 ## 🔨 Issues 
