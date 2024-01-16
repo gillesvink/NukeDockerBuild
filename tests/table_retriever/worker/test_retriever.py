@@ -185,7 +185,7 @@ class TestRetrieveDockerImageData:
         ) as requests_mock, contextlib.suppress(RetrieveError):
             _retrieve_manifest(tag="15.0-linux-latest")
 
-        expected_url = f"{GithubData.GHCR_API}/manifests/15.0-linux-latest"
+        expected_url = f"{GithubData.GHCR_API.value}/manifests/15.0-linux-latest"
         requests_mock.get.assert_called_once_with(
             url=expected_url, headers=_get_header(), timeout=3
         )
