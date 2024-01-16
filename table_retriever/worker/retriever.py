@@ -2,6 +2,8 @@
 
 @maintainer: Gilles Vink
 """
+from __future__ import annotations
+
 import json
 import os
 import re
@@ -9,6 +11,17 @@ import re
 import requests
 
 from table_retriever.datamodel.constants import GithubData
+
+TIMEOUT: int = 3
+"""General timeout for requests."""
+
+
+def _get_header() -> dict[str]:
+    token = os.getenv("TOKEN")
+    if not token:
+        msg = "No TOKEN environment has been set."
+        raise RetrieveError(msg)
+    return {"Authorization": f"Bearer {token}"}
 
 
 def _filter_tags(tags: set[str]) -> list[str]:
@@ -44,10 +57,9 @@ def _filter_tags(tags: set[str]) -> list[str]:
 
 def _retrieve_tags() -> set[str]:
     """Retrieve data from GHCR containing all tags."""
-    authorization_header = {"Authorization": f"Bearer {os.environ['TOKEN']}"}
     api_url = f"{GithubData.GHCR_API.value}/tags/list"
     requested_data: requests.Response = requests.get(
-        api_url, headers=authorization_header, timeout=3
+        url=api_url, headers=_get_header(), timeout=TIMEOUT
     )
     if requested_data.status_code != 200:
         msg = "No data found on server."
@@ -56,6 +68,19 @@ def _retrieve_tags() -> set[str]:
     data = json.loads(requested_data.json())
     tags = data.get("tags")
     return _filter_tags(tags)
+
+
+def _retrieve_manifest(tag: str) -> dict:
+    """Retrieve manifests for a specific tag."""
+    api_url = f"{GithubData.GHCR_API.value}/manifests/{tag}"
+    requested_data: requests.Response = requests.get(
+        url=api_url, headers=_get_header(), timeout=TIMEOUT
+    )
+    if requested_data.status_code != 200:
+        msg = f"No data found for tag '{tag}'."
+        raise RetrieveError(msg)
+
+    return json.loads(requested_data.json())
 
 
 class RetrieveError(Exception):

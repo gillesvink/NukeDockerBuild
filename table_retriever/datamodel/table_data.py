@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class DockerImage:
+class DockerImageData:
     """Data that represents a table entry for the image."""
 
     tag: str
