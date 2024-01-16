@@ -1,16 +1,24 @@
 [![Tests](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/create_dockerfiles.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/create_dockerfiles.yaml) [![Linux builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_linux.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_linux.yaml) [![Windows builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_windows.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_windows.yaml) 
 
-# 🐬 NukeDockerBuild 
+![NukeDockerBuild](./resources/header.jpg)
 > Ready to use Docker containers to build Nuke plugins for Linux and Windows.
 
+--- 
 The images produced here will include everything you need to build Nuke plugins. This includes the compiler for C++ ([gcc-toolsets](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/12) on Linux, [Visual Studio](https://visualstudio.microsoft.com/downloads/) on Windows), [CMake](https://cmake.org/) and the Nuke files required to compile.
 
 It is mostly meant for automatic deployment using CI/CD. However, it can also be used locally to quickly compile plugins without the need to install anything (except Docker itself 😉).
 
 ## 🏷 Tags
-Current images that are available to use. Note that there also is the locked tag available. These tags will never be updated. The default latest tag will possibly be updated, making sure you are using the latest things added automatically.
 
-**Note**: the individual :latest tag is not managed and created, as it does not make sense for this purpose. However, a latest tag for each Nuke version is provided. Which will be in this format: `{nuke_version}-{os}-latest`. For example `15.0-linux-latest`. Or for Linux which also has slim packages available (massively reduced image size): `15.0-linux-slim-latest`.
+You can pull from the GHCR (Github Package Registry) registry by using:
+
+```bash
+docker pull ghcr.io/gillesvink/nukedockerbuild:TAG
+```
+
+Where as tag will be the one you want to use. The table below will be updated automatically to show the available tags.
+
+**Note**: a latest tag for each Nuke version is provided. Which will be in this format: `{nuke_version}-{os}-latest`. For example `15.0-linux-latest`. Or Linux also has slim packages available (massively reduced image size): `15.0-linux-slim-latest`.
 
 You can also use the locked tag, which will be `15.0-linux-1.0` for example.
 
@@ -53,7 +61,11 @@ First of all make sure you have Docker installed on your system. Guides can be f
 Once installed, you can test the docker image by running the command provided here. There might be some warnings of deprecation, that is because some of the source code in the examples uses deprecated functions.
 
 ### Windows docker requirements
-Windows has some additional requirements to run this image. You need to have at least Windows 10 Pro or greater. Besides that, you need to 'switch to Windows containers' in the Docker Desktop application. Else it will use the Windows Subsystem for Linux (which is basically a virtualization of the Linux system, allowing you to even build Linux plugins on Windows.)
+Windows has some additional requirements to run this image. You need to have at least Windows 10 Pro or greater. Besides that, you need to 'switch to Windows containers' in the Docker Desktop application.
+
+![Switch to Windows Containers](./resources/switch_to_windows.png)
+
+Else it will use the Windows Subsystem for Linux (which is basically a virtualization of the Linux system, allowing you to even build Linux plugins on Windows.)
 
 ### Run tests locally
 Beneath here are some quick tests to verify everything is working on your system. It should pass compiling (this is a test for a Nuke 15 image). It might take a while for the image to be downloaded
