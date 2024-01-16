@@ -4,6 +4,7 @@
 """
 from __future__ import annotations
 
+import logging
 import re
 from functools import lru_cache
 
@@ -13,6 +14,8 @@ from table_retriever.datamodel.constants import GithubData
 
 TIMEOUT: int = 3
 """General timeout for requests."""
+
+logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=1)
@@ -88,7 +91,13 @@ def retrieve_tags() -> set[str]:
     requested_data = _get_requested_data(url=api_url)
     data = requested_data.json()
     tags = data.get("tags")
-    return _filter_tags(tags)
+
+    collected_tags = _filter_tags(tags)
+
+    msg = f"Collected tags: '{collected_tags}'"
+    logger.info(msg)
+
+    return collected_tags
 
 
 def retrieve_manifest(tag: str) -> dict:

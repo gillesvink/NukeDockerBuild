@@ -4,6 +4,7 @@
 """
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 from table_retriever.worker.data_extractor import manifest_to_docker_image_data
@@ -15,6 +16,8 @@ from table_retriever.worker.retriever import (
 
 if TYPE_CHECKING:
     from table_retriever.datamodel.table_data import DockerImageData
+
+logger = logging.getLogger(__name__)
 
 
 def get_all_docker_image_data() -> list[DockerImageData]:
@@ -32,5 +35,8 @@ def get_all_docker_image_data() -> list[DockerImageData]:
                 manifest=manifest, config=config, tag=tag, all_tags=all_tags
             )
         )
+
+        msg = f"Processed '{tag}'"
+        logging.info(msg)
 
     return docker_image_data

@@ -173,6 +173,6 @@ def test_convert_and_sort_data_to_markdown() -> None:
 
     sort_mock.assert_called_once_with(test_data)
     convert_to_dataframe_mock.assert_called_once_with(test_data)
-    dataframe_mock.to_markdown.assert_called_once_with(index=0, floatfmt=".0f")
+    dataframe_mock.to_markdown.assert_called_once_with(index=0, floatfmt=(".1f", ".1f", ".1f"))
 
-    assert markdown_result == "hello"
+    assert markdown_result == "\nhello\n"

@@ -7,9 +7,12 @@ from copy import copy
 from typing import TYPE_CHECKING
 
 import pandas as pd
+import logging
 
 if TYPE_CHECKING:
     from table_retriever.datamodel.table_data import DockerImageData
+
+logger = logging.getLogger(__name__)
 
 
 def _sort_docker_image_data(docker_data: list[DockerImageData]) -> None:
@@ -63,4 +66,9 @@ def convert_and_sort_data_to_markdown(
     data = copy(docker_data)
     _sort_docker_image_data(data)
     dataframe = _convert_data_to_dataframe(data)
-    return dataframe.to_markdown(index=False, floatfmt=".0f")
+    markdown = dataframe.to_markdown(index=False, floatfmt=(".1f", ".1f", ".1f"))
+
+    msg = f"Created markdown: \n {markdown}"
+    logging.info(msg)
+
+    return f"\n{markdown}\n"
