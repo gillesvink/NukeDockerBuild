@@ -52,7 +52,7 @@ class TagCollectorError(Exception):
 
 
 def manifest_to_docker_image_data(
-    manifest: dict, tag: str, all_tags: list[str]
+    manifest: dict, config: dict, tag: str, all_tags: list[str]
 ) -> DockerImageData:
     """Convert provided manifest into DockerImageData object.
 
@@ -67,7 +67,7 @@ def manifest_to_docker_image_data(
     calculated_size = _size_calculator(manifest)
     locked_tag = _get_locked_tag(tags=all_tags, target_tag=tag)
 
-    labels = manifest.get("labels")
+    labels = config["config"]["Labels"]
     nuke_version = labels["com.nukedockerbuild.nuke_version"]
     nuke_version = float(nuke_version)
     upstream_image = labels["com.nukedockerbuild.based_on"]

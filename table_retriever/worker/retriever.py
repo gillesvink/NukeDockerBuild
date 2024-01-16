@@ -4,9 +4,8 @@
 """
 from __future__ import annotations
 
-import json
-import os
 import re
+from functools import lru_cache
 
 import requests
 
@@ -16,10 +15,17 @@ TIMEOUT: int = 3
 """General timeout for requests."""
 
 
+@lru_cache(maxsize=1)
 def _get_header() -> dict[str]:
-    token = os.getenv("TOKEN")
+    """Get header to send to requests including a token."""
+    response = requests.get(
+        url=f"https://ghcr.io/token?scope=repository:{GithubData.REPOSITORY.value}:pull",
+        timeout=TIMEOUT,
+    )
+    token = response.json()
+    token = token.get("token")
     if not token:
-        msg = "No TOKEN environment has been set."
+        msg = "No token has provided."
         raise RetrieveError(msg)
     return {"Authorization": f"Bearer {token}"}
 
@@ -55,32 +61,60 @@ def _filter_tags(tags: set[str]) -> list[str]:
     return collected_tags
 
 
-def _retrieve_tags() -> set[str]:
-    """Retrieve data from GHCR containing all tags."""
-    api_url = f"{GithubData.GHCR_API.value}/tags/list"
+def _get_requested_data(url: str) -> requests.Response:
+    """Get requested data if found.
+
+    Args:
+        url: url to get data from.
+
+    Raises:
+        RetrieveError: if data could not be found.
+
+    Returns:
+        Response object containing retrieved data.
+    """
     requested_data: requests.Response = requests.get(
-        url=api_url, headers=_get_header(), timeout=TIMEOUT
+        url=url, headers=_get_header(), timeout=TIMEOUT
     )
     if requested_data.status_code != 200:
-        msg = "No data found on server."
+        msg = f"No data found on server: '{requested_data}'"
         raise RetrieveError(msg)
+    return requested_data
 
-    data = json.loads(requested_data.json())
+
+def retrieve_tags() -> set[str]:
+    """Retrieve data from GHCR containing all tags."""
+    api_url = f"{GithubData.GHCR_API.value}/tags/list"
+    requested_data = _get_requested_data(url=api_url)
+    data = requested_data.json()
     tags = data.get("tags")
     return _filter_tags(tags)
 
 
-def _retrieve_manifest(tag: str) -> dict:
-    """Retrieve manifests for a specific tag."""
-    api_url = f"{GithubData.GHCR_API.value}/manifests/{tag}"
-    requested_data: requests.Response = requests.get(
-        url=api_url, headers=_get_header(), timeout=TIMEOUT
-    )
-    if requested_data.status_code != 200:
-        msg = f"No data found for tag '{tag}'."
-        raise RetrieveError(msg)
+def retrieve_manifest(tag: str) -> dict:
+    """Retrieve manifests for a specific tag.
 
-    return json.loads(requested_data.json())
+    Args:
+        tag: tag to get data from.
+    """
+    api_url = f"{GithubData.GHCR_API.value}/manifests/{tag}"
+    requested_data = _get_requested_data(url=api_url)
+    return requested_data.json()
+
+
+def retrieve_config_from_manifest(manifest: dict) -> dict:
+    """Return collected config from provided manifest.
+
+    Args:
+        manifest: manifest that includes the digest data.
+
+    Returns:
+        dict: containing config data.
+    """
+    digest = manifest["config"]["digest"]
+    api_url = f"{GithubData.GHCR_API.value}/blobs/{digest}"
+    requested_data = _get_requested_data(url=api_url)
+    return requested_data.json()
 
 
 class RetrieveError(Exception):

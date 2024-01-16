@@ -170,6 +170,7 @@ class TestManifestToDockerImage:
     @pytest.mark.parametrize(
         (
             "test_manifest",
+            "test_config",
             "test_tag",
             "test_tags",
             "expected_docker_image_data",
@@ -182,13 +183,17 @@ class TestManifestToDockerImage:
                             "size": 500_000_000,
                         },
                     ],
-                    "labels": {
-                        "com.nukedockerbuild.nuke_version": "14.0",
-                        "com.nukedockerbuild.based_on": "centos:centos7.9.2009",
-                        "org.opencontainers.image.created": "2024-01-15",
-                        "org.opencontainers.version": "1.0",
-                        "com.nukedockerbuild.operating_system": "linux",
-                    },
+                },
+                {
+                    "config": {
+                        "Labels": {
+                            "com.nukedockerbuild.nuke_version": "14.0",
+                            "com.nukedockerbuild.based_on": "centos:centos7.9.2009",
+                            "org.opencontainers.image.created": "2024-01-15",
+                            "org.opencontainers.version": "1.0",
+                            "com.nukedockerbuild.operating_system": "linux",
+                        },
+                    }
                 },
                 "14.0-linux-latest",
                 ["14.0-linux-latest", "my_locked_tag"],
@@ -206,6 +211,7 @@ class TestManifestToDockerImage:
     )
     def test_manifest_to_docker_image_data(
         test_manifest: dict,
+        test_config: dict,
         test_tag: str,
         test_tags: list[str],
         expected_docker_image_data: DockerImageData,
@@ -220,7 +226,10 @@ class TestManifestToDockerImage:
         ) as locked_tag_mock:
             assert (
                 manifest_to_docker_image_data(
-                    manifest=test_manifest, tag=test_tag, all_tags=test_tags
+                    manifest=test_manifest,
+                    config=test_config,
+                    tag=test_tag,
+                    all_tags=test_tags,
                 )
                 == expected_docker_image_data
             )
