@@ -125,6 +125,16 @@ class TestGetLockedTag:
             ),
             (
                 [
+                    "15.0-linux-latest",
+                    "15.0-linux-1.0",
+                    "15.0-linux-slim-latest",
+                    "15.0-linux-slim-1.0",
+                ],
+                "15.0-linux-slim-latest",
+                "15.0-linux-slim-1.0",
+            ),
+            (
+                [
                     "13.0-linux-latest",
                     "13.0-linux-1.1",
                     "13.0-windows-latest",
