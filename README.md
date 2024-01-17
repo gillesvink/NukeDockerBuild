@@ -29,10 +29,10 @@ You can also use the locked tag, which will be `15.0-linux-1.0` for example.
 | `15.0-linux-slim-latest` | `15.0-linux-1.0`      | rockylinux:8                                  | 2024-01-15   |             0.198 |
 | `15.0-windows-latest`    | `15.0-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-15   |             5.491 |
 | `14.1-linux-latest`      | `14.1-linux-1.0`      | centos:centos7.9.2009                         | 2024-01-15   |             0.379 |
-| `14.1-linux-slim-latest` | `14.1-linux-1.0`      | centos:centos7.9.2009                         | 2024-01-15   |             0.172 |
+| `14.1-linux-slim-latest` | `14.1-linux-slim-1.0` | centos:centos7.9.2009                         | 2024-01-15   |             0.172 |
 | `14.1-windows-latest`    | `14.1-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-15   |             4.561 |
 | `14.0-linux-latest`      | `14.0-linux-1.0`      | centos:centos7.9.2009                         | 2024-01-15   |             0.379 |
-| `14.0-linux-slim-latest` | `14.0-linux-1.0`      | centos:centos7.9.2009                         | 2024-01-15   |             0.171 |
+| `14.0-linux-slim-latest` | `14.0-linux-slim-1.0` | centos:centos7.9.2009                         | 2024-01-15   |             0.171 |
 | `14.0-windows-latest`    | `14.0-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-15   |             4.556 |
 | `13.2-linux-latest`      | `13.2-linux-1.0`      | centos:centos7.4.1708                         | 2024-01-15   |             0.338 |
 | `13.2-linux-slim-latest` | `13.2-linux-1.0`      | centos:centos7.4.1708                         | 2024-01-15   |             0.145 |
@@ -41,7 +41,7 @@ You can also use the locked tag, which will be `15.0-linux-1.0` for example.
 | `13.1-linux-slim-latest` | `13.1-linux-slim-1.0` | centos:centos7.4.1708                         | 2024-01-15   |             0.145 |
 | `13.1-windows-latest`    | `13.1-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-15   |             3.276 |
 | `13.0-linux-latest`      | `13.0-linux-1.0`      | centos:centos7.4.1708                         | 2024-01-14   |             0.398 |
-| `13.0-linux-slim-latest` | `13.0-linux-1.0`      | centos:centos7.4.1708                         | 2024-01-14   |             0.146 |
+| `13.0-linux-slim-latest` | `13.0-linux-slim-1.0` | centos:centos7.4.1708                         | 2024-01-14   |             0.146 |
 | `13.0-windows-latest`    | `13.0-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-14   |             3.276 |
 <!-- TABLE_END -->
 
