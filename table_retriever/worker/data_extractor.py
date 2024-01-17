@@ -41,7 +41,8 @@ def _get_locked_tag(tags: list[str], target_tag: str) -> str:
         if "latest" in tag:
             continue
         platform, _ = tag.rsplit("-", 1)
-        if platform in target_tag:
+        target_tag_platform, _ = target_tag.rsplit("-", 1)
+        if platform == target_tag_platform:
             return tag
     msg = f"No locked tag found for '{target_tag}'"
     raise TagCollectorError(msg)
