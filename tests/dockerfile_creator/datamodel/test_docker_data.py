@@ -45,6 +45,7 @@ class TestDockerfile:
         ),
         [
             (OperatingSystem.LINUX, 15.0, UpstreamImage.ROCKYLINUX_8),
+            (OperatingSystem.MACOS, 15.0, UpstreamImage.DEBIAN_BOOKWORM),
             (OperatingSystem.LINUX, 14.0, UpstreamImage.CENTOS_7_9),
             (OperatingSystem.LINUX, 13.2, UpstreamImage.CENTOS_7_4),
             (OperatingSystem.LINUX, 13.0, UpstreamImage.CENTOS_7_4),
@@ -103,6 +104,7 @@ class TestDockerfile:
         ("test_operating_system", "expected_work_dir"),
         [
             (OperatingSystem.LINUX, "WORKDIR /nuke_build_directory"),
+            (OperatingSystem.MACOS, "WORKDIR /nuke_build_directory"),
             (OperatingSystem.WINDOWS, "WORKDIR C:\\\\nuke_build_directory"),
         ],
     )
@@ -250,6 +252,7 @@ class TestDockerfile:
         [
             (OperatingSystem.LINUX, 15.0),
             (OperatingSystem.LINUX, 13.0),
+            (OperatingSystem.MACOS, 13.0),
             (OperatingSystem.WINDOWS, 13.0),
         ],
     )

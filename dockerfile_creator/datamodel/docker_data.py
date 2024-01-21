@@ -117,6 +117,8 @@ class Dockerfile:
         """Return matching upstream image."""
         if self.operating_system == OperatingSystem.WINDOWS:
             return UpstreamImage.WINDOWS_SERVERCORE_LTSC2022
+        if self.operating_system == OperatingSystem.MACOS:
+            return UpstreamImage.DEBIAN_BOOKWORM
         if self.nuke_version >= 15.0:
             return UpstreamImage.ROCKYLINUX_8
         if self.nuke_version < 15.0 and self.nuke_version >= 14.0:

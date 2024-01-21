@@ -33,6 +33,7 @@ class UpstreamImage(str, Enum):
     WINDOWS_SERVERCORE_LTSC2022: str = (
         "mcr.microsoft.com/windows/servercore:ltsc2022"
     )
+    DEBIAN_BOOKWORM: str = "debian:bookworm"
 
 
 JSON_DATA_SOURCE = (
@@ -62,6 +63,7 @@ VISUALSTUDIO_BUILDTOOLS = {
 
 NUKE_INSTALL_DIRECTORIES: dict[OperatingSystem, str] = {
     OperatingSystem.LINUX: "/usr/local/nuke_install",
+    OperatingSystem.MACOS: "/usr/local/nuke_install",
     OperatingSystem.WINDOWS: "C:\\\\nuke_install",
 }
 """Install directory for Nuke per operating system."""

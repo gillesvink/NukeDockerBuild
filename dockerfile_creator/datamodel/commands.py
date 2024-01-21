@@ -145,5 +145,12 @@ OS_ENVIRONMENTS: dict[OperatingSystem, DockerEnvironments] = {
             ],
         }
     ),
+    OperatingSystem.MACOS: DockerEnvironments(
+        {
+            "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORIES[
+                OperatingSystem.LINUX
+            ],
+        }
+    ),
 }
 """Environment variables related to each operating system."""
