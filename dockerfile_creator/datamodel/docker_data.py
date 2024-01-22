@@ -20,6 +20,8 @@ from dockerfile_creator.datamodel.commands import (
 )
 from dockerfile_creator.datamodel.constants import (
     DEVTOOLSETS,
+    MAC_DEPLOYMENT_TARGET,
+    MAC_SDK,
     NUKE_INSTALL_DIRECTORIES,
     VISUALSTUDIO_BUILDTOOLS,
     OperatingSystem,
@@ -98,6 +100,13 @@ class Dockerfile:
         )
 
     @property
+    def copy(self) -> str:
+        """Additional copy statements to include."""
+        if self.operating_system != OperatingSystem.MACOS:
+            return ""
+        return "COPY toolchain.cmake /nukedockerbuild/"
+
+    @property
     def environments(self) -> str:
         """Return all environments as a string."""
         os_environments: DockerEnvironments = OS_ENVIRONMENTS[
@@ -106,6 +115,17 @@ class Dockerfile:
         general_environments = DockerEnvironments(
             {"NUKE_VERSION": self.nuke_version}
         )
+
+        if self.operating_system == OperatingSystem.MACOS:
+            major_nuke_version = floor(self.nuke_version)
+            sdk_path = os.path.basename(MAC_SDK[major_nuke_version])
+            sdk_path = sdk_path.split(".tar")[0]
+            general_environments.environments[
+                "MACOS_SDK"
+            ] = f"/usr/local/osxcross/SDK/{sdk_path}"
+            general_environments.environments[
+                "DEPLOYMENT_TARGET"
+            ] = MAC_DEPLOYMENT_TARGET[major_nuke_version]
 
         return "\n".join(
             environments.to_docker_format()
@@ -133,6 +153,7 @@ class Dockerfile:
             "ARG NUKE_SOURCE_FILES\n"
             "COPY $NUKE_SOURCE_FILES "
             f"{NUKE_INSTALL_DIRECTORIES[self.operating_system]}\n\n"
+            f"{self.copy}\n"
             f"{self.run_commands}\n\n"
             f"{self.work_dir}\n\n"
             f"{self.environments}"
@@ -140,11 +161,11 @@ class Dockerfile:
 
     def _get_toolset(self) -> str:
         """Return the toolset needed for this Dockerfile."""
-        return (
-            DEVTOOLSETS[floor(self.nuke_version)]
-            if self.operating_system == OperatingSystem.LINUX
-            else VISUALSTUDIO_BUILDTOOLS[floor(self.nuke_version)]
-        )
+        if self.operating_system == OperatingSystem.MACOS:
+            return MAC_SDK[floor(self.nuke_version)]
+        if self.operating_system == OperatingSystem.WINDOWS:
+            return VISUALSTUDIO_BUILDTOOLS[floor(self.nuke_version)]
+        return DEVTOOLSETS[floor(self.nuke_version)]
 
     def _remove_invalid_commands_for_version(
         self, commands: list[DockerCommand]

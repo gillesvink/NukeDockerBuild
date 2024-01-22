@@ -140,6 +140,36 @@ class TestDockerfile:
         )
 
     @pytest.mark.parametrize(
+        ("test_nuke_version", "expected_sdk", "expected_deployment_target"),
+        [
+            (16.0, "MacOSX13.3.sdk", "11.0"),
+            (15.0, "MacOSX13.3.sdk", "10.15"),
+            (14.0, "MacOSX13.3.sdk", "10.15"),
+            (13.0, "MacOSX10.14.sdk", "10.12"),
+        ],
+    )
+    def test_mac_environments(
+        self,
+        dummy_dockerfile: Dockerfile,
+        test_nuke_version: float,
+        expected_sdk: str,
+        expected_deployment_target: float,
+    ) -> None:
+        """Test to return the required environments."""
+        dummy_dockerfile.operating_system = OperatingSystem.MACOS
+        dummy_dockerfile.nuke_version = test_nuke_version
+        collected_environments = dummy_dockerfile.environments
+
+        assert (
+            f"MACOS_SDK=/usr/local/osxcross/SDK/{expected_sdk}"
+            in collected_environments
+        )
+        assert (
+            f"DEPLOYMENT_TARGET={expected_deployment_target}"
+            in collected_environments
+        )
+
+    @pytest.mark.parametrize(
         ("test_operating_system", "test_nuke_version", "test_nuke_source"),
         [
             (OperatingSystem.LINUX, 15.0, "hello"),
@@ -248,6 +278,25 @@ class TestDockerfile:
         assert bool(test_commands) == command_still_in_list
 
     @pytest.mark.parametrize(
+        ("test_operating_system", "expected_result"),
+        [
+            (OperatingSystem.LINUX, ""),
+            (OperatingSystem.WINDOWS, ""),
+            (OperatingSystem.MACOS, "COPY toolchain.cmake /nukedockerbuild/"),
+        ],
+    )
+    def test_copy(
+        self,
+        dummy_dockerfile: Dockerfile,
+        test_operating_system: OperatingSystem,
+        expected_result: str,
+    ) -> None:
+        """Test copy to only return additional values for Mac."""
+        dummy_dockerfile.operating_system = test_operating_system
+
+        assert dummy_dockerfile.copy == expected_result
+
+    @pytest.mark.parametrize(
         ("test_operating_system", "test_nuke_version"),
         [
             (OperatingSystem.LINUX, 15.0),
@@ -273,6 +322,7 @@ class TestDockerfile:
             "ARG NUKE_SOURCE_FILES\n"
             "COPY $NUKE_SOURCE_FILES "
             f"{NUKE_INSTALL_DIRECTORIES[dummy_dockerfile.operating_system]}\n\n"
+            f"{dummy_dockerfile.copy}\n"
             f"{dummy_dockerfile.run_commands}\n\n"
             f"{dummy_dockerfile.work_dir}\n\n"
             f"{dummy_dockerfile.environments}"

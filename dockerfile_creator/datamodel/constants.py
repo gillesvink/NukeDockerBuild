@@ -61,6 +61,22 @@ VISUALSTUDIO_BUILDTOOLS = {
 }
 """Matched Visual Studio build toolset to Nuke major version."""
 
+MAC_DEPLOYMENT_TARGET = {
+    16: 11.0,
+    15: 10.15,
+    14: 10.15,
+    13: 10.12,
+}
+"""Matched deployment target for Mac SDK."""
+
+MAC_SDK = {
+    16: "https://github.com/joseluisq/macosx-sdks/releases/download/13.3/MacOSX13.3.sdk.tar.xz",
+    15: "https://github.com/joseluisq/macosx-sdks/releases/download/13.3/MacOSX13.3.sdk.tar.xz",
+    14: "https://github.com/joseluisq/macosx-sdks/releases/download/13.3/MacOSX13.3.sdk.tar.xz",
+    13: "https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.14.sdk.tar.xz",
+}
+"""Matched SDK to Foundry docs."""
+
 NUKE_INSTALL_DIRECTORIES: dict[OperatingSystem, str] = {
     OperatingSystem.LINUX: "/usr/local/nuke_install",
     OperatingSystem.MACOS: "/usr/local/nuke_install",
