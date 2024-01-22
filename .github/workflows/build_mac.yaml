@@ -101,11 +101,7 @@ jobs:
           echo "unique_name=${unique_name}" >> $GITHUB_ENV
 
       - name: Set up Docker
-        run: |
-          brew install --cask docker
-          brew install docker-buildx
-          colima start
-          docker ps
+        uses: crazy-max/ghaction-setup-docker@v3
 
       - uses: actions/download-artifact@v4
         with:
