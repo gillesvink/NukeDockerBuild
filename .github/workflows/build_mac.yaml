@@ -127,15 +127,16 @@ jobs:
           build-args: NUKE_SOURCE_FILES=nuke_source_files
 
       - name: Build
-        uses: docker/build-push-action@v5
-        with:
-          context: ${{ github.workspace }}
-          file: "{{ matrix.files }}"
-          tags: nukedockerbuild:latest
-          build-args: |
-            NUKE_SOURCE_FILES={{ matrix.files }}/nuke_source_files
-            TOOLCHAIN=dependencies/macos/toolchain.cmake
+        run: |
+          cd ${{ github.workspace }}
+          docker build -f ${{ matrix.files }} \
+            -t nukedockerbuild:latest \
+            --build-arg NUKE_SOURCE_FILES=${{ matrix.files }}/nuke_source_files \
+            --build-arg TOOLCHAIN=dependencies/macos/toolchain.cmake \
+            .
 
+      - name: Export image
+        run: docker save nukedockerbuild:latest | gzip > /tmp/nukedockerbuild.tar.gz
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
