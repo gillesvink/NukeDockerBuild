@@ -1,12 +1,12 @@
 [![Tests](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/create_dockerfiles.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/create_dockerfiles.yaml) [![Linux builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_linux.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_linux.yaml) [![Windows builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_windows.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_windows.yaml) 
 
 ![NukeDockerBuild](./resources/header.jpg)
-> Ready to use Docker images to build Nuke plugins for Linux and Windows.
+> Ready to use Docker images to build Nuke plugins for all operating systems (Mac, Linux, Windows).
 
 --- 
-The images produced here will include everything you need to build Nuke plugins. This includes the compiler for C++ ([gcc-toolsets](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/12) on Linux, [Visual Studio](https://visualstudio.microsoft.com/downloads/) on Windows), [CMake](https://cmake.org/) and the Nuke files required to compile.
+The images produced here will include everything you need to build Nuke plugins. This includes the compiler for C++ ([gcc-toolsets](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/12) on Linux, [Visual Studio](https://visualstudio.microsoft.com/downloads/) on Windows, clang for MacOS using [OSXCross](https://github.com/tpoechtrager/osxcross)), [CMake](https://cmake.org/) and the Nuke files required to compile.
 
-It is mostly meant for automatic deployment using CI/CD. However, it can also be used locally to quickly compile plugins without the need to install anything (except Docker itself 😉).
+These images are meant for both local development using development containers as well as deployment using CI/CD.
 
 ## 🏷 Tags
 
@@ -18,7 +18,7 @@ docker pull ghcr.io/gillesvink/nukedockerbuild:TAG
 
 Where as tag will be the one you want to use. The table below will be updated automatically to show the available tags.
 
-**Note**: a latest tag for each Nuke version is provided. Which will be in this format: `{nuke_version}-{os}-latest`. For example `15.0-linux-latest`. Or Linux also has slim packages available (massively reduced image size): `15.0-linux-slim-latest`.
+**Note**: a latest tag for each Nuke version is provided. Which will be in this format: `{nuke_version}-{os}-latest`. For example `15.0-linux-latest`. Or Linux and Mac also have slim packages available (massively reduced image size): `15.0-linux-slim-latest`.
 
 You can also use the locked tag, which will be `15.0-linux-1.0` for example.
 
@@ -121,10 +121,6 @@ docker run --rm --isolation=process ^
     cmake --build build --config Release"
 ```
 
-
-## 🍎 Why no MacOS support? 
-I wish... However, Apple does not support containerized applications as its missing good handling for chroot. The good news is, there currently is being done active work by the community to create a dockerized Mac OS image. Until that's solid, that will of course be supported here as well.
-
 ## 📦 Image size
 This depends on the image you choose to use. Windows itself has quite large images, because it is relying on the server core image. Besides that the build tools are also quite big. As a result of that the Windows images are around 9gb.
 
@@ -147,6 +143,14 @@ All Linux images are based on Red Hat based images. This means [Rocky Linux](htt
 
 ### Windows
 For Windows the [Server Core ltsc2022](https://hub.docker.com/_/microsoft-windows-servercore) image is used. Besides that, for package installation the [Chocolatey package registry](https://community.chocolatey.org/packages) is used to install both the VS Build Tools as well as CMake.
+
+### MacOS
+The MacOS packages actually run on [Debian Bookworm](https://hub.docker.com/_/debian). It uses [OSXCross](https://github.com/tpoechtrager/osxcross) for cross compiling. 
+
+#### [Please ensure you have read and understood the Xcode license terms before continuing.](https://www.apple.com/legal/sla/docs/xcode.pdf)
+
+To set this up correctly, you also need to use the appropriate toolchain for CMake. You can get started quickly by using my template from [NukePluginTemplate](https://github.com/gillesvink/NukePluginTemplate). The toolchain can be found locally at `/nukedockerbuild/toolchain.cmake` and should be set when using CMake.
+
 
 ## ❤️ Thanks
 Thanks to everyone who contributed anything to the images that are used in these dockerfiles and to the maintainers of all plugins used! Without all the open source code applications that are available this would never have been possible.
