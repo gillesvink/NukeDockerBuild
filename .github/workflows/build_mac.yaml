@@ -103,7 +103,9 @@ jobs:
       - name: Set up Docker
         run: |
           brew install docker
+          brew install colima
           brew install docker-buildx
+          colima start
 
       - uses: actions/download-artifact@v4
         with:
