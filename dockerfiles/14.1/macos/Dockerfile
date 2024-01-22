@@ -1,6 +1,6 @@
 FROM debian:bookworm
 
-LABEL 'org.opencontainers.version'=0.1
+LABEL 'org.opencontainers.version'=0.2
 LABEL 'org.opencontainers.image.created'='2024-01-22'
 LABEL 'org.opencontainers.image.authors'='gilles@vinkvfx.com'
 LABEL 'org.opencontainers.image.description'='Ready to use Docker image for building Nuke plugins.'

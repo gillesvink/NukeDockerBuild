@@ -102,9 +102,8 @@ jobs:
 
       - name: Set up Docker
         run: |
-          brew install --cask docker
-          open /Applications/Docker.app
-          docker ps
+          brew install docker
+          colima start
 
       - uses: actions/download-artifact@v4
         with:
@@ -113,17 +112,15 @@ jobs:
 
       - name: Prepare source files
         run: |
-          DOCKERFILE_DIRECTORY=$(dirname ${{ github.workspace }}/${{ matrix.files }})
-          echo "Directory set to $DOCKERFILE_DIRECTORY"
-          echo "dockerfile_directory=${DOCKERFILE_DIRECTORY}" >> "$GITHUB_ENV"
-          tar -xzf /tmp/nuke_source_files.tar.gz -C $DOCKERFILE_DIRECTORY
+          tar -xzf /tmp/nuke_source_files.tar.gz -C ${{ github.workspace }}
 
       - name: Build
         run: |
           cd ${{ github.workspace }}
+
           docker build -f ${{ matrix.files }} \
             -t nukedockerbuild:latest \
-            --build-arg NUKE_SOURCE_FILES=${{ matrix.files }}/nuke_source_files \
+            --build-arg NUKE_SOURCE_FILES=nuke_source_files \
             --build-arg TOOLCHAIN=dependencies/macos/toolchain.cmake \
             .
 
@@ -157,7 +154,7 @@ jobs:
       - name: Set up Docker
         run: |
           brew install docker
-          brew install docker-buildx
+          colima start
 
       - uses: actions/download-artifact@v4
         with:
