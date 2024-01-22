@@ -101,7 +101,10 @@ jobs:
           echo "unique_name=${unique_name}" >> $GITHUB_ENV
 
       - name: Set up Docker
-        uses: crazy-max/ghaction-setup-docker@v3
+        run: |
+          brew install --cask docker
+          open /Applications/Docker.app
+          docker ps
 
       - uses: actions/download-artifact@v4
         with:
