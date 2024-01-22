@@ -68,7 +68,7 @@ jobs:
         timeout-minutes: 30
         run: |
           mkdir /tmp/nuke_source_files
-          bash "${GITHUB_WORKSPACE}/scripts/nuke_source_from_dockerfile.bash" "${{ matrix.files }}" /tmp/nuke_source_files
+          bash "${GITHUB_WORKSPACE}/scripts/nuke_source_from_dockerfile_linux.bash" "${{ matrix.files }}" /tmp/nuke_source_files
 
       - name: Create artifact tar
         run: tar -czvf /tmp/nuke_source_files.tar.gz -C /tmp nuke_source_files
