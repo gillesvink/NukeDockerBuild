@@ -101,7 +101,9 @@ jobs:
           echo "unique_name=${unique_name}" >> $GITHUB_ENV
 
       - name: Set up Docker
-        run: brew install docker
+        run: |
+          brew install docker
+          brew install docker-buildx
 
       - uses: actions/download-artifact@v4
         with:
