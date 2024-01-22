@@ -51,7 +51,7 @@ jobs:
         run: |
           unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
           echo "unique_name=${unique_name}" >> $GITHUB_ENV
-          cache_key=${unique_name}_${{ hashFiles('**/scripts/nuke_source_from_dockerfile_mac.bash') }}
+          cache_key=${unique_name}_${{ hashFiles('**/scripts/nuke_source_from_dockerfile_macos.bash') }}
           echo "cache_key=${cache_key}" >> $GITHUB_ENV
 
           echo "Got key '$cache_key'"
