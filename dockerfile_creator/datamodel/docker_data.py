@@ -100,11 +100,20 @@ class Dockerfile:
         )
 
     @property
+    def args(self) -> str:
+        """Return all arguments necessary."""
+        all_args = ["NUKE_SOURCE_FILES"]
+        if self.operating_system == OperatingSystem.MACOS:
+            all_args.append("TOOLCHAIN")
+        return "\n".join(f"ARG {argument}" for argument in all_args)
+
+    @property
     def copy(self) -> str:
         """Additional copy statements to include."""
+        nuke_sources = f"COPY $NUKE_SOURCE_FILES {NUKE_INSTALL_DIRECTORIES[self.operating_system]}"
         if self.operating_system != OperatingSystem.MACOS:
-            return ""
-        return "COPY toolchain.cmake /nukedockerbuild/"
+            return nuke_sources
+        return f"{nuke_sources}\nCOPY $TOOLCHAIN /nukedockerbuild/"
 
     @property
     def environments(self) -> str:
@@ -150,9 +159,7 @@ class Dockerfile:
         return (
             f"FROM {self.upstream_image.value}\n\n"
             f"{self.labels}\n\n"
-            "ARG NUKE_SOURCE_FILES\n"
-            "COPY $NUKE_SOURCE_FILES "
-            f"{NUKE_INSTALL_DIRECTORIES[self.operating_system]}\n"
+            f"{self.args}\n\n"
             f"{self.copy}\n\n"
             f"{self.run_commands}\n\n"
             f"{self.work_dir}\n\n"

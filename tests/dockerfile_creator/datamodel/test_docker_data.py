@@ -13,7 +13,6 @@ from dockerfile_creator.datamodel.commands import (
     DockerCommand,
     DockerEnvironments,
 )
-from dockerfile_creator.datamodel.constants import NUKE_INSTALL_DIRECTORIES
 from dockerfile_creator.datamodel.docker_data import (
     Dockerfile,
     OperatingSystem,
@@ -280,9 +279,46 @@ class TestDockerfile:
     @pytest.mark.parametrize(
         ("test_operating_system", "expected_result"),
         [
-            (OperatingSystem.LINUX, ""),
-            (OperatingSystem.WINDOWS, ""),
-            (OperatingSystem.MACOS, "COPY toolchain.cmake /nukedockerbuild/"),
+            (
+                OperatingSystem.LINUX,
+                "ARG NUKE_SOURCE_FILES",
+            ),
+            (
+                OperatingSystem.WINDOWS,
+                "ARG NUKE_SOURCE_FILES",
+            ),
+            (
+                OperatingSystem.MACOS,
+                "ARG NUKE_SOURCE_FILES\nARG TOOLCHAIN",
+            ),
+        ],
+    )
+    def test_args(
+        self,
+        dummy_dockerfile: Dockerfile,
+        test_operating_system: OperatingSystem,
+        expected_result: str,
+    ) -> None:
+        """Test args return source files and possibly toolchain."""
+        dummy_dockerfile.operating_system = test_operating_system
+
+        assert dummy_dockerfile.args == expected_result
+
+    @pytest.mark.parametrize(
+        ("test_operating_system", "expected_result"),
+        [
+            (
+                OperatingSystem.LINUX,
+                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install",
+            ),
+            (
+                OperatingSystem.WINDOWS,
+                "COPY $NUKE_SOURCE_FILES C:\\\\nuke_install",
+            ),
+            (
+                OperatingSystem.MACOS,
+                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install\nCOPY $TOOLCHAIN /nukedockerbuild/",
+            ),
         ],
     )
     def test_copy(
@@ -291,7 +327,7 @@ class TestDockerfile:
         test_operating_system: OperatingSystem,
         expected_result: str,
     ) -> None:
-        """Test copy to only return additional values for Mac."""
+        """Test copy to only return expected copy statements."""
         dummy_dockerfile.operating_system = test_operating_system
 
         assert dummy_dockerfile.copy == expected_result
@@ -319,9 +355,7 @@ class TestDockerfile:
             f"FROM {dummy_dockerfile.upstream_image.value}\n"
             "\n"
             f"{dummy_dockerfile.labels}\n\n"
-            "ARG NUKE_SOURCE_FILES\n"
-            "COPY $NUKE_SOURCE_FILES "
-            f"{NUKE_INSTALL_DIRECTORIES[dummy_dockerfile.operating_system]}\n"
+            f"{dummy_dockerfile.args}\n\n"
             f"{dummy_dockerfile.copy}\n\n"
             f"{dummy_dockerfile.run_commands}\n\n"
             f"{dummy_dockerfile.work_dir}\n\n"
