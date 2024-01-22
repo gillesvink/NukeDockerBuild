@@ -100,8 +100,11 @@ jobs:
           unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
           echo "unique_name=${unique_name}" >> $GITHUB_ENV
 
-      - uses: docker-practice/actions-setup-docker@master
-        timeout-minutes: 12
+      - name: Set up Docker
+        run: |
+          brew install --cask docker
+          ln -s ~/.docker/run/docker.sock /var/run/docker.sock
+          
 
       - uses: actions/download-artifact@v4
         with:
@@ -115,14 +118,14 @@ jobs:
           echo "dockerfile_directory=${DOCKERFILE_DIRECTORY}" >> "$GITHUB_ENV"
           tar -xzf /tmp/nuke_source_files.tar.gz -C $DOCKERFILE_DIRECTORY
 
-      - name: Build and export
-        uses: docker/build-push-action@v5
-        with:
-          context: ${{ env.dockerfile_directory }}
-          file: ${{ matrix.files }}
-          tags: nukedockerbuild:latest
-          outputs: type=docker,dest=/tmp/nukedockerbuild.tar.gz
-          build-args: NUKE_SOURCE_FILES=nuke_source_files
+      - name: Build
+        run: |
+          cd ${{ github.workspace }}
+          docker build -f ${{ matrix.files }} \
+            -t nukedockerbuild:latest \
+            --build-arg NUKE_SOURCE_FILES=${{ matrix.files }}/nuke_source_files \
+            --build-arg TOOLCHAIN=dependencies/macos/toolchain.cmake \
+            .
 
       - name: Export image
         run: docker save nukedockerbuild:latest | gzip > /tmp/nukedockerbuild.tar.gz
