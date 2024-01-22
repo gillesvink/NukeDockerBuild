@@ -82,7 +82,7 @@ jobs:
   build:
     name: Build base
 
-    runs-on: macos-latest
+    runs-on: macos-latest # Ideally this would be Ubuntu, but this is to comply with the SDK license
     needs: [changed_dockerfiles, get_nuke_sources]
 
     strategy:
@@ -103,8 +103,10 @@ jobs:
       - name: Set up Docker
         run: |
           brew install --cask docker
-          ln -s ~/.docker/run/docker.sock /var/run/docker.sock
-          
+          brew install docker-Buildx
+          ln -sfn $(brew --prefix)/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
+          colima start
+          docker ps
 
       - uses: actions/download-artifact@v4
         with:
