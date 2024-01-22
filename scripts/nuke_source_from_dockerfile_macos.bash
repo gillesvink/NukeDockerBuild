@@ -26,22 +26,25 @@ else
 fi
 
 filename=$(basename "$url")
-nuke_temp_files=/tmp/nuke_temp_files
+nuke_temp_files=/$TMPDIR/nuke_temp_files
 
 echo "Download and extract Nuke in temp folder"
 mkdir ${nuke_temp_files}
 curl -o ${nuke_temp_files}/${filename} ${url}
 tar zxvf ${nuke_temp_files}/${filename} -C ${nuke_temp_files}
 
-echo "Remove compressed Nuke"
-rm ${nuke_temp_files}/${filename}
+echo "Mount and convert ${nuke_temp_files}/${filename}"
+hdiutil convert "${nuke_temp_files}/${filename}" -format UDTO -o "${nuke_temp_files}/converted.cdr"
+hdiutil attach "${nuke_temp_files}/converted.cdr"
 
-echo "Install Nuke to ${target_folder}"
-${nuke_temp_files}/${filename%.*}.run --accept-foundry-eula --prefix=${target_folder} --exclude-subdir
+echo "Copying files from dmg"
+nuke_name=${filename%%-*}
+cd /Volumes/${filename%.*}/${nuke_name}
+mkdir ${target_folder}/tests
+cp -r Documentation/NDKExamples/examples/* ${target_folder}/tests
+cp -r ${nuke_name}.app/Contents/MacOS/* ${target_folder}
 
 echo "Keep only source files"
-mkdir ${target_folder}/tests
-cp -r ${target_folder}/Documentation/NDKExamples/examples/* ${target_folder}/tests
 find ${target_folder} -mindepth 1 -maxdepth 1 ! -name "tests" ! -name "cmake" ! -name "include" ! -name "*Fdk*" ! -name "*Fn*" ! -name "*Ndk*" ! -name "*DDI*" ! -name "source" -exec rm -rf {} \;
 
 echo "Clean nuke temp files"
