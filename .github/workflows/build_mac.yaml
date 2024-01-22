@@ -103,8 +103,7 @@ jobs:
       - name: Set up Docker
         run: |
           brew install --cask docker
-          brew install docker-Buildx
-          ln -sfn $(brew --prefix)/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
+          brew install docker-buildx
           colima start
           docker ps
 
