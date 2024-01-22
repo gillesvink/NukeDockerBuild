@@ -48,5 +48,4 @@ echo "Keep only source files"
 find ${target_folder} -mindepth 1 -maxdepth 1 ! -name "tests" ! -name "cmake" ! -name "include" ! -name "*Fdk*" ! -name "*Fn*" ! -name "*Ndk*" ! -name "*DDI*" ! -name "source" -exec rm -rf {} \;
 
 echo "Clean nuke temp files"
-hdiutil detach -force /Volumes/${filename%.*}
 rm -rf ${nuke_temp_files}
