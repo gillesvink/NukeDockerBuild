@@ -115,7 +115,7 @@ jobs:
       - name: Build and export
         uses: docker/build-push-action@v5
         with:
-          context: ${{ env.github.workspace }}
+          context: ${{ github.workspace }}
           file: ${{ matrix.files }}
           platforms: linux/amd64,linux/arm64
           tags: nukedockerbuild:latest
