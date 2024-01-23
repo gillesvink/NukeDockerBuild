@@ -34,7 +34,7 @@ jobs:
   get_nuke_sources:
     name: Collect and upload Nuke sources
 
-    runs-on: macos-latest
+    runs-on: macos-13
     needs: [changed_dockerfiles]
 
     strategy:
@@ -106,8 +106,7 @@ jobs:
           brew install docker-buildx
           mkdir -p ~/.docker/cli-plugins
           ln -sfn /usr/local/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
-          brew install colima
-          colima start --cpu 3
+          colima start --cpu 4 --memory 10 --disk 10 --vm-type=vz
 
       - uses: actions/download-artifact@v4
         with:
@@ -135,7 +134,7 @@ jobs:
     name: Test base
 
     needs: [changed_dockerfiles, build]
-    runs-on: macos-latest
+    runs-on: macos-13
 
     strategy:
       matrix: 
@@ -153,8 +152,7 @@ jobs:
         run: |
           brew install docker
           mkdir /tmp/tests/
-          brew install colima
-          colima start --cpu 3 --mount /tmp/tests:/tmp/tests:w
+          colima start  --vm-type=vz --cpu 3 --memory 10 --disk 10 --mount /tmp/tests:/tmp/tests:w --mount-type virtiofs
 
       - uses: actions/download-artifact@v4
         with:
