@@ -104,7 +104,7 @@ jobs:
         run: |
           brew install docker
           brew install colima
-          colima start --arch x86_64 --vm-type=vz 
+          colima start
 
       - uses: actions/download-artifact@v4
         with:
@@ -157,7 +157,7 @@ jobs:
           brew install docker
           mkdir /tmp/tests/
           brew install colima
-          colima start --arch x86_64 --vm-type=vz --mount /tmp/tests:/tmp/tests:w
+          colima start --mount /tmp/tests:/tmp/tests:w
 
       - uses: actions/download-artifact@v4
         with:
