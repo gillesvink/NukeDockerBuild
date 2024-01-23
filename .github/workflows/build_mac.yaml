@@ -82,7 +82,7 @@ jobs:
   build:
     name: Build base
 
-    runs-on: macos-latest
+    runs-on: macos-13
     needs: [changed_dockerfiles, get_nuke_sources]
 
     strategy:
