@@ -119,8 +119,8 @@ jobs:
       - name: Build
         run: |
           cd ${{ github.workspace }}
-
-          docker buildx create --use multiplatform-builder
+          docker buildx create --name multiplatform-builder
+          docker buildx use multiplatform-builder
           docker buildx build --platform linux/amd64,linux/arm64 -t nukedockerbuild:latest -f ${{ matrix.files }} --build-arg NUKE_SOURCE_FILES=nuke_source_files --build-arg TOOLCHAIN=dependencies/macos/toolchain.cmake --output type=tar,dest=/tmp/nukedockerbuild.tar.gz .
 
       - name: Upload artifact
