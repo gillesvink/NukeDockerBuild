@@ -88,6 +88,7 @@ jobs:
     strategy:
       matrix: 
         files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
+        arch: ["arm64", "amd64"]
       fail-fast: false
 
     steps:
@@ -121,61 +122,58 @@ jobs:
         run: |
           docker buildx create --name multiplatform-builder
           docker buildx use multiplatform-builder
-          docker buildx build --platform linux/amd64,linux/arm64 -t nukedockerbuild:latest -f ${{ matrix.files }} --build-arg NUKE_SOURCE_FILES=nuke_source_files --build-arg TOOLCHAIN=dependencies/macos/toolchain.cmake --load .
-
-      - name: Export to tar
-        run: |
-          docker save nukedockerbuild:latest > /tmp/nukedockerbuild.tar.gz
+          docker buildx build --platform linux/${{ matrix.arch }} -t nukedockerbuild:latest-${{ matrix.arch }} -f ${{ matrix.files }} --build-arg NUKE_SOURCE_FILES=nuke_source_files --build-arg TOOLCHAIN=dependencies/macos/toolchain.cmake --output type=docker,dest=/tmp/nukedockerbuild_${{ matrix.arch }}.tar .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: docker_image_${{ env.unique_name }}
-          path: /tmp/nukedockerbuild.tar.gz
-          
-  # test_build:
-  #   name: Test base
+          name: docker_image_${{ matrix.arch }}_${{ env.unique_name }}
+          path: /tmp/nukedockerbuild_${{ matrix.arch }}.tar.gz
 
-  #   needs: [changed_dockerfiles, build]
-  #   runs-on: macos-latest
+  test_build:
+    name: Test base
 
-  #   strategy:
-  #     matrix: 
-  #       files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
-  #     fail-fast: false
+    needs: [changed_dockerfiles, build]
+    runs-on: macos-latest
 
-  #   steps:
-  #     - name: Get unique name
-  #       id: unique_name
-  #       run: |
-  #         unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
-  #         echo "unique_name=${unique_name}" >> $GITHUB_ENV
+    strategy:
+      matrix: 
+        files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
+        arch: ["arm64", "amd64"]
+      fail-fast: false
 
-  #     - name: Set up Docker
-  #       run: |
-  #         brew install docker
-  #         mkdir /tmp/tests/
-  #         colima start --cpu 3 --memory 10 --disk 10 --mount /tmp/tests:/tmp/tests:w
+    steps:
+      - name: Get unique name
+        id: unique_name
+        run: |
+          unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
+          echo "unique_name=${unique_name}" >> $GITHUB_ENV
 
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         name: docker_image_${{ env.unique_name  }}
-  #         path: /tmp/
+      - name: Set up Docker
+        run: |
+          brew install docker
+          mkdir /tmp/tests/
+          colima start --cpu 3 --memory 10 --disk 10 --mount /tmp/tests:/tmp/tests:w
 
-  #     - name: Load image
-  #       run: |
-  #         docker load --input /tmp/nukedockerbuild.tar.gz
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker_image_${{ matrix.arch }}_${{ env.unique_name }}
+          path: /tmp/
 
-  #     - name: Tests
-  #       run: |
-  #         docker run -v /tmp/tests:/nuke_build_directory nukedockerbuild:latest bash -c "cd /usr/local/nuke_install/tests && cmake . -B /nuke_build_directory -DCMAKE_TOOLCHAIN_FILE=/nukedockerbuild/toolchain.cmake && cmake --build /nuke_build_directory"
-  #         tar -czvf /tmp/test_run.tar.gz /tmp/tests
+      - name: Load image
+        run: |
+          docker load --input /tmp/nukedockerbuild_${{ matrix.arch }}.tar.gz
 
-  #     - name: Upload tests artifacts
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: tests_run_base_${{ env.unique_name }}
-  #         path: /tmp/test_run.tar.gz
+      - name: Tests
+        run: |
+          docker run -v /tmp/tests:/nuke_build_directory nukedockerbuild:latest-${{ matrix.arch }} bash -c "cd /usr/local/nuke_install/tests && cmake . -B /nuke_build_directory -DCMAKE_TOOLCHAIN_FILE=/nukedockerbuild/toolchain.cmake && cmake --build /nuke_build_directory"
+          tar -czvf /tmp/test_run.tar.gz /tmp/tests
+
+      - name: Upload tests artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests_run_base_${{matrix.arch}}_${{ env.unique_name }}
+          path: /tmp/test_run.tar.gz
 
 
   # build_slim:
