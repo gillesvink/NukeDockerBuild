@@ -119,7 +119,7 @@ jobs:
           file: ${{ matrix.files }}
           platforms: linux/amd64,linux/arm64
           tags: nukedockerbuild:latest
-          outputs: type=docker,dest=/tmp/nukedockerbuild.tar.gz
+          outputs: type=oci,dest=/tmp/nukedockerbuild.tar.gz
           build-args: |
             NUKE_SOURCE_FILES=nuke_source_files
             TOOLCHAIN=dependencies/macos/toolchain.cmake
