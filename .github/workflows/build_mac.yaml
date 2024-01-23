@@ -82,7 +82,7 @@ jobs:
   build:
     name: Build base
 
-    runs-on: macos-13
+    runs-on: macos-latest
     needs: [changed_dockerfiles, get_nuke_sources]
 
     strategy:
@@ -105,7 +105,7 @@ jobs:
           brew install docker
           brew install docker-buildx
           brew install colima
-          colima start --cpu 4
+          colima start --cpu 3
 
       - uses: actions/download-artifact@v4
         with:
@@ -133,7 +133,7 @@ jobs:
     name: Test base
 
     needs: [changed_dockerfiles, build]
-    runs-on: macos-13
+    runs-on: macos-latest
 
     strategy:
       matrix: 
@@ -152,7 +152,7 @@ jobs:
           brew install docker
           mkdir /tmp/tests/
           brew install colima
-          colima start --cpu 4 --mount /tmp/tests:/tmp/tests:w
+          colima start --cpu 3 --mount /tmp/tests:/tmp/tests:w
 
       - uses: actions/download-artifact@v4
         with:
