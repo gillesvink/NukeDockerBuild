@@ -82,7 +82,7 @@ jobs:
   build:
     name: Build base
 
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs: [changed_dockerfiles, get_nuke_sources]
 
     strategy:
@@ -100,16 +100,13 @@ jobs:
           unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
           echo "unique_name=${unique_name}" >> $GITHUB_ENV
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # - name: Set up Docker
-      #   run: |
-      #     brew install docker
-      #     brew install docker-buildx
-      #     mkdir -p ~/.docker/cli-plugins
-      #     ln -sfn /usr/local/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
-      #     colima start --cpu 3 --memory 10 --disk 10
+      - name: Set up Docker
+        run: |
+          brew install docker
+          brew install docker-buildx
+          mkdir -p ~/.docker/cli-plugins
+          ln -sfn /usr/local/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
+          colima start --cpu 3 --memory 10 --disk 10
 
       - uses: actions/download-artifact@v4
         with:
