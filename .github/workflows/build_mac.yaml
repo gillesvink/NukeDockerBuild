@@ -118,6 +118,7 @@ jobs:
           context: ${{ github.workspace }}
           file: ${{ matrix.files }}
           platforms: linux/amd64
+          load: true
           tags: nukedockerbuild:latest
           build-args: |
             NUKE_SOURCE_FILES=nuke_source_files
