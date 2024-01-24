@@ -43,10 +43,12 @@ def _filter_tags(tags: set[str]) -> list[str]:
         filtered list of tags.
     """
     collected_tags = set()
-    for tag in tags:
+    pre_filtered_tags = [
+        tag for tag in tags if "amd64" not in tag and not "arm64" in tag
+    ]
+    for tag in pre_filtered_tags:
         if "latest" in tag:
             collected_tags.add(tag)
-
         platform, _ = tag.rsplit("-", 1)
         if not any(
             platform in collected_tag for collected_tag in collected_tags
@@ -54,7 +56,9 @@ def _filter_tags(tags: set[str]) -> list[str]:
             collected_tags.add(tag)
 
         regex_match = rf"{platform}-((\d).(\d))"
-        same_target_tags = [tag for tag in tags if re.match(regex_match, tag)]
+        same_target_tags = [
+            tag for tag in pre_filtered_tags if re.match(regex_match, tag)
+        ]
         same_target_tags.sort(reverse=True)
         if same_target_tags[0] != tag:
             continue
@@ -107,7 +111,15 @@ def retrieve_manifest(tag: str) -> dict:
         tag: tag to get data from.
     """
     api_url = f"{GithubData.GHCR_API.value}/manifests/{tag}"
-    requested_data = _get_requested_data(url=api_url)
+    requested_data = _get_requested_data(url=api_url).json()
+
+    if requested_data.get("config"):
+        return requested_data
+
+    target_manifest = requested_data["manifests"][0]
+    target_digest = target_manifest["digest"]
+    manifest_url = f"{GithubData.GHCR_API.value}/manifests/{target_digest}"
+    requested_data = _get_requested_data(url=manifest_url)
     return requested_data.json()
 
 

@@ -1,0 +1,248 @@
+name: Build Mac
+run-name: Mac builds
+
+on:
+  push:
+    paths:
+      - "dockerfiles/**/macos/Dockerfile"
+      - "dockerfiles/**/macos-arm/Dockerfile"
+
+
+jobs:
+  changed_dockerfiles:
+    name: Get target dockerfiles
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      matrix: ${{ steps.changed_dockerfiles.outputs.all_changed_files }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed_dockerfiles
+        uses: tj-actions/changed-files@v41
+        with:
+          json: true
+          escape_json: false
+          files: |
+            **/macos/Dockerfile
+            **/macos-arm/Dockerfile
+
+
+      - name: Show changed dockerfiles
+        run: echo '${{ steps.changed_dockerfiles.outputs.all_changed_files }}'
+
+  get_nuke_sources:
+    name: Collect and upload Nuke sources
+
+    runs-on: macos-latest
+    needs: [changed_dockerfiles]
+
+    strategy:
+      matrix: 
+        files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get cache key
+        id: unique_name
+        run: |
+          unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
+          echo "unique_name=${unique_name}" >> $GITHUB_ENV
+          cache_key=${unique_name}_${{ hashFiles('**/scripts/nuke_source_from_dockerfile_macos.bash') }}
+          echo "cache_key=${cache_key}" >> $GITHUB_ENV
+
+          echo "Got key '$cache_key'"
+
+      - name: Get Nuke source files cache
+        id: cache_nuke_source
+        uses: actions/cache@v4
+        with:
+          path: /tmp/nuke_source_files
+          key: ${{ env.cache_key }}
+          
+      - name: Collect Nuke source files
+        if: steps.cache_nuke_source.outputs.cache-hit != 'true'
+        timeout-minutes: 30
+        run: |
+          mkdir /tmp/nuke_source_files
+          bash "${GITHUB_WORKSPACE}/scripts/nuke_source_from_dockerfile_macos.bash" "${{ matrix.files }}" /tmp/nuke_source_files
+
+      - name: Create artifact tar
+        run: tar -czvf /tmp/nuke_source_files.tar.gz -C /tmp nuke_source_files
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuke_source_files_${{ env.unique_name}}
+          path: /tmp/nuke_source_files.tar.gz
+
+  build:
+    name: Build base
+
+    runs-on: macos-latest
+    needs: [changed_dockerfiles, get_nuke_sources]
+
+    strategy:
+      matrix: 
+        files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
+        arch: ["arm64", "amd64"]
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get unique name
+        id: unique_name
+        run: |
+          unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
+          echo "unique_name=${unique_name}" >> $GITHUB_ENV
+
+      - name: Set up Docker
+        run: |
+          brew install docker
+          brew install docker-buildx
+          mkdir -p ~/.docker/cli-plugins
+          ln -sfn /usr/local/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
+          colima start --cpu 3 --memory 10 --disk 10
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: nuke_source_files_${{ env.unique_name }}
+          path: /tmp/
+
+      - name: Prepare source files
+        run: |
+          tar -xzf /tmp/nuke_source_files.tar.gz -C ${{ github.workspace }}
+
+      - name: Build and export
+        run: |
+          docker buildx create --name multiplatform-builder
+          docker buildx use multiplatform-builder
+          docker buildx build --platform linux/${{ matrix.arch }} -t nukedockerbuild:latest-${{ matrix.arch }} -f ${{ matrix.files }} --build-arg NUKE_SOURCE_FILES=nuke_source_files --build-arg TOOLCHAIN=dependencies/macos/toolchain.cmake --output type=docker,dest=/tmp/nukedockerbuild_${{ matrix.arch }}.tar.gz .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker_image_${{ matrix.arch }}_${{ env.unique_name }}
+          path: /tmp/nukedockerbuild_${{ matrix.arch }}.tar.gz
+
+  test_build:
+    name: Test base
+
+    needs: [changed_dockerfiles, build]
+    runs-on: macos-latest
+
+    strategy:
+      matrix: 
+        files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
+        arch: ["arm64", "amd64"]
+      fail-fast: false
+
+    steps:
+      - name: Get unique name
+        id: unique_name
+        run: |
+          unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
+          echo "unique_name=${unique_name}" >> $GITHUB_ENV
+
+      - name: Set up Docker
+        run: |
+          brew install docker
+          mkdir /tmp/tests/
+          colima start --cpu 3 --memory 10 --disk 10 --mount /tmp/tests:/tmp/tests:w
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker_image_${{ matrix.arch }}_${{ env.unique_name }}
+          path: /tmp/
+
+      - name: Load image
+        run: |
+          docker load --input /tmp/nukedockerbuild_${{ matrix.arch }}.tar.gz
+
+      - name: Tests
+        run: |
+          docker run -v /tmp/tests:/nuke_build_directory nukedockerbuild:latest-${{ matrix.arch }} bash -c "cd /usr/local/nuke_install/tests && cmake . -B /nuke_build_directory -DCMAKE_TOOLCHAIN_FILE=/nukedockerbuild/toolchain.cmake && cmake --build /nuke_build_directory"
+          tar -czvf /tmp/test_run.tar.gz /tmp/tests
+
+      - name: Upload tests artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests_run_base_${{matrix.arch}}_${{ env.unique_name }}
+          path: /tmp/test_run.tar.gz
+
+  deploy:
+    name: Deploy
+
+    needs: [changed_dockerfiles, test_build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions: write-all
+    env:
+      PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
+
+    strategy:
+      matrix: 
+        files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
+      fail-fast: false
+
+    steps:
+      - name: Get unique name
+        id: unique_name
+        run: |
+          unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
+          echo "unique_name=${unique_name}" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker_image_amd64_${{ env.unique_name  }}
+          path: /tmp/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker_image_arm64_${{ env.unique_name  }}
+          path: /tmp/
+
+      - name: Load amd64 image
+        run: docker load --input /tmp/nukedockerbuild_amd64.tar.gz
+
+      - name: Load arm64 image
+        run: docker load --input /tmp/nukedockerbuild_arm64.tar.gz
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set tag and push
+        run: |
+          NUKE_VERSION=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.nuke_version"}}' nukedockerbuild:latest-amd64)
+          OPERATING_SYSTEM=$(docker inspect -f '{{index .Config.Labels "com.nukedockerbuild.operating_system"}}' nukedockerbuild:latest-amd64)
+          VERSION=$(docker inspect -f '{{index .Config.Labels "org.opencontainers.version"}}' nukedockerbuild:latest-amd64)
+
+          TAG=${NUKE_VERSION}-${OPERATING_SYSTEM}
+
+          docker tag nukedockerbuild:latest-amd64 ${PUSH_LOCATION}:${TAG}-${VERSION}-amd64
+          docker image push ${PUSH_LOCATION}:${TAG}-${VERSION}-amd64
+
+          docker tag nukedockerbuild:latest-arm64 ${PUSH_LOCATION}:${TAG}-${VERSION}-arm64
+          docker image push ${PUSH_LOCATION}:${TAG}-${VERSION}-arm64
+
+          docker buildx imagetools create --tag ${PUSH_LOCATION}:${TAG}-${VERSION} \
+            ${PUSH_LOCATION}:${TAG}-${VERSION}-arm64 \
+            ${PUSH_LOCATION}:${TAG}-${VERSION}-amd64
+
+          docker buildx imagetools create -t ${PUSH_LOCATION}:${TAG}-latest ${PUSH_LOCATION}:${TAG}-${VERSION}

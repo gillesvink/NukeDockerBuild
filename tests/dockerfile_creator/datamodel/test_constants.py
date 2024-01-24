@@ -14,7 +14,6 @@ from dockerfile_creator.datamodel.constants import OperatingSystem
         ("win", OperatingSystem.WINDOWS),
         ("mac", OperatingSystem.MACOS),
         ("lin", OperatingSystem.LINUX),
-
     ],
 )
 def test_operating_system_from_shortname(
@@ -24,9 +23,25 @@ def test_operating_system_from_shortname(
     assert OperatingSystem.from_shortname(test_shortname) == expected_os
 
 
+@pytest.mark.parametrize(
+    ("test_mapped_name", "expected_os"),
+    [
+        ("windows_x86", OperatingSystem.WINDOWS),
+        ("mac_x86", OperatingSystem.MACOS),
+        ("mac_arm", OperatingSystem.MACOS_ARM),
+        ("linux_x86", OperatingSystem.LINUX),
+    ],
+)
+def test_operating_system_from_mapped_name(
+    test_mapped_name: str, expected_os: OperatingSystem
+) -> None:
+    """Test to retrieve OperatingSystem from provided mapped name."""
+    assert OperatingSystem.from_mapped_name(test_mapped_name) == expected_os
+
+
 def test_operating_system_from_shortname_with_invalid_name() -> None:
     """Test to retrieve OperatingSystem from provided short name."""
-    with pytest.raises(ValueError, match="No matching enum for short name: 'winwows'."):
+    with pytest.raises(
+        ValueError, match="No matching enum for short name: 'winwows'."
+    ):
         assert OperatingSystem.from_shortname("winwows")
-
-
