@@ -15,6 +15,7 @@ ARG NUKE_SOURCE_FILES
 ARG TOOLCHAIN
 
 COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
+COPY cmake /usr/local/nuke_install/cmake
 COPY $TOOLCHAIN /nukedockerbuild/
 
 RUN apt-get update \
