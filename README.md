@@ -147,7 +147,7 @@ For Windows the [Server Core ltsc2022](https://hub.docker.com/_/microsoft-window
 ### MacOS
 The MacOS packages actually run on [Debian Bookworm](https://hub.docker.com/_/debian). It uses [OSXCross](https://github.com/tpoechtrager/osxcross) for cross compiling. Both `arm64` and `amd64` images are made, to support both Intel cpu's and M1, M2, etc.
 
-All images are built on Apple hardware and should only be used on Apple hardware.
+**All images are built on Apple hardware and should only be used on Apple hardware.**
 
 #### [Please ensure you have read and understood the Xcode license terms before continuing.](https://www.apple.com/legal/sla/docs/xcode.pdf)
 
