@@ -153,31 +153,31 @@ jobs:
           unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
           echo "unique_name=${unique_name}" >> $GITHUB_ENV
 
-      # - name: Set up Docker
-      #   run: |
-      #     brew install docker
-      #     mkdir /tmp/tests/
-      #     colima start --cpu 3 --memory 10 --disk 10 --mount /tmp/tests:/tmp/tests:w
+      - name: Set up Docker
+        run: |
+          brew install docker
+          mkdir /tmp/tests/
+          colima start --cpu 3 --memory 10 --disk 10 --mount /tmp/tests:/tmp/tests:w
 
-      # - uses: actions/download-artifact@v4
-      #   with:
-      #     name: docker_image_${{ matrix.arch }}_${{ env.unique_name }}
-      #     path: /tmp/
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker_image_${{ matrix.arch }}_${{ env.unique_name }}
+          path: /tmp/
 
-      # - name: Load image
-      #   run: |
-      #     docker load --input /tmp/nukedockerbuild_${{ matrix.arch }}.tar.gz
+      - name: Load image
+        run: |
+          docker load --input /tmp/nukedockerbuild_${{ matrix.arch }}.tar.gz
 
-      # - name: Tests
-      #   run: |
-      #     docker run -v /tmp/tests:/nuke_build_directory nukedockerbuild:latest-${{ matrix.arch }} bash -c "cd /usr/local/nuke_install/tests && cmake . -B /nuke_build_directory -DCMAKE_TOOLCHAIN_FILE=/nukedockerbuild/toolchain.cmake && cmake --build /nuke_build_directory"
-      #     tar -czvf /tmp/test_run.tar.gz /tmp/tests
+      - name: Tests
+        run: |
+          docker run -v /tmp/tests:/nuke_build_directory nukedockerbuild:latest-${{ matrix.arch }} bash -c "cd /usr/local/nuke_install/tests && cmake . -B /nuke_build_directory -DCMAKE_TOOLCHAIN_FILE=/nukedockerbuild/toolchain.cmake && cmake --build /nuke_build_directory"
+          tar -czvf /tmp/test_run.tar.gz /tmp/tests
 
-      # - name: Upload tests artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: tests_run_base_${{matrix.arch}}_${{ env.unique_name }}
-      #     path: /tmp/test_run.tar.gz
+      - name: Upload tests artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests_run_base_${{matrix.arch}}_${{ env.unique_name }}
+          path: /tmp/test_run.tar.gz
 
   deploy:
     name: Deploy
