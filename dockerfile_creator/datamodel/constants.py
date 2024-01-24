@@ -12,16 +12,45 @@ class OperatingSystem(str, Enum):
 
     WINDOWS: str = "windows"
     MACOS: str = "macos"
+    MACOS_ARM: str = "macos_arm"
     LINUX: str = "linux"
 
     @classmethod
     def from_shortname(cls, shortname: str) -> OperatingSystem:
-        """Return enum by provided shortname"""
+        """Return enum by provided shortname
+
+        Args:
+            shortname: name to get the enum from.
+
+        Raises:
+            ValueError: if no matching enum could be found.
+
+        Returns:
+            matched enum.
+        """
         for os_enum in cls:
-            if shortname.lower() in os_enum.name.lower():
+            if shortname.lower() in os_enum.value.lower():
                 return os_enum
         msg = f"No matching enum for short name: '{shortname}'."
         raise ValueError(msg)
+
+    @classmethod
+    def from_mapped_name(cls, name: str) -> OperatingSystem:
+        """Return operating system based on mapping for version parser.
+
+        Args:
+            name: name to get the enum from.
+
+        Returns:
+            matched enum.
+        """
+        if name == "mac_arm":
+            return cls.MACOS_ARM
+        if name == "mac_x86":
+            return cls.MACOS
+        if name == "windows_x86":
+            return cls.WINDOWS
+        return cls.LINUX
 
 
 class UpstreamImage(str, Enum):

@@ -103,29 +103,47 @@ class Dockerfile:
     def args(self) -> str:
         """Return all arguments necessary."""
         all_args = ["NUKE_SOURCE_FILES"]
-        if self.operating_system == OperatingSystem.MACOS:
+        if self.operating_system in (
+            OperatingSystem.MACOS,
+            OperatingSystem.MACOS_ARM,
+        ):
             all_args.append("TOOLCHAIN")
         return "\n".join(f"ARG {argument}" for argument in all_args)
 
     @property
     def copy(self) -> str:
         """Additional copy statements to include."""
-        nuke_sources = f"COPY $NUKE_SOURCE_FILES {NUKE_INSTALL_DIRECTORIES[self.operating_system]}"
-        if self.operating_system != OperatingSystem.MACOS:
+        nuke_sources = f"COPY $NUKE_SOURCE_FILES {NUKE_INSTALL_DIRECTORIES[self._is_macos() or self.operating_system]}"
+        if self.operating_system not in (
+            OperatingSystem.MACOS,
+            OperatingSystem.MACOS_ARM,
+        ):
             return nuke_sources
         return f"{nuke_sources}\nCOPY $TOOLCHAIN /nukedockerbuild/"
+
+    def _is_macos(self) -> None | OperatingSystem:
+        """Return MACOS operating system if it is macos, else None."""
+        return (
+            OperatingSystem.MACOS
+            if self.operating_system
+            in (OperatingSystem.MACOS, OperatingSystem.MACOS_ARM)
+            else None
+        )
 
     @property
     def environments(self) -> str:
         """Return all environments as a string."""
         os_environments: DockerEnvironments = OS_ENVIRONMENTS[
-            self.operating_system
+            self._is_macos() or self.operating_system
         ]
         general_environments = DockerEnvironments(
             {"NUKE_VERSION": self.nuke_version}
         )
 
-        if self.operating_system == OperatingSystem.MACOS:
+        if self.operating_system in (
+            OperatingSystem.MACOS,
+            OperatingSystem.MACOS_ARM,
+        ):
             major_nuke_version = floor(self.nuke_version)
             sdk_path = os.path.basename(MAC_SDK[major_nuke_version])
             sdk_path = sdk_path.split(".tar")[0]
@@ -135,6 +153,11 @@ class Dockerfile:
             general_environments.environments[
                 "DEPLOYMENT_TARGET"
             ] = MAC_DEPLOYMENT_TARGET[major_nuke_version]
+            general_environments.environments["ARCH_COMPILER"] = (
+                "oa64"
+                if self.operating_system == OperatingSystem.MACOS_ARM
+                else "o64"
+            )
 
         return "\n".join(
             environments.to_docker_format()
@@ -146,7 +169,10 @@ class Dockerfile:
         """Return matching upstream image."""
         if self.operating_system == OperatingSystem.WINDOWS:
             return UpstreamImage.WINDOWS_SERVERCORE_LTSC2022
-        if self.operating_system == OperatingSystem.MACOS:
+        if self.operating_system in (
+            OperatingSystem.MACOS,
+            OperatingSystem.MACOS_ARM,
+        ):
             return UpstreamImage.DEBIAN_BOOKWORM
         if self.nuke_version >= 15.0:
             return UpstreamImage.ROCKYLINUX_8
@@ -168,7 +194,10 @@ class Dockerfile:
 
     def _get_toolset(self) -> str:
         """Return the toolset needed for this Dockerfile."""
-        if self.operating_system == OperatingSystem.MACOS:
+        if self.operating_system in (
+            OperatingSystem.MACOS,
+            OperatingSystem.MACOS_ARM,
+        ):
             return MAC_SDK[floor(self.nuke_version)]
         if self.operating_system == OperatingSystem.WINDOWS:
             return VISUALSTUDIO_BUILDTOOLS[floor(self.nuke_version)]

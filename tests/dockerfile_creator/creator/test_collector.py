@@ -32,7 +32,12 @@ def dummy_data() -> dict:
     """Example data that would be fetched in the json requests."""
     return {
         "15": {
-            "15.1v5": {"installer": {"mac_x86": "mac_url"}},
+            "15.1v5": {
+                "installer": {
+                    "mac_x86": "mac_url",
+                    "mac_arm": "mac_arm_url",
+                }
+            },
             "15.0v2": {
                 "installer": {
                     "mac_x86": "mac_url",
@@ -45,6 +50,7 @@ def dummy_data() -> dict:
             "14.1v2": {
                 "installer": {
                     "mac_x86": "mac_url",
+                    "mac_arm": None,
                     "linux_x86": "linux_url",
                     "windows_x86": "windows_url",
                 },
@@ -108,6 +114,11 @@ def test__nuke_version_to_float_raise_exception() -> None:
 def test_get_dockerfiles(dummy_data: dict) -> None:
     """Test to return from the dummy data a list of Dockerfile."""
     expected_dockerfiles = [
+        Dockerfile(
+            operating_system=OperatingSystem.MACOS_ARM,
+            nuke_version=15.1,
+            nuke_source="mac_arm_url",
+        ),
         Dockerfile(
             operating_system=OperatingSystem.MACOS,
             nuke_version=15.1,
