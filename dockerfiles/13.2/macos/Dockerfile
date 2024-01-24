@@ -20,7 +20,7 @@ COPY $TOOLCHAIN /nukedockerbuild/
 RUN apt-get update \
   && apt-get install -y cmake git python3 patch libssl-dev lzma-dev libxml2-dev bzip2 cpio zlib1g-dev curl clang unzip build-essential \
   && cd /tmp/ && git clone https://github.com/tpoechtrager/osxcross \
-  && cd /tmp/osxcross/tarballs && curl -LO https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.14.sdk.tar.xz \
+  && cd /tmp/osxcross/tarballs && curl -LO https://github.com/joseluisq/macosx-sdks/releases/download/13.3/MacOSX13.3.sdk.tar.xz \
   && cd /tmp/osxcross && UNATTENDED=1 TARGET_DIR=/usr/local/osxcross ./build.sh \
   && apt-get -y remove python3 git patch libssl-dev lzma-dev libxml2-dev bzip2 cpio zlib1g-dev curl unzip build-essential \
   && apt-get -y autoremove \
