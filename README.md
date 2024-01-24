@@ -145,11 +145,13 @@ All Linux images are based on Red Hat based images. This means [Rocky Linux](htt
 For Windows the [Server Core ltsc2022](https://hub.docker.com/_/microsoft-windows-servercore) image is used. Besides that, for package installation the [Chocolatey package registry](https://community.chocolatey.org/packages) is used to install both the VS Build Tools as well as CMake.
 
 ### MacOS
-The MacOS packages actually run on [Debian Bookworm](https://hub.docker.com/_/debian). It uses [OSXCross](https://github.com/tpoechtrager/osxcross) for cross compiling. 
+The MacOS packages actually run on [Debian Bookworm](https://hub.docker.com/_/debian). It uses [OSXCross](https://github.com/tpoechtrager/osxcross) for cross compiling. Both `arm64` and `amd64` images are made, to support both Intel cpu's and M1, M2, etc.
+
+All images are built on Apple hardware and should only be used on Apple hardware.
 
 #### [Please ensure you have read and understood the Xcode license terms before continuing.](https://www.apple.com/legal/sla/docs/xcode.pdf)
 
-To set this up correctly, you also need to use the appropriate toolchain for CMake. You can get started quickly by using my template from [NukePluginTemplate](https://github.com/gillesvink/NukePluginTemplate). The toolchain can be found locally at `/nukedockerbuild/toolchain.cmake` and should be set when using CMake.
+To set this up correctly, you also need to use the appropriate toolchain for CMake. You can get started quickly by using my template from [NukePluginTemplate](https://github.com/gillesvink/NukePluginTemplate). The toolchain can be found locally at `/nukedockerbuild/toolchain.cmake` and should be set when using CMake. If you prefer to use your own CMake, make sure to setup the project using `-DCMAKE_TOOLCHAIN_FILE=$GLOBAL_TOOLCHAIN` set.
 
 
 ## ❤️ Thanks

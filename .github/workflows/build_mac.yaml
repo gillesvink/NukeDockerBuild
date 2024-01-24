@@ -236,17 +236,12 @@ jobs:
           TAG=${NUKE_VERSION}-${OPERATING_SYSTEM}
 
           docker tag nukedockerbuild:latest-amd64 ${PUSH_LOCATION}:${TAG}-${VERSION}-amd64
-          docker tag nukedockerbuild:latest-amd64 ${PUSH_LOCATION}:${TAG}-latest-amd64
           docker image push ${PUSH_LOCATION}:${TAG}-${VERSION}-amd64
-          docker image push ${PUSH_LOCATION}:${TAG}-latest-amd64
 
           docker tag nukedockerbuild:latest-arm64 ${PUSH_LOCATION}:${TAG}-${VERSION}-arm64
-          docker tag nukedockerbuild:latest-arm64 ${PUSH_LOCATION}:${TAG}-latest-arm64
           docker image push ${PUSH_LOCATION}:${TAG}-${VERSION}-arm64
-          docker image push ${PUSH_LOCATION}:${TAG}-latest-arm64
 
-          docker buildx imagetools create \                                                           
-            --tag ${PUSH_LOCATION}:${TAG}-${VERSION} \
+          docker buildx imagetools create --tag ${PUSH_LOCATION}:${TAG}-${VERSION} \                                           
             ${PUSH_LOCATION}:${TAG}-${VERSION}-arm64 \
             ${PUSH_LOCATION}:${TAG}-${VERSION}-amd64
 
