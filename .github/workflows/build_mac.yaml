@@ -120,13 +120,18 @@ jobs:
 
       - name: Prepare source files
         run: |
-          tar -xzf /tmp/nuke_source_files.tar.gz -C ${{ github.workspace }}
+          DOCKERFILE_DIRECTORY=$(dirname ${{ github.workspace }}/${{ matrix.files }})
+          echo "Directory set to $DOCKERFILE_DIRECTORY"
+          echo "dockerfile_directory=${DOCKERFILE_DIRECTORY}" >> "$GITHUB_ENV"
+          tar -xzf /tmp/nuke_source_files.tar.gz -C $DOCKERFILE_DIRECTORY
+          cp ${{ github.workspace }}/dependencies/macos/toolchain.cmake $DOCKERFILE_DIRECTORY
 
       - name: Build and export
         run: |
+          cd ${{ env.dockerfile_directory }}
           docker buildx create --name multiplatform-builder
           docker buildx use multiplatform-builder
-          docker buildx build --platform linux/${{ matrix.arch }} -t nukedockerbuild:latest-${{ matrix.arch }} -f ${{ matrix.files }} --build-arg NUKE_SOURCE_FILES=nuke_source_files --build-arg TOOLCHAIN=dependencies/macos/toolchain.cmake --output type=docker,dest=/tmp/nukedockerbuild_${{ matrix.arch }}.tar.gz .
+          docker buildx build --platform linux/${{ matrix.arch }} -t nukedockerbuild:latest-${{ matrix.arch }} --build-arg NUKE_SOURCE_FILES=nuke_source_files --build-arg TOOLCHAIN=toolchain.cmake --output type=docker,dest=/tmp/nukedockerbuild_${{ matrix.arch }}.tar.gz .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
