@@ -149,7 +149,7 @@ class TestDockerfile:
             (16.0, "MacOSX13.3.sdk", "11.0"),
             (15.0, "MacOSX13.3.sdk", "10.15"),
             (14.0, "MacOSX13.3.sdk", "10.15"),
-            (13.0, "MacOSX10.14.sdk", "10.12"),
+            (13.0, "MacOSX13.3.sdk", "10.12"),
         ],
     )
     def test_mac_environments(
