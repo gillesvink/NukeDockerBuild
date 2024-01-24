@@ -15,6 +15,7 @@ ARG NUKE_SOURCE_FILES
 ARG TOOLCHAIN
 
 COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
+COPY cmake /usr/local/nuke_install/cmake
 COPY $TOOLCHAIN /nukedockerbuild/
 
 RUN apt-get update \
@@ -33,6 +34,6 @@ ENV CMAKE_PREFIX_PATH=/usr/local/nuke_install \
   PATH=/usr/local/osxcross/bin:$PATH \
   GLOBAL_TOOLCHAIN=/nukedockerbuild/toolchain.cmake
 ENV NUKE_VERSION=13.2 \
-  MACOS_SDK=/usr/local/osxcross/SDK/MacOSX10.14.sdk \
+  MACOS_SDK=/usr/local/osxcross/SDK/MacOSX13.3.sdk \
   DEPLOYMENT_TARGET=10.12 \
   ARCH_COMPILER=o64

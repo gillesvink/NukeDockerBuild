@@ -34,6 +34,6 @@ ENV CMAKE_PREFIX_PATH=/usr/local/nuke_install \
   PATH=/usr/local/osxcross/bin:$PATH \
   GLOBAL_TOOLCHAIN=/nukedockerbuild/toolchain.cmake
 ENV NUKE_VERSION=13.0 \
-  MACOS_SDK=/usr/local/osxcross/SDK/MacOSX10.14.sdk \
+  MACOS_SDK=/usr/local/osxcross/SDK/MacOSX13.3.sdk \
   DEPLOYMENT_TARGET=10.12 \
   ARCH_COMPILER=o64
