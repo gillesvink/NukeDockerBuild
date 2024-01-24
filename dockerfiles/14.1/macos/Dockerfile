@@ -1,6 +1,6 @@
 FROM debian:bookworm
 
-LABEL 'org.opencontainers.version'=0.2
+LABEL 'org.opencontainers.version'=0.1
 LABEL 'org.opencontainers.image.created'='2024-01-22'
 LABEL 'org.opencontainers.image.authors'='gilles@vinkvfx.com'
 LABEL 'org.opencontainers.image.description'='Ready to use Docker image for building Nuke plugins.'
@@ -17,15 +17,15 @@ ARG TOOLCHAIN
 COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
 COPY $TOOLCHAIN /nukedockerbuild/
 
-RUN apt-get update \
-  && apt-get install -y cmake git python3 patch libssl-dev lzma-dev libxml2-dev bzip2 cpio zlib1g-dev curl clang unzip build-essential \
-  && cd /tmp/ && git clone https://github.com/tpoechtrager/osxcross \
-  && cd /tmp/osxcross/tarballs && curl -LO https://github.com/joseluisq/macosx-sdks/releases/download/13.3/MacOSX13.3.sdk.tar.xz \
-  && cd /tmp/osxcross && UNATTENDED=1 TARGET_DIR=/usr/local/osxcross ./build.sh \
-  && apt-get -y remove python3 git patch libssl-dev lzma-dev libxml2-dev bzip2 cpio zlib1g-dev curl unzip build-essential \
-  && apt-get -y autoremove \
-  && apt-get -y clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# RUN apt-get update \
+#   && apt-get install -y cmake git python3 patch libssl-dev lzma-dev libxml2-dev bzip2 cpio zlib1g-dev curl clang unzip build-essential \
+#   && cd /tmp/ && git clone https://github.com/tpoechtrager/osxcross \
+#   && cd /tmp/osxcross/tarballs && curl -LO https://github.com/joseluisq/macosx-sdks/releases/download/13.3/MacOSX13.3.sdk.tar.xz \
+#   && cd /tmp/osxcross && UNATTENDED=1 TARGET_DIR=/usr/local/osxcross ./build.sh \
+#   && apt-get -y remove python3 git patch libssl-dev lzma-dev libxml2-dev bzip2 cpio zlib1g-dev curl unzip build-essential \
+#   && apt-get -y autoremove \
+#   && apt-get -y clean \
+#   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR /nuke_build_directory
 
