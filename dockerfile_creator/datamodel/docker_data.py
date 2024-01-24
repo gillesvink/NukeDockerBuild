@@ -52,7 +52,7 @@ class Dockerfile:
         commands = list(
             chain(
                 IMAGE_COMMANDS.get(self.upstream_image, []),
-                OS_COMMANDS.get(self.operating_system, []),
+                OS_COMMANDS.get(self._is_macos() or self.operating_system, []),
             )
         )
         commands = list(commands)

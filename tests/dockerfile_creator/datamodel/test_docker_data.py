@@ -214,10 +214,19 @@ class TestDockerfile:
             in retrieved_labels
         )
 
-    def test_run_commands(self) -> None:
+    @pytest.mark.parametrize(
+        "os",
+        [
+            OperatingSystem.MACOS,
+            OperatingSystem.MACOS_ARM,
+            OperatingSystem.LINUX,
+            OperatingSystem.WINDOWS,
+        ],
+    )
+    def test_run_commands(self, os: OperatingSystem) -> None:
         """Test to collect all commands and format them."""
         test_dockerfile = Dockerfile(
-            operating_system=OperatingSystem.LINUX,
+            operating_system=os,
             nuke_version=15.0,
             nuke_source="https://gillesvink.com/test_file.tgz",
         )
@@ -237,7 +246,7 @@ class TestDockerfile:
             test_dockerfile.run_commands
 
         os_commands_mock.get.assert_called_once_with(
-            test_dockerfile.operating_system, []
+            test_dockerfile._is_macos() or test_dockerfile.operating_system, []
         )
         image_commands_mock.get.assert_called_once_with(
             test_dockerfile.upstream_image, []
