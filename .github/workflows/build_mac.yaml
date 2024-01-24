@@ -106,8 +106,9 @@ jobs:
           brew install docker
           brew install docker-buildx
           mkdir -p ~/.docker/cli-plugins
+          mkdir /tmp/build
           ln -sfn /usr/local/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
-          colima start --cpu 3 --memory 10 --disk 10 --mount /tmp:/tmp:w
+          colima start --cpu 3 --memory 10 --disk 10 --mount /tmp/build:/tmp/build:w
 
       - uses: actions/download-artifact@v4
         with:
@@ -122,13 +123,13 @@ jobs:
         run: |
           docker buildx create --name multiplatform-builder
           docker buildx use multiplatform-builder
-          docker buildx build --platform linux/${{ matrix.arch }} -t nukedockerbuild:latest-${{ matrix.arch }} -f ${{ matrix.files }} --build-arg NUKE_SOURCE_FILES=nuke_source_files --build-arg TOOLCHAIN=dependencies/macos/toolchain.cmake --output type=docker,dest=/tmp/nukedockerbuild_${{ matrix.arch }}.tar .
+          docker buildx build --platform linux/${{ matrix.arch }} -t nukedockerbuild:latest-${{ matrix.arch }} -f ${{ matrix.files }} --build-arg NUKE_SOURCE_FILES=nuke_source_files --build-arg TOOLCHAIN=dependencies/macos/toolchain.cmake --output type=docker,dest=/tmp/build/nukedockerbuild_${{ matrix.arch }}.tar .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: docker_image_${{ matrix.arch }}_${{ env.unique_name }}
-          path: /tmp/nukedockerbuild_${{ matrix.arch }}.tar.gz
+          path: /tmp/build/nukedockerbuild_${{ matrix.arch }}.tar.gz
 
   test_build:
     name: Test base
