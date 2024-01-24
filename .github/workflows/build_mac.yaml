@@ -184,7 +184,7 @@ jobs:
 
     needs: [changed_dockerfiles, test_build]
     runs-on: ubuntu-latest
-    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     permissions: write-all
     env:
       PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
