@@ -12,7 +12,7 @@ class OperatingSystem(str, Enum):
 
     WINDOWS: str = "windows"
     MACOS: str = "macos"
-    MACOS_ARM: str = "macos_arm"
+    MACOS_ARM: str = "macos-arm"
     LINUX: str = "linux"
 
     @classmethod
