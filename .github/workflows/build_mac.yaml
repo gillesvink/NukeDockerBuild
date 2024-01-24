@@ -153,16 +153,16 @@ jobs:
           unique_name=$(echo "${{ matrix.files }}" | sed 's/\//_/g')
           echo "unique_name=${unique_name}" >> $GITHUB_ENV
 
-      - name: Set up Docker
-        run: |
-          brew install docker
-          mkdir /tmp/tests/
-          colima start --cpu 3 --memory 10 --disk 10 --mount /tmp/tests:/tmp/tests:w
+      # - name: Set up Docker
+      #   run: |
+      #     brew install docker
+      #     mkdir /tmp/tests/
+      #     colima start --cpu 3 --memory 10 --disk 10 --mount /tmp/tests:/tmp/tests:w
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: docker_image_${{ matrix.arch }}_${{ env.unique_name }}
-          path: /tmp/
+      # - uses: actions/download-artifact@v4
+      #   with:
+      #     name: docker_image_${{ matrix.arch }}_${{ env.unique_name }}
+      #     path: /tmp/
 
       # - name: Load image
       #   run: |
@@ -241,7 +241,7 @@ jobs:
           docker tag nukedockerbuild:latest-arm64 ${PUSH_LOCATION}:${TAG}-${VERSION}-arm64
           docker image push ${PUSH_LOCATION}:${TAG}-${VERSION}-arm64
 
-          docker buildx imagetools create --tag ${PUSH_LOCATION}:${TAG}-${VERSION} \                                           
+          docker buildx imagetools create --tag ${PUSH_LOCATION}:${TAG}-${VERSION} \
             ${PUSH_LOCATION}:${TAG}-${VERSION}-arm64 \
             ${PUSH_LOCATION}:${TAG}-${VERSION}-amd64
 
