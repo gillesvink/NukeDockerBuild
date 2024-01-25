@@ -111,7 +111,7 @@ jobs:
           brew install docker-buildx
           mkdir -p ~/.docker/cli-plugins
           ln -sfn /usr/local/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
-          colima start --cpu 3 --memory 10 --disk 10
+          colima start --cpu 2 --memory 10 --disk 10
 
       - uses: actions/download-artifact@v4
         with:
