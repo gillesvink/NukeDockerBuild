@@ -3,7 +3,6 @@
 @maintainer: Gilles Vink
 """
 import contextlib
-import json
 import os
 from unittest.mock import MagicMock, patch
 
@@ -157,6 +156,27 @@ class TestRetrieveTags:
             ),
             (
                 {
+                    "name": "not important",
+                    "tags": [
+                        "13.0-macos-latest",
+                        "13.0-macos-1.0",
+                        "13.0-macos-1.0-arm64",
+                        "13.0-macos-1.0-amd64",
+                        "15.0-macos-arm-latest",
+                        "15.0-macos-arm-1.0",
+                        "15.0-macos-arm-1.0-arm64",
+                        "15.0-macos-arm-1.0-amd64",
+                    ],
+                },
+                {
+                    "13.0-macos-latest",
+                    "13.0-macos-1.0",
+                    "15.0-macos-arm-latest",
+                    "15.0-macos-arm-1.0",
+                },
+            ),
+            (
+                {
                     "name": "it really is not important",
                     "tags": [
                         "13.0-windows-latest",
@@ -219,6 +239,7 @@ class TestRetrieveDockerImageData:
                         "size": 1388598786,
                     },
                 ],
+                "config": "yes",
                 "labels": {
                     "hey": "hello",
                     "how are you": "good",
@@ -238,3 +259,22 @@ class TestRetrieveDockerImageData:
             retrieved_data = retrieve_manifest("some_tag")
 
         assert retrieved_data == test_data
+
+    @pytest.mark.parametrize(
+        "test_data",
+        [{"manifests": [{"digest": "yes I am a digest!"}]}],
+    )
+    def test_retrieval_of_multiarch_manifest(self, test_data: str) -> None:
+        """Test call to be made to a sub-manifest."""
+        response_mock = MagicMock(spec=requests.Response)
+        response_mock.json.return_value = test_data
+
+        with patch(
+            "table_retriever.worker.retriever._get_requested_data",
+            return_value=response_mock,
+        ) as get_requested_data_mock:
+            retrieve_manifest("some_tag")
+
+        get_requested_data_mock.assert_called_with(
+            url=f"{GithubData.GHCR_API.value}/manifests/yes I am a digest!"
+        )

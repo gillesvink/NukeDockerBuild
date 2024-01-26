@@ -66,6 +66,11 @@ def test_write_dockerfiles(tmp_path) -> None:
             Path("dockerfiles/14.1/macos/Dockerfile"),
         ),
         (
+            OperatingSystem.MACOS_ARM,
+            15.0,
+            Path("dockerfiles/15.0/macos-arm/Dockerfile"),
+        ),
+        (
             OperatingSystem.WINDOWS,
             13.2,
             Path("dockerfiles/13.2/windows/Dockerfile"),
@@ -81,5 +86,4 @@ def test__get_dockerfile_path(
     dockerfile_mock = MagicMock(spec=Dockerfile)
     dockerfile_mock.operating_system = test_operating_system
     dockerfile_mock.nuke_version = test_nuke_version
-
     assert _get_dockerfile_path(dockerfile_mock) == expected_path

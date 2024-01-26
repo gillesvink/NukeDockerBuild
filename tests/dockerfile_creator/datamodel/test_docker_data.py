@@ -13,7 +13,6 @@ from dockerfile_creator.datamodel.commands import (
     DockerCommand,
     DockerEnvironments,
 )
-from dockerfile_creator.datamodel.constants import NUKE_INSTALL_DIRECTORIES
 from dockerfile_creator.datamodel.docker_data import (
     Dockerfile,
     OperatingSystem,
@@ -45,6 +44,8 @@ class TestDockerfile:
         ),
         [
             (OperatingSystem.LINUX, 15.0, UpstreamImage.ROCKYLINUX_8),
+            (OperatingSystem.MACOS, 15.0, UpstreamImage.DEBIAN_BOOKWORM),
+            (OperatingSystem.MACOS_ARM, 15.0, UpstreamImage.DEBIAN_BOOKWORM),
             (OperatingSystem.LINUX, 14.0, UpstreamImage.CENTOS_7_9),
             (OperatingSystem.LINUX, 13.2, UpstreamImage.CENTOS_7_4),
             (OperatingSystem.LINUX, 13.0, UpstreamImage.CENTOS_7_4),
@@ -103,6 +104,8 @@ class TestDockerfile:
         ("test_operating_system", "expected_work_dir"),
         [
             (OperatingSystem.LINUX, "WORKDIR /nuke_build_directory"),
+            (OperatingSystem.MACOS, "WORKDIR /nuke_build_directory"),
+            (OperatingSystem.MACOS_ARM, "WORKDIR /nuke_build_directory"),
             (OperatingSystem.WINDOWS, "WORKDIR C:\\\\nuke_build_directory"),
         ],
     )
@@ -134,6 +137,45 @@ class TestDockerfile:
         )
         assert (
             f"NUKE_VERSION={dummy_dockerfile.nuke_version}"
+            in collected_environments
+        )
+
+    @pytest.mark.parametrize(
+        ("mac_os"), [OperatingSystem.MACOS, OperatingSystem.MACOS_ARM]
+    )
+    @pytest.mark.parametrize(
+        ("test_nuke_version", "expected_sdk", "expected_deployment_target"),
+        [
+            (16.0, "MacOSX13.3.sdk", "11.0"),
+            (15.0, "MacOSX13.3.sdk", "10.15"),
+            (14.0, "MacOSX13.3.sdk", "10.15"),
+            (13.0, "MacOSX13.3.sdk", "10.12"),
+        ],
+    )
+    def test_mac_environments(
+        self,
+        dummy_dockerfile: Dockerfile,
+        mac_os: OperatingSystem,
+        test_nuke_version: float,
+        expected_sdk: str,
+        expected_deployment_target: float,
+    ) -> None:
+        """Test to return the required environments."""
+        dummy_dockerfile.operating_system = mac_os
+        dummy_dockerfile.nuke_version = test_nuke_version
+        collected_environments = dummy_dockerfile.environments
+
+        if mac_os == OperatingSystem.MACOS:
+            assert "ARCH_COMPILER=o64" in collected_environments
+        else:
+            assert "ARCH_COMPILER=oa64" in collected_environments
+
+        assert (
+            f"MACOS_SDK=/usr/local/osxcross/SDK/{expected_sdk}"
+            in collected_environments
+        )
+        assert (
+            f"DEPLOYMENT_TARGET={expected_deployment_target}"
             in collected_environments
         )
 
@@ -172,10 +214,19 @@ class TestDockerfile:
             in retrieved_labels
         )
 
-    def test_run_commands(self) -> None:
+    @pytest.mark.parametrize(
+        "os",
+        [
+            OperatingSystem.MACOS,
+            OperatingSystem.MACOS_ARM,
+            OperatingSystem.LINUX,
+            OperatingSystem.WINDOWS,
+        ],
+    )
+    def test_run_commands(self, os: OperatingSystem) -> None:
         """Test to collect all commands and format them."""
         test_dockerfile = Dockerfile(
-            operating_system=OperatingSystem.LINUX,
+            operating_system=os,
             nuke_version=15.0,
             nuke_source="https://gillesvink.com/test_file.tgz",
         )
@@ -195,7 +246,7 @@ class TestDockerfile:
             test_dockerfile.run_commands
 
         os_commands_mock.get.assert_called_once_with(
-            test_dockerfile.operating_system, []
+            test_dockerfile._is_macos() or test_dockerfile.operating_system, []
         )
         image_commands_mock.get.assert_called_once_with(
             test_dockerfile.upstream_image, []
@@ -246,10 +297,76 @@ class TestDockerfile:
         assert bool(test_commands) == command_still_in_list
 
     @pytest.mark.parametrize(
+        ("test_operating_system", "expected_result"),
+        [
+            (
+                OperatingSystem.LINUX,
+                "ARG NUKE_SOURCE_FILES",
+            ),
+            (
+                OperatingSystem.WINDOWS,
+                "ARG NUKE_SOURCE_FILES",
+            ),
+            (
+                OperatingSystem.MACOS,
+                "ARG NUKE_SOURCE_FILES\nARG TOOLCHAIN",
+            ),
+            (
+                OperatingSystem.MACOS_ARM,
+                "ARG NUKE_SOURCE_FILES\nARG TOOLCHAIN",
+            ),
+        ],
+    )
+    def test_args(
+        self,
+        dummy_dockerfile: Dockerfile,
+        test_operating_system: OperatingSystem,
+        expected_result: str,
+    ) -> None:
+        """Test args return source files and possibly toolchain."""
+        dummy_dockerfile.operating_system = test_operating_system
+
+        assert dummy_dockerfile.args == expected_result
+
+    @pytest.mark.parametrize(
+        ("test_operating_system", "expected_result"),
+        [
+            (
+                OperatingSystem.LINUX,
+                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install",
+            ),
+            (
+                OperatingSystem.WINDOWS,
+                "COPY $NUKE_SOURCE_FILES C:\\\\nuke_install",
+            ),
+            (
+                OperatingSystem.MACOS,
+                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install\nCOPY $TOOLCHAIN /nukedockerbuild/",
+            ),
+            (
+                OperatingSystem.MACOS_ARM,
+                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install\nCOPY $TOOLCHAIN /nukedockerbuild/",
+            ),
+        ],
+    )
+    def test_copy(
+        self,
+        dummy_dockerfile: Dockerfile,
+        test_operating_system: OperatingSystem,
+        expected_result: str,
+    ) -> None:
+        """Test copy to only return expected copy statements."""
+        dummy_dockerfile.operating_system = test_operating_system
+
+        assert dummy_dockerfile.copy == expected_result
+
+    @pytest.mark.parametrize(
         ("test_operating_system", "test_nuke_version"),
         [
             (OperatingSystem.LINUX, 15.0),
             (OperatingSystem.LINUX, 13.0),
+            (OperatingSystem.MACOS, 13.0),
+            (OperatingSystem.MACOS_ARM, 15.0),
             (OperatingSystem.WINDOWS, 13.0),
         ],
     )
@@ -267,9 +384,8 @@ class TestDockerfile:
             f"FROM {dummy_dockerfile.upstream_image.value}\n"
             "\n"
             f"{dummy_dockerfile.labels}\n\n"
-            "ARG NUKE_SOURCE_FILES\n"
-            "COPY $NUKE_SOURCE_FILES "
-            f"{NUKE_INSTALL_DIRECTORIES[dummy_dockerfile.operating_system]}\n\n"
+            f"{dummy_dockerfile.args}\n\n"
+            f"{dummy_dockerfile.copy}\n\n"
             f"{dummy_dockerfile.run_commands}\n\n"
             f"{dummy_dockerfile.work_dir}\n\n"
             f"{dummy_dockerfile.environments}"

@@ -70,13 +70,13 @@ def get_dockerfiles(data: dict) -> list[Dockerfile]:
         if version_number < 13:
             continue
 
-        for os in ["linux", "windows"]:
-            install_url = installer_data.get(f"{os}_x86")
+        for os in ["mac_arm", "mac_x86", "linux_x86", "windows_x86"]:
+            install_url = installer_data.get(os)
             if not install_url:
                 continue
             dockerfiles.append(
                 Dockerfile(
-                    operating_system=OperatingSystem.from_shortname(os),
+                    operating_system=OperatingSystem.from_mapped_name(os),
                     nuke_version=version_number,
                     nuke_source=install_url,
                 )

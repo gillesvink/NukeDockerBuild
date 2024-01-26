@@ -118,10 +118,25 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 "choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y",
                 "choco install visualstudio{toolset}buildtools -y",
                 "choco install visualstudio{toolset}-workload-vctools --package-parameters '--includeRecommended' -y",
-                'powershell -Command "Remove-Item -Path \\\"$env:TEMP\\*\\\" -Force -Recurse"',
-                'powershell -Command "Remove-Item -Path \'C:\\ProgramData\\Package Cache\\*\' -Force -Recurse"'
+                'powershell -Command "Remove-Item -Path \\"$env:TEMP\\*\\" -Force -Recurse"',
+                "powershell -Command \"Remove-Item -Path 'C:\\ProgramData\\Package Cache\\*' -Force -Recurse\"",
             ],
             minimum_version=13.0,
+        ),
+    ],
+    OperatingSystem.MACOS: [
+        DockerCommand(
+            [
+                "apt-get update",
+                "apt-get install -y cmake git python3 patch libssl-dev lzma-dev libxml2-dev bzip2 cpio zlib1g-dev curl clang unzip build-essential",
+                "cd /tmp/ && git clone https://github.com/tpoechtrager/osxcross",
+                "cd /tmp/osxcross/tarballs && curl -LO {toolset}",
+                "cd /tmp/osxcross && UNATTENDED=1 TARGET_DIR=/usr/local/osxcross ./build.sh",
+                "apt-get -y remove python3 git patch libssl-dev lzma-dev libxml2-dev bzip2 cpio zlib1g-dev curl unzip build-essential",
+                "apt-get -y autoremove",
+                "apt-get -y clean",
+                "rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*",
+            ]
         ),
     ],
 }
@@ -143,6 +158,15 @@ OS_ENVIRONMENTS: dict[OperatingSystem, DockerEnvironments] = {
             "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORIES[
                 OperatingSystem.WINDOWS
             ],
+        }
+    ),
+    OperatingSystem.MACOS: DockerEnvironments(
+        {
+            "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORIES[
+                OperatingSystem.LINUX
+            ],
+            "PATH": "/usr/local/osxcross/bin:$PATH",
+            "GLOBAL_TOOLCHAIN": "/nukedockerbuild/toolchain.cmake",
         }
     ),
 }
