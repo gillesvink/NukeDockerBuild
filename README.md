@@ -18,7 +18,7 @@ docker pull ghcr.io/gillesvink/nukedockerbuild:TAG
 
 Where as tag will be the one you want to use. The table below will be updated automatically to show the available tags.
 
-**Note**: a latest tag for each Nuke version is provided. Which will be in this format: `{nuke_version}-{os}-latest`. For example `15.0-linux-latest`. Or Linux and Mac also have slim packages available (massively reduced image size): `15.0-linux-slim-latest`.
+**Note**: a latest tag for each Nuke version is provided. Which will be in this format: `{nuke_version}-{os}-latest`. For example `15.0-linux-latest`. Or Linux also have slim packages available (massively reduced image size): `15.0-linux-slim-latest`.
 
 You can also use the locked tag, which will be `15.0-linux-1.0` for example.
 
