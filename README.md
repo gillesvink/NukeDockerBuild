@@ -80,7 +80,12 @@ depending on your local internet connection.
 
 #### Linux:
 ```bash
-docker run --rm ghcr.io/gillesvink/nukedockerbuild:15.0-linux-slim-latest bash -c "cd /usr/local/nuke_install/tests && cmake . -B build && cmake --build build
+docker run --rm ghcr.io/gillesvink/nukedockerbuild:15.0-linux-slim-latest bash -c "cd /usr/local/nuke_install/tests && cmake . -B build && cmake --build build"
+```
+
+#### MacOS
+```bash
+docker run --rm ghcr.io/gillesvink/nukedockerbuild:15.0-macos-latest bash -c "cd /usr/local/nuke_install/tests && cmake . -B build -DCMAKE_TOOLCHAIN_FILE=/nukedockerbuild/toolchain.cmake && cmake --build build"
 ```
 
 #### Windows:
@@ -92,14 +97,6 @@ docker run --rm `
     cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; `
     cmake --build build --config Release"
 ```
-##### CMD (Command Prompt)
-```bash
-docker run --rm ^
-    ghcr.io/gillesvink/nukedockerbuild:15.0-windows-latest ^
-    powershell -Command "cd C:\nuke_install\tests ; ^
-    cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; ^
-    cmake --build build --config Release"
-```
 
 ### Building the current directory (that contains a CMakeLists file)
 Note that you can change it to whatever Nuke version is available. In this example Nuke 15 is used.
@@ -109,6 +106,13 @@ docker run --rm -v "$(pwd):/nuke_build_directory \
     ghcr.io/gillesvink/nukedockerbuild:15.0-linux-slim-latest bash -c \
     "cmake . -B build && cmake --build build
 ```
+
+#### MacOS:
+```bash
+docker run --rm -v "$(pwd):/nuke_build_directory \
+    ghcr.io/gillesvink/nukedockerbuild:15.0-linux-slim-latest bash -c \
+    "cmake . -B build -DCMAKE_TOOLCHAIN_FILE=/nukedockerbuild/toolchain.cmake && cmake --build build
+```
 #### Windows:
 On Windows it is important that `--isolution=process` is set as it is mounting the directory, else there will be issues with cleaning files in the mounted directory. Also for CMake building it requires the config to be specified for release using `--config Release`.
 ##### Powershell
@@ -117,14 +121,6 @@ docker run --rm --isolation=process `
     -v ${PWD}:C:\nuke_build_directory `
     ghcr.io/gillesvink/nukedockerbuild:15.0-windows-latest powershell -Command `
     "cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; `
-    cmake --build build --config Release"
-```
-##### CMD (Command Prompt)
-```bash
-docker run --rm --isolation=process ^
-    -v %CD%:C:\nuke_build_directory ^
-    ghcr.io/gillesvink/nukedockerbuild:15.0-windows-latest powershell -Command ^
-    "cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; ^
     cmake --build build --config Release"
 ```
 
