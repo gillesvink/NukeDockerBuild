@@ -18,7 +18,7 @@ docker pull ghcr.io/gillesvink/nukedockerbuild:TAG
 
 Where as tag will be the one you want to use. The table below will be updated automatically to show the available tags.
 
-**Note**: a latest tag for each Nuke version is provided. Which will be in this format: `{nuke_version}-{os}-latest`. For example `15.0-linux-latest`. Or Linux and Mac also have slim packages available (massively reduced image size): `15.0-linux-slim-latest`.
+**Note**: a latest tag for each Nuke version is provided. Which will be in this format: `{nuke_version}-{os}-latest`. For example `15.0-linux-latest`. Or Linux also have slim packages available (massively reduced image size): `15.0-linux-slim-latest`.
 
 You can also use the locked tag, which will be `15.0-linux-1.0` for example.
 
@@ -27,21 +27,28 @@ You can also use the locked tag, which will be `15.0-linux-1.0` for example.
 |:-------------------------|:----------------------|:----------------------------------------------|:-------------|------------------:|
 | `15.0-linux-latest`      | `15.0-linux-1.0`      | rockylinux:8                                  | 2024-01-15   |             0.347 |
 | `15.0-linux-slim-latest` | `15.0-linux-slim-1.0` | rockylinux:8                                  | 2024-01-15   |             0.198 |
+| `15.0-macos-arm-latest`  | `15.0-macos-arm-1.0`  | debian:bookworm                               | 2024-01-25   |             0.42  |
+| `15.0-macos-latest`      | `15.0-macos-1.0`      | debian:bookworm                               | 2024-01-25   |             0.421 |
 | `15.0-windows-latest`    | `15.0-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-15   |             5.491 |
 | `14.1-linux-latest`      | `14.1-linux-1.0`      | centos:centos7.9.2009                         | 2024-01-15   |             0.379 |
 | `14.1-linux-slim-latest` | `14.1-linux-slim-1.0` | centos:centos7.9.2009                         | 2024-01-15   |             0.172 |
+| `14.1-macos-latest`      | `14.1-macos-1.0`      | debian:bookworm                               | 2024-01-25   |             0.421 |
 | `14.1-windows-latest`    | `14.1-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-15   |             4.561 |
 | `14.0-linux-latest`      | `14.0-linux-1.0`      | centos:centos7.9.2009                         | 2024-01-15   |             0.379 |
 | `14.0-linux-slim-latest` | `14.0-linux-slim-1.0` | centos:centos7.9.2009                         | 2024-01-15   |             0.171 |
+| `14.0-macos-latest`      | `14.0-macos-1.0`      | debian:bookworm                               | 2024-01-25   |             0.42  |
 | `14.0-windows-latest`    | `14.0-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-15   |             4.556 |
 | `13.2-linux-latest`      | `13.2-linux-1.0`      | centos:centos7.4.1708                         | 2024-01-15   |             0.338 |
 | `13.2-linux-slim-latest` | `13.2-linux-slim-1.0` | centos:centos7.4.1708                         | 2024-01-15   |             0.145 |
+| `13.2-macos-latest`      | `13.2-macos-1.0`      | debian:bookworm                               | 2024-01-25   |             0.418 |
 | `13.2-windows-latest`    | `13.2-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-15   |             3.277 |
 | `13.1-linux-latest`      | `13.1-linux-1.0`      | centos:centos7.4.1708                         | 2024-01-15   |             0.338 |
 | `13.1-linux-slim-latest` | `13.1-linux-slim-1.0` | centos:centos7.4.1708                         | 2024-01-15   |             0.145 |
+| `13.1-macos-latest`      | `13.1-macos-1.0`      | debian:bookworm                               | 2024-01-25   |             0.418 |
 | `13.1-windows-latest`    | `13.1-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-15   |             3.276 |
 | `13.0-linux-latest`      | `13.0-linux-1.0`      | centos:centos7.4.1708                         | 2024-01-14   |             0.398 |
 | `13.0-linux-slim-latest` | `13.0-linux-slim-1.0` | centos:centos7.4.1708                         | 2024-01-14   |             0.146 |
+| `13.0-macos-latest`      | `13.0-macos-1.0`      | debian:bookworm                               | 2024-01-25   |             0.418 |
 | `13.0-windows-latest`    | `13.0-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-14   |             3.276 |
 <!-- TABLE_END -->
 
@@ -73,7 +80,12 @@ depending on your local internet connection.
 
 #### Linux:
 ```bash
-docker run --rm ghcr.io/gillesvink/nukedockerbuild:15.0-linux-slim-latest bash -c "cd /usr/local/nuke_install/tests && cmake . -B build && cmake --build build
+docker run --rm ghcr.io/gillesvink/nukedockerbuild:15.0-linux-slim-latest bash -c "cd /usr/local/nuke_install/tests && cmake . -B build && cmake --build build"
+```
+
+#### MacOS
+```bash
+docker run --rm ghcr.io/gillesvink/nukedockerbuild:15.0-macos-latest bash -c "cd /usr/local/nuke_install/tests && cmake . -B build -DCMAKE_TOOLCHAIN_FILE=/nukedockerbuild/toolchain.cmake && cmake --build build"
 ```
 
 #### Windows:
@@ -85,14 +97,6 @@ docker run --rm `
     cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; `
     cmake --build build --config Release"
 ```
-##### CMD (Command Prompt)
-```bash
-docker run --rm ^
-    ghcr.io/gillesvink/nukedockerbuild:15.0-windows-latest ^
-    powershell -Command "cd C:\nuke_install\tests ; ^
-    cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; ^
-    cmake --build build --config Release"
-```
 
 ### Building the current directory (that contains a CMakeLists file)
 Note that you can change it to whatever Nuke version is available. In this example Nuke 15 is used.
@@ -101,6 +105,13 @@ Note that you can change it to whatever Nuke version is available. In this examp
 docker run --rm -v "$(pwd):/nuke_build_directory \
     ghcr.io/gillesvink/nukedockerbuild:15.0-linux-slim-latest bash -c \
     "cmake . -B build && cmake --build build
+```
+
+#### MacOS:
+```bash
+docker run --rm -v "$(pwd):/nuke_build_directory \
+    ghcr.io/gillesvink/nukedockerbuild:15.0-linux-slim-latest bash -c \
+    "cmake . -B build -DCMAKE_TOOLCHAIN_FILE=/nukedockerbuild/toolchain.cmake && cmake --build build
 ```
 #### Windows:
 On Windows it is important that `--isolution=process` is set as it is mounting the directory, else there will be issues with cleaning files in the mounted directory. Also for CMake building it requires the config to be specified for release using `--config Release`.
@@ -112,19 +123,13 @@ docker run --rm --isolation=process `
     "cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; `
     cmake --build build --config Release"
 ```
-##### CMD (Command Prompt)
-```bash
-docker run --rm --isolation=process ^
-    -v %CD%:C:\nuke_build_directory ^
-    ghcr.io/gillesvink/nukedockerbuild:15.0-windows-latest powershell -Command ^
-    "cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; ^
-    cmake --build build --config Release"
-```
 
 ## 📦 Image size
-This depends on the image you choose to use. Windows itself has quite large images, because it is relying on the server core image. Besides that the build tools are also quite big. As a result of that the Windows images are around 9gb.
+This depends on the image you choose to use. Windows itself has quite large images, because it is relying on the server core image. Besides that the build tools are also quite large. 
 
-Linux however can be optimized a lot more. The base system is around 400 MB compressed and 1.2 GB uncompressed. However here are also slim images available. These are around only 150 MB compressed, 400 MB uncompressed (while only a Nuke install would already be around 10gb). Note that these slim images only provide functionality to compile plugins. The rest of the system is basically gone. If you plan to extend these images please choose the usual image, and not the slim version.
+MacOS images are around 450mb compressed and 2gb uncompressed.
+
+Linux however can be optimized a lot more. The base system is around 400 MB compressed and 1.2 GB uncompressed. However here are also slim images available. These are around only 150 MB compressed, 400 MB uncompressed. Note that these slim images only provide functionality to compile plugins. The rest of the system is basically gone. If you plan to extend these images please choose the usual image, and not the slim version.
 
 ### Slim
 These images only include everything that is absolutely necessary for compiling purposes, the rest is erased. If [SlimToolkit](https://slimtoolkit.org/) will support Windows eventually, Slim images are then planned to be available as well for Windows.
