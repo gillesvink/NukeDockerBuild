@@ -92,7 +92,7 @@ VISUALSTUDIO_BUILDTOOLS = {
 
 MAC_DEPLOYMENT_TARGET = {
     16: 11.0,
-    15: 10.15,
+    15: 11.0,
     14: 10.15,
     13: 10.12,
 }

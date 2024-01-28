@@ -147,7 +147,7 @@ class TestDockerfile:
         ("test_nuke_version", "expected_sdk", "expected_deployment_target"),
         [
             (16.0, "MacOSX13.3.sdk", "11.0"),
-            (15.0, "MacOSX13.3.sdk", "10.15"),
+            (15.0, "MacOSX13.3.sdk", "11.0"),
             (14.0, "MacOSX13.3.sdk", "10.15"),
             (13.0, "MacOSX13.3.sdk", "10.12"),
         ],

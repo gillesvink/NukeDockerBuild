@@ -1,7 +1,7 @@
 FROM debian:bookworm
 
-LABEL 'org.opencontainers.version'=1.0
-LABEL 'org.opencontainers.image.created'='2024-01-25'
+LABEL 'org.opencontainers.version'=1.1
+LABEL 'org.opencontainers.image.created'='2024-01-28'
 LABEL 'org.opencontainers.image.authors'='gilles@vinkvfx.com'
 LABEL 'org.opencontainers.image.description'='Ready to use Docker image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
@@ -34,5 +34,5 @@ ENV CMAKE_PREFIX_PATH=/usr/local/nuke_install \
   GLOBAL_TOOLCHAIN=/nukedockerbuild/toolchain.cmake
 ENV NUKE_VERSION=15.0 \
   MACOS_SDK=/usr/local/osxcross/SDK/MacOSX13.3.sdk \
-  DEPLOYMENT_TARGET=10.15 \
+  DEPLOYMENT_TARGET=11.0 \
   ARCH_COMPILER=oa64
