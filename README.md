@@ -1,6 +1,5 @@
 [![Tests](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/create_dockerfiles.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/create_dockerfiles.yaml) [![Linux builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_linux.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_linux.yaml) [![MacOS builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_mac.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_macyaml) [![Windows builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_windows.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_windows.yaml) 
 
-![NukeDockerBuild](./resources/header.jpg)
 > Ready to use Docker images to build Nuke plugins for all operating systems (Mac, Linux, Windows).
 
 --- 
