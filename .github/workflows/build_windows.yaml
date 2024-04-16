@@ -87,7 +87,7 @@ jobs:
 
   build:
     name: Build, test and push image
-    runs-on: windows-latest
+    runs-on: windows-2019
     needs: [changed_dockerfiles, get_nuke_sources]
     permissions: write-all
     env:
