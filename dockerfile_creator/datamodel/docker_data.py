@@ -168,7 +168,7 @@ class Dockerfile:
     def upstream_image(self) -> UpstreamImage:
         """Return matching upstream image."""
         if self.operating_system == OperatingSystem.WINDOWS:
-            return UpstreamImage.WINDOWS_SERVERCORE_LTSC2022
+            return UpstreamImage.WINDOWS_SERVERCORE_LTSC2019
         if self.operating_system in (
             OperatingSystem.MACOS,
             OperatingSystem.MACOS_ARM,

@@ -53,12 +53,12 @@ class TestDockerfile:
             (
                 OperatingSystem.WINDOWS,
                 15.0,
-                UpstreamImage.WINDOWS_SERVERCORE_LTSC2022,
+                UpstreamImage.WINDOWS_SERVERCORE_LTSC2019,
             ),
             (
                 OperatingSystem.WINDOWS,
                 12.0,
-                UpstreamImage.WINDOWS_SERVERCORE_LTSC2022,
+                UpstreamImage.WINDOWS_SERVERCORE_LTSC2019,
             ),
         ],
     )
