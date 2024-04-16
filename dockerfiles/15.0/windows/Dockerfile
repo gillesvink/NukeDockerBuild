@@ -1,12 +1,12 @@
-FROM mcr.microsoft.com/windows/servercore:ltsc2022
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
-LABEL 'org.opencontainers.version'=1.0
-LABEL 'org.opencontainers.image.created'='2024-01-15'
+LABEL 'org.opencontainers.version'=1.1
+LABEL 'org.opencontainers.image.created'='2024-04-16'
 LABEL 'org.opencontainers.image.authors'='gilles@vinkvfx.com'
 LABEL 'org.opencontainers.image.description'='Ready to use Docker image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
 LABEL 'org.opencontainers.url'='https://github.com/gillesvink/NukeDockerBuild'
-LABEL 'com.nukedockerbuild.based_on'='mcr.microsoft.com/windows/servercore:ltsc2022'
+LABEL 'com.nukedockerbuild.based_on'='mcr.microsoft.com/windows/servercore:ltsc2019'
 LABEL 'com.nukedockerbuild.operating_system'='windows'
 LABEL 'com.nukedockerbuild.nuke_version'=15.0
 LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/15.0v2/Nuke15.0v2-win-x86_64.zip'
