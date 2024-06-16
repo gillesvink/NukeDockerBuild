@@ -1,6 +1,5 @@
 [![Tests](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/create_dockerfiles.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/create_dockerfiles.yaml) [![Linux builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_linux.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_linux.yaml) [![MacOS builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_mac.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_macyaml) [![Windows builds](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_windows.yaml/badge.svg)](https://github.com/gillesvink/NukeDockerBuild/actions/workflows/build_windows.yaml) 
 
-![NukeDockerBuild](./resources/header.jpg)
 > Ready to use Docker images to build Nuke plugins for all operating systems (Mac, Linux, Windows).
 
 --- 
@@ -27,8 +26,8 @@ You can also use the locked tag, which will be `15.0-linux-1.0` for example.
 |:-------------------------|:----------------------|:----------------------------------------------|:-------------|------------------:|
 | `15.0-linux-latest`      | `15.0-linux-1.0`      | rockylinux:8                                  | 2024-01-15   |             0.347 |
 | `15.0-linux-slim-latest` | `15.0-linux-slim-1.0` | rockylinux:8                                  | 2024-01-15   |             0.198 |
-| `15.0-macos-arm-latest`  | `15.0-macos-arm-1.0`  | debian:bookworm                               | 2024-01-25   |             0.42  |
-| `15.0-macos-latest`      | `15.0-macos-1.0`      | debian:bookworm                               | 2024-01-25   |             0.421 |
+| `15.0-macos-arm-latest`  | `15.0-macos-arm-1.0`  | debian:bookworm                               | 2024-01-28   |             0.42  |
+| `15.0-macos-latest`      | `15.0-macos-1.1`      | debian:bookworm                               | 2024-01-28   |             0.421 |
 | `15.0-windows-latest`    | `15.0-windows-1.0`    | mcr.microsoft.com/windows/servercore:ltsc2022 | 2024-01-15   |             5.491 |
 | `14.1-linux-latest`      | `14.1-linux-1.0`      | centos:centos7.9.2009                         | 2024-01-15   |             0.379 |
 | `14.1-linux-slim-latest` | `14.1-linux-slim-1.0` | centos:centos7.9.2009                         | 2024-01-15   |             0.172 |
