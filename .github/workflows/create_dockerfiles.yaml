@@ -55,7 +55,8 @@ jobs:
           git branch
           git pull
           if [[ -n $(git status -s) ]]; then
-            git commit -a -m  "Parse new data."
+            git add -A
+            git commit -m  "Parse new data."
             git push
           else
             echo "No changes to commit."
