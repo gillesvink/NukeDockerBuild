@@ -90,7 +90,8 @@ jobs:
           git branch
           git pull
           if [[ -n $(git status -s) ]]; then
-            git commit -a -m  "Update README table with latest releases."
+            git add -A
+            git commit -m  "Update README table with latest releases."
             git push
           else
             echo "No changes to commit."
