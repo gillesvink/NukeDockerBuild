@@ -7,7 +7,6 @@ on:
       - "dockerfiles/**/macos/Dockerfile"
       - "dockerfiles/**/macos-arm/Dockerfile"
 
-
 jobs:
   changed_dockerfiles:
     name: Get target dockerfiles
@@ -31,7 +30,6 @@ jobs:
             **/macos/Dockerfile
             **/macos-arm/Dockerfile
 
-
       - name: Show changed dockerfiles
         run: echo '${{ steps.changed_dockerfiles.outputs.all_changed_files }}'
 
@@ -42,7 +40,7 @@ jobs:
     needs: [changed_dockerfiles]
 
     strategy:
-      matrix: 
+      matrix:
         files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
       fail-fast: false
 
@@ -66,7 +64,7 @@ jobs:
         with:
           path: /tmp/nuke_source_files
           key: ${{ env.cache_key }}
-          
+
       - name: Collect Nuke source files
         if: steps.cache_nuke_source.outputs.cache-hit != 'true'
         timeout-minutes: 30
@@ -90,7 +88,7 @@ jobs:
     needs: [changed_dockerfiles, get_nuke_sources]
 
     strategy:
-      matrix: 
+      matrix:
         files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
         arch: ["arm64", "amd64"]
       fail-fast: false
@@ -107,7 +105,7 @@ jobs:
 
       - name: Set up Docker
         run: |
-          brew install docker
+          brew install colima
           brew install docker-buildx
           mkdir -p ~/.docker/cli-plugins
           ln -sfn /usr/local/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
@@ -146,7 +144,7 @@ jobs:
     runs-on: macos-latest
 
     strategy:
-      matrix: 
+      matrix:
         files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
         arch: ["arm64", "amd64"]
       fail-fast: false
@@ -160,7 +158,7 @@ jobs:
 
       - name: Set up Docker
         run: |
-          brew install docker
+          brew install colima
           mkdir /tmp/tests/
           colima start --cpu 3 --memory 10 --disk 10 --mount /tmp/tests:/tmp/tests:w
 
@@ -195,7 +193,7 @@ jobs:
       PUSH_LOCATION: "ghcr.io/gillesvink/nukedockerbuild"
 
     strategy:
-      matrix: 
+      matrix:
         files: ${{ fromJSON(needs.changed_dockerfiles.outputs.matrix) }}
       fail-fast: false
 
