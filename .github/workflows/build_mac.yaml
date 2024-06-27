@@ -105,6 +105,7 @@ jobs:
 
       - name: Set up Docker
         run: |
+          brew install docker
           brew install colima
           brew install docker-buildx
           mkdir -p ~/.docker/cli-plugins
@@ -158,6 +159,7 @@ jobs:
 
       - name: Set up Docker
         run: |
+          brew install docker
           brew install colima
           mkdir /tmp/tests/
           colima start --cpu 3 --memory 10 --disk 10 --mount /tmp/tests:/tmp/tests:w
