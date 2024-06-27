@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 LABEL 'org.opencontainers.version'=1.0
-LABEL 'org.opencontainers.image.created'='2024-06-16'
+LABEL 'org.opencontainers.image.created'='2024-06-27'
 LABEL 'org.opencontainers.image.authors'='gilles@vinkvfx.com'
 LABEL 'org.opencontainers.image.description'='Ready to use Docker image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
