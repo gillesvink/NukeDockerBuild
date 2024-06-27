@@ -106,13 +106,8 @@ jobs:
       - name: Set up Docker
         run: |
           brew install docker
-          brew install colima
-          colima delete
-          curl -OSL https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb brew install ./qemu.rb
-          brew link --overwrite qemu
-          colima start
-
           brew install docker-buildx
+          brew install colima
           mkdir -p ~/.docker/cli-plugins
           ln -sfn /usr/local/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
           colima start --cpu 2 --memory 10 --disk 10
