@@ -1,7 +1,7 @@
 param (
     [string]$NUKEVERSION
 )
-Set-Location $startPath
+$startPath = Get-Location
 
 $answer = Read-Host "Is the Nuke version correct: '$NUKEVERSION'. It can be for example 13.2, it has to be in this precise format (y/n)"
 
