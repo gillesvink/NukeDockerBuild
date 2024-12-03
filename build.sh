@@ -18,7 +18,7 @@ mkdir -p $SOURCES_DIR
 ../../../scripts/nuke_source_from_dockerfile_linux.sh Dockerfile $SOURCES_DIR
 
 docker buildx build \
-    -t nukedockerbuild:$NUKEVERSION-linux-latest \
+    -t nukedockerbuild:$NUKEVERSION-linux \
     --build-arg NUKE_SOURCE_FILES=$SOURCES_DIR \
     .
 
