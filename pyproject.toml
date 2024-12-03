@@ -22,7 +22,7 @@ dev-dependencies = [
 ]
 
 [project.scripts]
-dockerbuild = "nukedockerbuild.main:generate_dockerfiles"
+nukedockerbuild = "nukedockerbuild.main:generate_dockerfiles"
 
 [tool.hatch.metadata]
 allow-direct-references = true

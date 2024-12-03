@@ -1,23 +1,30 @@
 FROM centos:centos7.9.2009
 
 LABEL 'org.opencontainers.version'=1.0
-LABEL 'org.opencontainers.image.created'='2024-01-15'
-LABEL 'org.opencontainers.image.authors'='gilles@vinkvfx.com'
-LABEL 'org.opencontainers.image.description'='Ready to use Docker image for building Nuke plugins.'
+LABEL 'org.opencontainers.image.created'='2024-12-03'
+LABEL 'org.opencontainers.image.description'='Ready to use Image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
 LABEL 'org.opencontainers.url'='https://github.com/gillesvink/NukeDockerBuild'
 LABEL 'com.nukedockerbuild.based_on'='centos:centos7.9.2009'
 LABEL 'com.nukedockerbuild.operating_system'='linux'
 LABEL 'com.nukedockerbuild.nuke_version'=14.0
-LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/14.0v6/Nuke14.0v6-linux-x86_64.tgz'
+LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/14.0v8/Nuke14.0v8-linux-x86_64.tgz'
 
 ARG NUKE_SOURCE_FILES
-COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
 
-RUN echo 'Installing required packages.' \
+COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
+COPY $TOOLCHAIN /nukedockerbuild/
+
+RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
+  && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
+  && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
+  && echo 'Installing required packages.' \
   && ulimit -n 1024 \
   && yum -y install epel-release \
   && yum -y install centos-release-scl \
+  && sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
+  && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
+  && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
   && yum -y install devtoolset-9 \
   && yum -y install cmake3 \
   && yum -y install mesa-libGLU-devel

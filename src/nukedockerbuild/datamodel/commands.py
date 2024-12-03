@@ -78,9 +78,17 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
     UpstreamImage.CENTOS_7_4: [
         DockerCommand(
             [
+                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
                 "echo 'Installing required packages.'",
                 "ulimit -n 1024",
                 "yum -y install epel-release",
+                "yum -y install centos-release-scl",
+                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
+                "yum -y install {toolset}",
                 "yum -y install cmake3",
                 "yum -y install mesa-libGLU-devel",
             ]
