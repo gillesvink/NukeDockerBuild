@@ -20,10 +20,12 @@ jobs:
         run: cd ${GITHUB_WORKSPACE}
 
       - name: Install pip requirements
-        run: pip install -r requirements.txt
+        run: pip install -r requirements-dev.lock
 
       - name: Run pytest
-        run: pytest
+        run: |
+          export PYTHONPATH="$($pwd/src)"
+          pytest
 
 
   dockerfile_creator:
