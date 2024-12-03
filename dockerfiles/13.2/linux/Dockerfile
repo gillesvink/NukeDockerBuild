@@ -14,26 +14,24 @@ ARG NUKE_SOURCE_FILES
 
 COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
 
+RUN echo 'Installing devtoolset.' \
+  && ulimit -n 1024 \
+  && sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
+  && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
+  && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
+  && yum -y install centos-release-scl-rh  \
+  && echo 'Use vault for SC packages as CentOS 7 reached EOL.' \
+  && sed -i 's/7/7.4.1708/g; s|^#\s*\(baseurl=http://\)mirror|\1vault|g; /mirrorlist/d' /etc/yum.repos.d/CentOS-SCLo-*.repo \
+  && yum -y install devtoolset-6
+
 RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
   && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
   && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
   && echo 'Installing required packages.' \
   && ulimit -n 1024 \
   && yum -y install epel-release \
-  && yum -y install centos-release-scl \
-  && sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
-  && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-  && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
-  && yum -y install devtoolset-6 \
   && yum -y install cmake3 \
   && yum -y install mesa-libGLU-devel
-
-RUN echo 'Installing devtoolset.' \
-  && ulimit -n 1024 \
-  && yum -y install centos-release-scl-rh  \
-  && echo 'Use vault for SC packages as CentOS 7 reached EOL.' \
-  && sed -i 's/7/7.4.1708/g; s|^#\s*\(baseurl=http://\)mirror|\1vault|g; /mirrorlist/d' /etc/yum.repos.d/CentOS-SCLo-*.repo \
-  && yum -y install devtoolset-6
 
 RUN echo 'Setting devtoolset to devtoolset-6.' \
   && echo 'unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtoolset-6' >> /usr/bin/scl_enable \

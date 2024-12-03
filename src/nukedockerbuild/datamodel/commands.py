@@ -78,25 +78,11 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
     UpstreamImage.CENTOS_7_4: [
         DockerCommand(
             [
-                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
-                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
-                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
-                "echo 'Installing required packages.'",
-                "ulimit -n 1024",
-                "yum -y install epel-release",
-                "yum -y install centos-release-scl",
-                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
-                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
-                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
-                "yum -y install {toolset}",
-                "yum -y install cmake3",
-                "yum -y install mesa-libGLU-devel",
-            ]
-        ),
-        DockerCommand(
-            [
                 "echo 'Installing devtoolset.'",
                 "ulimit -n 1024",
+                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
                 "yum -y install centos-release-scl-rh ",
                 "echo 'Use vault for SC packages as CentOS 7 reached EOL.'",
                 (
@@ -105,6 +91,18 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
                     "/etc/yum.repos.d/CentOS-SCLo-*.repo"
                 ),
                 "yum -y install {toolset}",
+            ]
+        ),
+        DockerCommand(
+            [
+                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
+                "echo 'Installing required packages.'",
+                "ulimit -n 1024",
+                "yum -y install epel-release",
+                "yum -y install cmake3",
+                "yum -y install mesa-libGLU-devel",
             ]
         ),
     ],

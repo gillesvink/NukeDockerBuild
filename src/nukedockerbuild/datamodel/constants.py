@@ -61,7 +61,7 @@ class UpstreamImage(str, Enum):
 
 JSON_DATA_SOURCE = (
     "https://raw.githubusercontent.com/gillesvink/"
-    "NukeVersionParser/main/nuke-minor-supported-releases.json"
+    "NukeVersionParser/main/nuke-minor-releases.json"
 )
 """JSON data to use for fetching new Nuke releases."""
 

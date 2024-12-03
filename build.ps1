@@ -1,6 +1,7 @@
 param (
     [string]$NUKEVERSION
 )
+Set-Location $startPath
 
 $answer = Read-Host "Is the Nuke version correct: '$NUKEVERSION'. It can be for example 13.2, it has to be in this precise format (y/n)"
 
@@ -26,7 +27,7 @@ $sourcesDirPath = Resolve-Path $SOURCES_DIR
 
 Set-Location $originalPath
 
-docker buildx build `
-    -t "nukedockerbuild:$NUKEVERSION-windows" `
-    --build-arg "NUKE_SOURCE_FILES=$SOURCES_DIR" `
-    .
+
+docker build . --tag nukedockerbuild:$NUKEVERSION-windows --build-arg="NUKE_SOURCE_FILES=$SOURCES_DIR"
+
+Set-Location $startPath
