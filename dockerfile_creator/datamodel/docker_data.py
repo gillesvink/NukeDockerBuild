@@ -77,8 +77,7 @@ class Dockerfile:
             f"{label_prefix}.image.created": datetime.now().strftime(
                 "%Y-%m-%d"
             ),
-            f"{label_prefix}.image.authors": "gilles@vinkvfx.com",
-            f"{label_prefix}.image.description": "Ready to use Docker image for building Nuke plugins.",
+            f"{label_prefix}.image.description": "Ready to use Image for building Nuke plugins.",
             f"{label_prefix}.license": "MIT",
             f"{label_prefix}.url": "https://github.com/gillesvink/NukeDockerBuild",
         }

@@ -61,16 +61,6 @@ def test_write_dockerfiles(tmp_path) -> None:
             Path("dockerfiles/15.0/linux/Dockerfile"),
         ),
         (
-            OperatingSystem.MACOS,
-            14.1,
-            Path("dockerfiles/14.1/macos/Dockerfile"),
-        ),
-        (
-            OperatingSystem.MACOS_ARM,
-            15.0,
-            Path("dockerfiles/15.0/macos-arm/Dockerfile"),
-        ),
-        (
             OperatingSystem.WINDOWS,
             13.2,
             Path("dockerfiles/13.2/windows/Dockerfile"),
