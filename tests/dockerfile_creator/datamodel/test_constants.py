@@ -5,7 +5,7 @@
 
 import pytest
 
-from dockerfile_creator.datamodel.constants import OperatingSystem
+from nukedockerbuild.datamodel.constants import OperatingSystem
 
 
 @pytest.mark.parametrize(

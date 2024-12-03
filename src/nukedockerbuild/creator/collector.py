@@ -9,11 +9,11 @@ import re
 
 import requests
 
-from dockerfile_creator.datamodel.constants import (
+from nukedockerbuild.datamodel.constants import (
     JSON_DATA_SOURCE,
     OperatingSystem,
 )
-from dockerfile_creator.datamodel.docker_data import Dockerfile
+from nukedockerbuild.datamodel.docker_data import Dockerfile
 
 _VERSION_REGEX = re.compile("^[^v]*")
 

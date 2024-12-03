@@ -4,7 +4,7 @@
 """
 import pytest
 
-from dockerfile_creator.datamodel.commands import (
+from nukedockerbuild.datamodel.commands import (
     DockerCommand,
     DockerEnvironments,
 )

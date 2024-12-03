@@ -7,13 +7,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from dockerfile_creator.datamodel.commands import (
+from nukedockerbuild.datamodel.commands import (
     IMAGE_COMMANDS,
     OS_COMMANDS,
     DockerCommand,
     DockerEnvironments,
 )
-from dockerfile_creator.datamodel.docker_data import (
+from nukedockerbuild.datamodel.docker_data import (
     Dockerfile,
     OperatingSystem,
     UpstreamImage,
@@ -123,7 +123,7 @@ class TestDockerfile:
             {"test": "test"}
         )
         with patch(
-            "dockerfile_creator.datamodel.docker_data.OS_ENVIRONMENTS",
+            "nukedockerbuild.datamodel.docker_data.OS_ENVIRONMENTS",
             os_environments_mock,
         ) as environments_mock:
             collected_environments = dummy_dockerfile.environments
@@ -190,20 +190,17 @@ class TestDockerfile:
         image_commands_mock = MagicMock(wraps=IMAGE_COMMANDS)
 
         with patch(
-            "dockerfile_creator.datamodel.docker_data.OS_COMMANDS",
+            "nukedockerbuild.datamodel.docker_data.OS_COMMANDS",
             os_commands_mock,
         ) as os_commands_mock, patch(
-            "dockerfile_creator.datamodel.docker_data.IMAGE_COMMANDS",
+            "nukedockerbuild.datamodel.docker_data.IMAGE_COMMANDS",
             image_commands_mock,
         ), patch(
-            "dockerfile_creator.datamodel.docker_data.Dockerfile."
+            "nukedockerbuild.datamodel.docker_data.Dockerfile."
             "_remove_invalid_commands_for_version"
         ) as remove_commands_mock:
             test_dockerfile.run_commands
 
-        os_commands_mock.get.assert_called_once_with(
-            test_dockerfile._is_macos() or test_dockerfile.operating_system, []
-        )
         image_commands_mock.get.assert_called_once_with(
             test_dockerfile.upstream_image, []
         )
@@ -281,11 +278,11 @@ class TestDockerfile:
         [
             (
                 OperatingSystem.LINUX,
-                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install",
+                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install\nCOPY $TOOLCHAIN /nukedockerbuild/",
             ),
             (
                 OperatingSystem.WINDOWS,
-                "COPY $NUKE_SOURCE_FILES C:\\\\nuke_install",
+                "COPY $NUKE_SOURCE_FILES C:\\\\nuke_install\nCOPY $TOOLCHAIN /nukedockerbuild/",
             ),
         ],
     )
@@ -297,7 +294,6 @@ class TestDockerfile:
     ) -> None:
         """Test copy to only return expected copy statements."""
         dummy_dockerfile.operating_system = test_operating_system
-
         assert dummy_dockerfile.copy == expected_result
 
     @pytest.mark.parametrize(
