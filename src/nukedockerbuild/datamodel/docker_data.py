@@ -107,7 +107,7 @@ class Dockerfile:
         nuke_sources = (
             f"COPY $NUKE_SOURCE_FILES {NUKE_INSTALL_DIRECTORIES[self.operating_system]}"
         )
-        return f"{nuke_sources}\nCOPY $TOOLCHAIN /nukedockerbuild/"
+        return f"{nuke_sources}"
 
     @property
     def environments(self) -> str:

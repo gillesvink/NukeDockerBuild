@@ -13,7 +13,6 @@ LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/pro
 ARG NUKE_SOURCE_FILES
 
 COPY $NUKE_SOURCE_FILES C:\\nuke_install
-COPY $TOOLCHAIN /nukedockerbuild/
 
 RUN powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin" \
   && choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y \

@@ -278,11 +278,11 @@ class TestDockerfile:
         [
             (
                 OperatingSystem.LINUX,
-                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install\nCOPY $TOOLCHAIN /nukedockerbuild/",
+                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install",
             ),
             (
                 OperatingSystem.WINDOWS,
-                "COPY $NUKE_SOURCE_FILES C:\\\\nuke_install\nCOPY $TOOLCHAIN /nukedockerbuild/",
+                "COPY $NUKE_SOURCE_FILES C:\\\\nuke_install",
             ),
         ],
     )

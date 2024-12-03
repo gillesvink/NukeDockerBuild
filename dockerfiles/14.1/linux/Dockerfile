@@ -13,7 +13,6 @@ LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/pro
 ARG NUKE_SOURCE_FILES
 
 COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
-COPY $TOOLCHAIN /nukedockerbuild/
 
 RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
   && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
