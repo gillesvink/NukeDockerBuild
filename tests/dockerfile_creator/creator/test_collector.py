@@ -6,24 +6,23 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from requests import Response
-
-from dockerfile_creator.creator.collector import (
+from nukedockerbuild.creator.collector import (
     _nuke_version_to_float,
     fetch_json_data,
     get_dockerfiles,
 )
-from dockerfile_creator.datamodel.constants import (
+from nukedockerbuild.datamodel.constants import (
     JSON_DATA_SOURCE,
     OperatingSystem,
 )
-from dockerfile_creator.datamodel.docker_data import Dockerfile
+from nukedockerbuild.datamodel.docker_data import Dockerfile
+from requests import Response
 
 
 @pytest.fixture(autouse=True)
 def _mock_requests():
     """Automatically patch every test to prevent actual calls."""
-    with patch("dockerfile_creator.creator.collector.requests.get"):
+    with patch("nukedockerbuild.creator.collector.requests.get"):
         yield
 
 
@@ -65,7 +64,7 @@ def test_fetch_json_data(dummy_data: dict) -> None:
     response_mock.json.return_value = dummy_data
     response_mock.status_code = 200
     with patch(
-        "dockerfile_creator.creator.collector.requests.get",
+        "nukedockerbuild.creator.collector.requests.get",
         return_value=response_mock,
     ) as requests_get_mock:
         collected_data = fetch_json_data()
@@ -79,7 +78,7 @@ def test_fetch_json_data_but_no_data_found(test_status_code: int) -> None:
     requests_get_mock = MagicMock(spec=Response)
     requests_get_mock.status_code = test_status_code
     with patch(
-        "dockerfile_creator.creator.collector.requests.get",
+        "nukedockerbuild.creator.collector.requests.get",
         return_value=requests_get_mock,
     ), pytest.raises(
         ValueError,
@@ -115,21 +114,6 @@ def test_get_dockerfiles(dummy_data: dict) -> None:
     """Test to return from the dummy data a list of Dockerfile."""
     expected_dockerfiles = [
         Dockerfile(
-            operating_system=OperatingSystem.MACOS_ARM,
-            nuke_version=15.1,
-            nuke_source="mac_arm_url",
-        ),
-        Dockerfile(
-            operating_system=OperatingSystem.MACOS,
-            nuke_version=15.1,
-            nuke_source="mac_url",
-        ),
-        Dockerfile(
-            operating_system=OperatingSystem.MACOS,
-            nuke_version=15.0,
-            nuke_source="mac_url",
-        ),
-        Dockerfile(
             operating_system=OperatingSystem.LINUX,
             nuke_version=15.0,
             nuke_source="linux_url",
@@ -138,11 +122,6 @@ def test_get_dockerfiles(dummy_data: dict) -> None:
             operating_system=OperatingSystem.WINDOWS,
             nuke_version=15.0,
             nuke_source="windows_url",
-        ),
-        Dockerfile(
-            operating_system=OperatingSystem.MACOS,
-            nuke_version=14.1,
-            nuke_source="mac_url",
         ),
         Dockerfile(
             operating_system=OperatingSystem.LINUX,

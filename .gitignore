@@ -1,3 +1,6 @@
 *.pyc
 *.drawio
 .vscode
+**/_nuke_sources
+*.tgz
+.DS_Store

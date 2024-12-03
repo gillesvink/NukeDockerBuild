@@ -7,11 +7,11 @@ import logging
 import os
 from pathlib import Path
 
-from dockerfile_creator.creator.collector import (
+from nukedockerbuild.creator.collector import (
     fetch_json_data,
     get_dockerfiles,
 )
-from dockerfile_creator.creator.create_dockerfiles import write_dockerfiles
+from nukedockerbuild.creator.create_dockerfiles import write_dockerfiles
 
 FORMAT = "[%(asctime)s] %(message)s"
 logging.basicConfig(level=logging.INFO, format=FORMAT)

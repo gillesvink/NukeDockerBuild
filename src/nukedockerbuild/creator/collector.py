@@ -9,11 +9,11 @@ import re
 
 import requests
 
-from dockerfile_creator.datamodel.constants import (
+from nukedockerbuild.datamodel.constants import (
     JSON_DATA_SOURCE,
     OperatingSystem,
 )
-from dockerfile_creator.datamodel.docker_data import Dockerfile
+from nukedockerbuild.datamodel.docker_data import Dockerfile
 
 _VERSION_REGEX = re.compile("^[^v]*")
 
@@ -70,7 +70,7 @@ def get_dockerfiles(data: dict) -> list[Dockerfile]:
         if version_number < 13:
             continue
 
-        for os in ["mac_arm", "mac_x86", "linux_x86", "windows_x86"]:
+        for os in ["linux_x86", "windows_x86"]:
             install_url = installer_data.get(os)
             if not install_url:
                 continue

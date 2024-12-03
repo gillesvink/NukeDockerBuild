@@ -1,15 +1,14 @@
 FROM rockylinux:8
 
 LABEL 'org.opencontainers.version'=1.0
-LABEL 'org.opencontainers.image.created'='2024-06-27'
-LABEL 'org.opencontainers.image.authors'='gilles@vinkvfx.com'
-LABEL 'org.opencontainers.image.description'='Ready to use Docker image for building Nuke plugins.'
+LABEL 'org.opencontainers.image.created'='2024-12-03'
+LABEL 'org.opencontainers.image.description'='Ready to use Image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
 LABEL 'org.opencontainers.url'='https://github.com/gillesvink/NukeDockerBuild'
 LABEL 'com.nukedockerbuild.based_on'='rockylinux:8'
 LABEL 'com.nukedockerbuild.operating_system'='linux'
 LABEL 'com.nukedockerbuild.nuke_version'=15.1
-LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/15.1v1/Nuke15.1v1-linux-x86_64.tgz'
+LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/15.1v4/Nuke15.1v4-linux-x86_64.tgz'
 
 ARG NUKE_SOURCE_FILES
 

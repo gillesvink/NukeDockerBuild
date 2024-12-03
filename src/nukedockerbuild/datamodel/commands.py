@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from dockerfile_creator.datamodel.constants import (
+from nukedockerbuild.datamodel.constants import (
     NUKE_INSTALL_DIRECTORIES,
     OperatingSystem,
     UpstreamImage,
@@ -59,10 +59,16 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
     UpstreamImage.CENTOS_7_9: [
         DockerCommand(
             [
+                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
                 "echo 'Installing required packages.'",
                 "ulimit -n 1024",
                 "yum -y install epel-release",
                 "yum -y install centos-release-scl",
+                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
                 "yum -y install {toolset}",
                 "yum -y install cmake3",
                 "yum -y install mesa-libGLU-devel",
@@ -72,17 +78,11 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
     UpstreamImage.CENTOS_7_4: [
         DockerCommand(
             [
-                "echo 'Installing required packages.'",
-                "ulimit -n 1024",
-                "yum -y install epel-release",
-                "yum -y install cmake3",
-                "yum -y install mesa-libGLU-devel",
-            ]
-        ),
-        DockerCommand(
-            [
                 "echo 'Installing devtoolset.'",
                 "ulimit -n 1024",
+                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
                 "yum -y install centos-release-scl-rh ",
                 "echo 'Use vault for SC packages as CentOS 7 reached EOL.'",
                 (
@@ -91,6 +91,18 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
                     "/etc/yum.repos.d/CentOS-SCLo-*.repo"
                 ),
                 "yum -y install {toolset}",
+            ]
+        ),
+        DockerCommand(
+            [
+                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
+                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
+                "echo 'Installing required packages.'",
+                "ulimit -n 1024",
+                "yum -y install epel-release",
+                "yum -y install cmake3",
+                "yum -y install mesa-libGLU-devel",
             ]
         ),
     ],
@@ -124,21 +136,6 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
             minimum_version=13.0,
         ),
     ],
-    OperatingSystem.MACOS: [
-        DockerCommand(
-            [
-                "apt-get update",
-                "apt-get install -y cmake git python3 patch libssl-dev lzma-dev libxml2-dev bzip2 cpio zlib1g-dev curl clang unzip build-essential",
-                "cd /tmp/ && git clone https://github.com/tpoechtrager/osxcross",
-                "cd /tmp/osxcross/tarballs && curl -LO {toolset}",
-                "cd /tmp/osxcross && UNATTENDED=1 TARGET_DIR=/usr/local/osxcross ./build.sh",
-                "apt-get -y remove python3 git patch libssl-dev lzma-dev libxml2-dev bzip2 cpio zlib1g-dev curl unzip build-essential",
-                "apt-get -y autoremove",
-                "apt-get -y clean",
-                "rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*",
-            ]
-        ),
-    ],
 }
 """Commands related to each operating system."""
 
@@ -158,15 +155,6 @@ OS_ENVIRONMENTS: dict[OperatingSystem, DockerEnvironments] = {
             "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORIES[
                 OperatingSystem.WINDOWS
             ],
-        }
-    ),
-    OperatingSystem.MACOS: DockerEnvironments(
-        {
-            "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORIES[
-                OperatingSystem.LINUX
-            ],
-            "PATH": "/usr/local/osxcross/bin:$PATH",
-            "GLOBAL_TOOLCHAIN": "/nukedockerbuild/toolchain.cmake",
         }
     ),
 }

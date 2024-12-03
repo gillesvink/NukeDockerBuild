@@ -10,8 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-
-    from dockerfile_creator.datamodel.docker_data import Dockerfile
+    from nukedockerbuild.datamodel.docker_data import Dockerfile
 
 logger = logging.getLogger(__name__)
 

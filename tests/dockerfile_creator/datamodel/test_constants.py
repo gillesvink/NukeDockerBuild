@@ -5,14 +5,13 @@
 
 import pytest
 
-from dockerfile_creator.datamodel.constants import OperatingSystem
+from nukedockerbuild.datamodel.constants import OperatingSystem
 
 
 @pytest.mark.parametrize(
     ("test_shortname", "expected_os"),
     [
         ("win", OperatingSystem.WINDOWS),
-        ("mac", OperatingSystem.MACOS),
         ("lin", OperatingSystem.LINUX),
     ],
 )
@@ -27,8 +26,6 @@ def test_operating_system_from_shortname(
     ("test_mapped_name", "expected_os"),
     [
         ("windows_x86", OperatingSystem.WINDOWS),
-        ("mac_x86", OperatingSystem.MACOS),
-        ("mac_arm", OperatingSystem.MACOS_ARM),
         ("linux_x86", OperatingSystem.LINUX),
     ],
 )

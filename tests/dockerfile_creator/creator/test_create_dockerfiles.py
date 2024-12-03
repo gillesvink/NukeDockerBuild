@@ -4,13 +4,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from dockerfile_creator.creator.create_dockerfiles import (
+from nukedockerbuild.creator.create_dockerfiles import (
     _get_dockerfile_path,
     _keep_only_new_dockerfiles,
     write_dockerfiles,
 )
-from dockerfile_creator.datamodel.constants import OperatingSystem
-from dockerfile_creator.datamodel.docker_data import Dockerfile
+from nukedockerbuild.datamodel.constants import OperatingSystem
+from nukedockerbuild.datamodel.docker_data import Dockerfile
 
 
 def test__keep_only_new_dockerfiles(tmp_path: Path) -> None:
@@ -59,16 +59,6 @@ def test_write_dockerfiles(tmp_path) -> None:
             OperatingSystem.LINUX,
             15.0,
             Path("dockerfiles/15.0/linux/Dockerfile"),
-        ),
-        (
-            OperatingSystem.MACOS,
-            14.1,
-            Path("dockerfiles/14.1/macos/Dockerfile"),
-        ),
-        (
-            OperatingSystem.MACOS_ARM,
-            15.0,
-            Path("dockerfiles/15.0/macos-arm/Dockerfile"),
         ),
         (
             OperatingSystem.WINDOWS,

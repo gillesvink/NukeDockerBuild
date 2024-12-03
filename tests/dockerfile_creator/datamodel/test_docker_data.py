@@ -7,13 +7,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from dockerfile_creator.datamodel.commands import (
+from nukedockerbuild.datamodel.commands import (
     IMAGE_COMMANDS,
     OS_COMMANDS,
     DockerCommand,
     DockerEnvironments,
 )
-from dockerfile_creator.datamodel.docker_data import (
+from nukedockerbuild.datamodel.docker_data import (
     Dockerfile,
     OperatingSystem,
     UpstreamImage,
@@ -44,8 +44,6 @@ class TestDockerfile:
         ),
         [
             (OperatingSystem.LINUX, 15.0, UpstreamImage.ROCKYLINUX_8),
-            (OperatingSystem.MACOS, 15.0, UpstreamImage.DEBIAN_BOOKWORM),
-            (OperatingSystem.MACOS_ARM, 15.0, UpstreamImage.DEBIAN_BOOKWORM),
             (OperatingSystem.LINUX, 14.0, UpstreamImage.CENTOS_7_9),
             (OperatingSystem.LINUX, 13.2, UpstreamImage.CENTOS_7_4),
             (OperatingSystem.LINUX, 13.0, UpstreamImage.CENTOS_7_4),
@@ -104,8 +102,6 @@ class TestDockerfile:
         ("test_operating_system", "expected_work_dir"),
         [
             (OperatingSystem.LINUX, "WORKDIR /nuke_build_directory"),
-            (OperatingSystem.MACOS, "WORKDIR /nuke_build_directory"),
-            (OperatingSystem.MACOS_ARM, "WORKDIR /nuke_build_directory"),
             (OperatingSystem.WINDOWS, "WORKDIR C:\\\\nuke_build_directory"),
         ],
     )
@@ -127,7 +123,7 @@ class TestDockerfile:
             {"test": "test"}
         )
         with patch(
-            "dockerfile_creator.datamodel.docker_data.OS_ENVIRONMENTS",
+            "nukedockerbuild.datamodel.docker_data.OS_ENVIRONMENTS",
             os_environments_mock,
         ) as environments_mock:
             collected_environments = dummy_dockerfile.environments
@@ -140,44 +136,6 @@ class TestDockerfile:
             in collected_environments
         )
 
-    @pytest.mark.parametrize(
-        ("mac_os"), [OperatingSystem.MACOS, OperatingSystem.MACOS_ARM]
-    )
-    @pytest.mark.parametrize(
-        ("test_nuke_version", "expected_sdk", "expected_deployment_target"),
-        [
-            (16.0, "MacOSX13.3.sdk", "11.0"),
-            (15.0, "MacOSX13.3.sdk", "11.0"),
-            (14.0, "MacOSX13.3.sdk", "10.15"),
-            (13.0, "MacOSX13.3.sdk", "10.12"),
-        ],
-    )
-    def test_mac_environments(
-        self,
-        dummy_dockerfile: Dockerfile,
-        mac_os: OperatingSystem,
-        test_nuke_version: float,
-        expected_sdk: str,
-        expected_deployment_target: float,
-    ) -> None:
-        """Test to return the required environments."""
-        dummy_dockerfile.operating_system = mac_os
-        dummy_dockerfile.nuke_version = test_nuke_version
-        collected_environments = dummy_dockerfile.environments
-
-        if mac_os == OperatingSystem.MACOS:
-            assert "ARCH_COMPILER=o64" in collected_environments
-        else:
-            assert "ARCH_COMPILER=oa64" in collected_environments
-
-        assert (
-            f"MACOS_SDK=/usr/local/osxcross/SDK/{expected_sdk}"
-            in collected_environments
-        )
-        assert (
-            f"DEPLOYMENT_TARGET={expected_deployment_target}"
-            in collected_environments
-        )
 
     @pytest.mark.parametrize(
         ("test_operating_system", "test_nuke_version", "test_nuke_source"),
@@ -217,8 +175,6 @@ class TestDockerfile:
     @pytest.mark.parametrize(
         "os",
         [
-            OperatingSystem.MACOS,
-            OperatingSystem.MACOS_ARM,
             OperatingSystem.LINUX,
             OperatingSystem.WINDOWS,
         ],
@@ -234,20 +190,17 @@ class TestDockerfile:
         image_commands_mock = MagicMock(wraps=IMAGE_COMMANDS)
 
         with patch(
-            "dockerfile_creator.datamodel.docker_data.OS_COMMANDS",
+            "nukedockerbuild.datamodel.docker_data.OS_COMMANDS",
             os_commands_mock,
         ) as os_commands_mock, patch(
-            "dockerfile_creator.datamodel.docker_data.IMAGE_COMMANDS",
+            "nukedockerbuild.datamodel.docker_data.IMAGE_COMMANDS",
             image_commands_mock,
         ), patch(
-            "dockerfile_creator.datamodel.docker_data.Dockerfile."
+            "nukedockerbuild.datamodel.docker_data.Dockerfile."
             "_remove_invalid_commands_for_version"
         ) as remove_commands_mock:
             test_dockerfile.run_commands
 
-        os_commands_mock.get.assert_called_once_with(
-            test_dockerfile._is_macos() or test_dockerfile.operating_system, []
-        )
         image_commands_mock.get.assert_called_once_with(
             test_dockerfile.upstream_image, []
         )
@@ -307,14 +260,6 @@ class TestDockerfile:
                 OperatingSystem.WINDOWS,
                 "ARG NUKE_SOURCE_FILES",
             ),
-            (
-                OperatingSystem.MACOS,
-                "ARG NUKE_SOURCE_FILES\nARG TOOLCHAIN",
-            ),
-            (
-                OperatingSystem.MACOS_ARM,
-                "ARG NUKE_SOURCE_FILES\nARG TOOLCHAIN",
-            ),
         ],
     )
     def test_args(
@@ -339,14 +284,6 @@ class TestDockerfile:
                 OperatingSystem.WINDOWS,
                 "COPY $NUKE_SOURCE_FILES C:\\\\nuke_install",
             ),
-            (
-                OperatingSystem.MACOS,
-                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install\nCOPY $TOOLCHAIN /nukedockerbuild/",
-            ),
-            (
-                OperatingSystem.MACOS_ARM,
-                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install\nCOPY $TOOLCHAIN /nukedockerbuild/",
-            ),
         ],
     )
     def test_copy(
@@ -357,7 +294,6 @@ class TestDockerfile:
     ) -> None:
         """Test copy to only return expected copy statements."""
         dummy_dockerfile.operating_system = test_operating_system
-
         assert dummy_dockerfile.copy == expected_result
 
     @pytest.mark.parametrize(
@@ -365,8 +301,6 @@ class TestDockerfile:
         [
             (OperatingSystem.LINUX, 15.0),
             (OperatingSystem.LINUX, 13.0),
-            (OperatingSystem.MACOS, 13.0),
-            (OperatingSystem.MACOS_ARM, 15.0),
             (OperatingSystem.WINDOWS, 13.0),
         ],
     )

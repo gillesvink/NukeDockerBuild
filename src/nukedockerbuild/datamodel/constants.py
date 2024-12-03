@@ -11,8 +11,6 @@ class OperatingSystem(str, Enum):
     """Enumeration to store operating system type."""
 
     WINDOWS: str = "windows"
-    MACOS: str = "macos"
-    MACOS_ARM: str = "macos-arm"
     LINUX: str = "linux"
 
     @classmethod
@@ -44,10 +42,6 @@ class OperatingSystem(str, Enum):
         Returns:
             matched enum.
         """
-        if name == "mac_arm":
-            return cls.MACOS_ARM
-        if name == "mac_x86":
-            return cls.MACOS
         if name == "windows_x86":
             return cls.WINDOWS
         return cls.LINUX
@@ -67,7 +61,7 @@ class UpstreamImage(str, Enum):
 
 JSON_DATA_SOURCE = (
     "https://raw.githubusercontent.com/gillesvink/"
-    "NukeVersionParser/main/nuke-minor-supported-releases.json"
+    "NukeVersionParser/main/nuke-minor-releases.json"
 )
 """JSON data to use for fetching new Nuke releases."""
 
@@ -90,25 +84,9 @@ VISUALSTUDIO_BUILDTOOLS = {
 }
 """Matched Visual Studio build toolset to Nuke major version."""
 
-MAC_DEPLOYMENT_TARGET = {
-    16: 11.0,
-    15: 11.0,
-    14: 10.15,
-    13: 10.12,
-}
-"""Matched deployment target for Mac SDK."""
-
-MAC_SDK = {
-    16: "https://github.com/joseluisq/macosx-sdks/releases/download/13.3/MacOSX13.3.sdk.tar.xz",
-    15: "https://github.com/joseluisq/macosx-sdks/releases/download/13.3/MacOSX13.3.sdk.tar.xz",
-    14: "https://github.com/joseluisq/macosx-sdks/releases/download/13.3/MacOSX13.3.sdk.tar.xz",
-    13: "https://github.com/joseluisq/macosx-sdks/releases/download/13.3/MacOSX13.3.sdk.tar.xz",
-}
-"""Matched SDK to Foundry docs."""
 
 NUKE_INSTALL_DIRECTORIES: dict[OperatingSystem, str] = {
     OperatingSystem.LINUX: "/usr/local/nuke_install",
-    OperatingSystem.MACOS: "/usr/local/nuke_install",
     OperatingSystem.WINDOWS: "C:\\\\nuke_install",
 }
 """Install directory for Nuke per operating system."""
