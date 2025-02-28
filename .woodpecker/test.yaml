@@ -1,0 +1,9 @@
+when:
+  event: [push]
+
+steps:
+  test:
+    image: ghcr.io/astral-sh/uv:debian
+    commands:
+      - uv sync
+      - uv run pytest

@@ -3,8 +3,9 @@
 @maintainer: Gilles Vink
 """
 
+import argparse
 import logging
-import os
+import sys
 from pathlib import Path
 
 from nukedockerbuild.creator.collector import (
@@ -17,20 +18,12 @@ FORMAT = "[%(asctime)s] %(message)s"
 logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 
-def generate_dockerfiles() -> None:
+def _generate_dockerfiles(dockerfiles_directory: Path) -> None:
     """Generate dockerfiles in directory.
 
-    Note:
-        make sure to set the DOCKERFILES_DIRECTORY env.
+    Args:
+        dockerfiles_directory: directory to write dockerfiles to.
     """
-    dockerfiles_directory = os.getenv("DOCKERFILES_DIRECTORY")
-    if not dockerfiles_directory:
-        msg = (
-            "DOCKERFILES_DIRECTORY environment not set. "
-            "Cannot create dockerfiles."
-        )
-        raise ValueError(msg)
-
     json_data = fetch_json_data()
     dockerfiles = get_dockerfiles(data=json_data)
     write_dockerfiles(
@@ -38,5 +31,28 @@ def generate_dockerfiles() -> None:
     )
 
 
+def _parse_args(args: list[str]) -> argparse.Namespace:
+    """Parse provided arguments."""
+    parser = argparse.ArgumentParser(
+        prog="NukeVersionParser",
+        description=("CLI to create dockerfiles for all Nuke versions."),
+    )
+    parser.add_argument("--write_dir", required=True)
+    return parser.parse_args(args)
+
+
+def main() -> None:
+    """Main pytest bootstrap entrypoint"""
+    parsed_arguments = _parse_args(sys.argv[1:])
+    if parsed_arguments.write_dir is None:
+        msg = (
+            "Provide the path to write to. For example: "
+            "nuke-dockerbuild ./ for the current directory."
+        )
+        raise ValueError(msg)
+    json_directory = Path(parsed_arguments.write_dir)
+    _generate_dockerfiles(json_directory)
+
+
 if __name__ == "__main__":
-    generate_dockerfiles()
+    main()

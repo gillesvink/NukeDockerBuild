@@ -1,0 +1,30 @@
+when:
+  event: [manual, cron]
+  branch: main
+
+steps:
+  parse:
+    image: ghcr.io/astral-sh/uv:debian
+    commands:
+      - uv sync
+      - uv run nuke-dockerbuild --write_dir ./
+
+  push_parsed_data:
+    image: ghcr.io/astral-sh/uv:debian
+    commands:
+      - git config user.name 'CI Runner'
+      - git config user.email '${CI_COMMIT_AUTHOR_EMAIL}'
+      - |
+        if [ -n "$(git status -s)" ]; then
+          git commit -a -m "Update JSON with latest data."
+          git remote set-url origin https://$${PUSH_TOKEN}@codeberg.org/${CI_REPO}.git
+          git push --set-upstream origin ${CI_COMMIT_BRANCH}
+
+        else
+          echo "No changes to commit."
+        fi
+        exit 0
+
+    environment:
+      PUSH_TOKEN:
+        from_secret: ACCESS_TOKEN
