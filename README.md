@@ -24,7 +24,7 @@ It is recommended to keep the builded images in your own registry, so you don't 
 ## ⬆️ How is this updated? 
 Since Nuke requires every minor release to be compiled natively, it needs to have a docker image as well for each minor version.
 
-This is done in an automatic process to create the Dockerfiles whenever there is a new Nuke minor release. It uses the minor supported releases JSON from my other repo: [NukeVersionParser](https://github.com/gillesvink/NukeVersionParser).
+This is done in an automatic process to create the Dockerfiles whenever there is a new Nuke minor release. It uses the minor supported releases JSON from my other repo: [NukeVersionParser](https://codeberg.org/gillesvink/NukeVersionParser).
 
 This data is used once a day to check if there is anything new a new dockerfile will be created
 
