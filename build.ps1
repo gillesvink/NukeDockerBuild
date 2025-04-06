@@ -3,7 +3,7 @@ param (
 )
 $startPath = Get-Location
 
-$answer = Read-Host "Starting build for: '$NUKEVERSION'."
+Write-Host "Starting build for: '$NUKEVERSION'."
 
 Set-Location "dockerfiles\$NUKEVERSION\windows"
 Write-Host "Creating image for Nuke version: $NUKEVERSION"
