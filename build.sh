@@ -2,13 +2,7 @@
 
 NUKEVERSION="$1"
 
-read -p "Is the Nuke version correct: '$NUKEVERSION'. It can be for example 13.2, it has to be in this precise format (y/n): " answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    echo "Continuing installation..."
-else
-    echo "Please change the input"
-    exit 1
-fi
+echo "Starting build for: '$NUKEVERSION'."
 
 cd dockerfiles/$NUKEVERSION/linux
 echo "Creating image for Nuke version: $NUKEVERSION"
