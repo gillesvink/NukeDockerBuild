@@ -3,15 +3,7 @@ param (
 )
 $startPath = Get-Location
 
-$answer = Read-Host "Is the Nuke version correct: '$NUKEVERSION'. It can be for example 13.2, it has to be in this precise format (y/n)"
-
-if ($answer -match '^[Yy]$') {
-    Write-Host "Continuing installation..."
-}
-else {
-    Write-Host "Please change the input"
-    exit 1
-}
+$answer = Read-Host "Starting build for: '$NUKEVERSION'."
 
 Set-Location "dockerfiles\$NUKEVERSION\windows"
 Write-Host "Creating image for Nuke version: $NUKEVERSION"
