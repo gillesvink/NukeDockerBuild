@@ -17,6 +17,12 @@ $sourcesDirPath = Resolve-Path $SOURCES_DIR
 
 ..\..\..\scripts\nuke_source_from_dockerfile.ps1 $dockerfilePath $sourcesDirPath
 
+if (Test-Path "cmake" -PathType Container) {
+    Write-Host "Found cmake folder for backwards compatibility"
+    Copy-Item -Path "cmake" -Destination $SOURCES_DIR -Recurse
+}
+
+
 Set-Location $originalPath
 
 
