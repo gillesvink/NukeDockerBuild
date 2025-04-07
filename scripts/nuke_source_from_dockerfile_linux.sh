@@ -37,6 +37,7 @@ echo "Remove compressed Nuke"
 rm ${nuke_temp_files}/${filename}
 
 echo "Install Nuke to ${target_folder}"
+chmod +x ${nuke_temp_files}/${filename%.*}.run
 ${nuke_temp_files}/${filename%.*}.run --accept-foundry-eula --prefix=${target_folder} --exclude-subdir
 
 echo "Keep only source files"
