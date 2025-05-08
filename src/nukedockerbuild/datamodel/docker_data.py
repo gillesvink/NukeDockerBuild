@@ -68,7 +68,7 @@ class Dockerfile:
         """Return image labels as a string."""
         label_prefix = "org.opencontainers"
         labels = {
-            f"{label_prefix}.version": 2.0,
+            f"{label_prefix}.version": 1.0,
             f"{label_prefix}.image.created": datetime.now().strftime("%Y-%m-%d"),
             f"{label_prefix}.image.description": "Ready to use image for building Nuke plugins.",
             f"{label_prefix}.license": "MIT",
