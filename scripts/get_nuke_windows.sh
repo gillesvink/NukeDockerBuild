@@ -9,6 +9,7 @@ dockerfile_path="$1"
 target_folder="$2"
 
 url=$(grep "LABEL 'com.nukedockerbuild.nuke_source'" "$dockerfile_path" | awk -F"=" '{print $2}' | tr -d "'")
+version=$(grep "LABEL 'com.nukedockerbuild.nuke_version'" "$dockerfile_path" | awk -F"=" '{print $2}' | tr -d "'")
 if [ -z "$url" ]; then
     echo "Error: Label not found in the Dockerfile."
     exit 1
@@ -31,7 +32,13 @@ echo "Remove compressed Nuke"
 rm ${nuke_temp_files}/${filename}
 
 echo "Install Nuke to temp directory in Wine"
-wine msiexec /i ${nuke_temp_files}/${filename%.*}.msi /qb /l log.txt INSTALL_ROOT=C:\\nuke_temp
+
+if (( $(echo "$version < 14.0" | bc -l) )); then
+    wine ${nuke_temp_files}/${filename%.*}.exe  /S /ACCEPT-FOUNDRY-EULA /D=C:\\nuke_temp
+else
+    wine msiexec /i ${nuke_temp_files}/${filename%.*}.msi /qb /l log.txt INSTALL_ROOT=C:\\nuke_temp ACCEPT_FOUNDRY_EULA=ACCEPT
+fi
+
 
 echo "Moving to specified directory"
 mv ~/.wine/drive_c/nuke_temp/* ${target_folder}/
