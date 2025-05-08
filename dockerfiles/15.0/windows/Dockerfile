@@ -1,27 +1,56 @@
-FROM mcr.microsoft.com/windows/servercore:ltsc2022
+FROM ubuntu:22.04
 
-LABEL 'org.opencontainers.version'=1.0
-LABEL 'org.opencontainers.image.created'='2024-12-03'
-LABEL 'org.opencontainers.image.description'='Ready to use Image for building Nuke plugins.'
+LABEL 'org.opencontainers.version'=2.0
+LABEL 'org.opencontainers.image.created'='2025-05-08'
+LABEL 'org.opencontainers.image.description'='Ready to use image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
-LABEL 'org.opencontainers.url'='https://github.com/gillesvink/NukeDockerBuild'
-LABEL 'com.nukedockerbuild.based_on'='mcr.microsoft.com/windows/servercore:ltsc2022'
+LABEL 'org.opencontainers.url'='https://codeberg.org/gillesvink/NukeDockerBuild'
+LABEL 'com.nukedockerbuild.based_on'='ubuntu:22.04'
 LABEL 'com.nukedockerbuild.operating_system'='windows'
 LABEL 'com.nukedockerbuild.nuke_version'=15.0
-LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/15.0v5/Nuke15.0v5-win-x86_64.zip'
+LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/15.0v7/Nuke15.0v7-win-x86_64.zip'
 
 ARG NUKE_SOURCE_FILES
+ARG TOOLCHAIN
 
-COPY $NUKE_SOURCE_FILES C:\\nuke_install
+COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
+COPY $TOOLCHAIN /nukedockerbuild/
 
-RUN powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin" \
-  && choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y \
-  && choco install visualstudio2022buildtools -y \
-  && choco install visualstudio2022-workload-vctools --package-parameters '--includeRecommended' -y \
-  && powershell -Command "Remove-Item -Path \"$env:TEMP\*\" -Force -Recurse" \
-  && powershell -Command "Remove-Item -Path 'C:\ProgramData\Package Cache\*' -Force -Recurse"
+RUN apt-get update \
+  && apt-get install wine64 python3 msitools ca-certificates git wget ninja-build winbind -y  \
+  && apt-get clean -y \
+  && rm -rf /var/lib/apt/lists/* \
+  && wget https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-linux-x86_64.sh \
+  && chmod +x cmake-3.29.3-linux-x86_64.sh \
+  && ./cmake-3.29.3-linux-x86_64.sh --prefix=/usr/local --skip-license \
+  && rm cmake-3.29.3-linux-x86_64.sh
 
-WORKDIR C:\\nuke_build_directory
+RUN $(command -v wine64 || command -v wine || false) wineboot --init \
+  && while pgrep wineserver > /dev/null; do sleep 1; done
 
-ENV CMAKE_PREFIX_PATH=C:\\nuke_install
+RUN cd ~/ \
+  && git clone https://github.com/mstorsjo/msvc-wine.git \
+  && cd msvc-wine \
+  && git checkout 44dc13b5e62ecc2373fbe7e4727a525001f403f4 \
+  && PYTHONUNBUFFERED=1 ./vsdownload.py --major 17 --accept-license --dest /opt/msvc \
+  && ./install.sh /opt/msvc \
+  && mv ./msvcenv-native.sh /opt/msvc \
+  && cd ../ && rm -rf ./msvc-wine \
+  && bash -c 'export BIN=/opt/msvc/bin/x64/ \
+  && . /opt/msvc/msvcenv-native.sh \
+  && MSVCDIR=$(. "${BIN}msvcenv.sh" && echo $MSVCDIR) \
+  && MSVCDIR=${MSVCDIR//\\\\//} \
+  && MSVCDIR=${MSVCDIR#z:} \
+  && echo "export BIN=${BIN}" >> /etc/bashrc \
+  && echo "export MSVCDIR=$MSVCDIR" >> /etc/bashrc \
+  && echo "export CC=${BIN}cl" >> /etc/basbashrc \
+  && echo "export CXX=${BIN}cl" >> /etc/bashrc \
+  && echo "export RC=${BIN}rc" >> /etc/bashrc \
+  && echo "source /opt/msvc/msvcenv-native.sh" >> /etc/bashrc'
+
+WORKDIR /nuke_build_directory
+
+ENV CMAKE_PREFIX_PATH=/usr/local/nuke_install \
+  PATH=/opt/msvc/bin/x64:$PATH \
+  GLOBAL_TOOLCHAIN=/nukedockerbuild/toolchain.cmake
 ENV NUKE_VERSION=15.0

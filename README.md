@@ -11,12 +11,14 @@ Build the image you need locally. This can be done with the build.sh or build.ps
 
 ### Linux
 ```bash
-./build.sh 15.1
+./build.sh 15.1 linux
 ```
 
 ### Windows
+Make sure you have `wine` installed for the installer to run.
+
 ```bash
-./build.ps1 15.1
+./build.sh 15.1 windows
 ```
 
 It is recommended to keep the builded images in your own registry, so you don't need to build each use.
@@ -45,17 +47,21 @@ depending on your local internet connection.
 
 #### Linux:
 ```bash
-docker run --rm nukedockerbuild:15.0 bash -c "cd /usr/local/nuke_install/tests && cmake . -B build && cmake --build build"
+docker run --rm nukedockerbuild:15.0-linux bash -c "cd /usr/local/nuke_install/tests && cmake . -B build && cmake --build build"
 ```
 
 #### Windows:
-##### Powershell
 ```bash
-docker run --rm `
-    nukedockerbuild:13.0-windows-latest `
-    powershell -Command "cd C:\nuke_install\tests ; `
-    cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; `
-    cmake --build build --config Release"
+docker run --rm nukedockerbuild:16.0-windows bash -c "
+    cd /usr/local/nuke_install/tests && \
+    cmake . \
+        -GNinja \
+        -DCMAKE_SYSTEM_NAME=Windows \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_TOOLCHAIN_FILE=$GLOBAL_TOOLCHAIN \
+        -B build && \
+    cmake --build build
+"
 ```
 
 ### Building the current directory (that contains a CMakeLists file)
