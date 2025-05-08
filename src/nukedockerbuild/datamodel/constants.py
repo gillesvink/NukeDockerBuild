@@ -42,7 +42,7 @@ class OperatingSystem(str, Enum):
         Returns:
             matched enum.
         """
-        if name == "windows_x86":
+        if name == "windows_x86_64":
             return cls.WINDOWS
         return cls.LINUX
 
@@ -56,7 +56,7 @@ class UpstreamImage(str, Enum):
     WINDOWS_SERVERCORE_LTSC2022: str = (
         "mcr.microsoft.com/windows/servercore:ltsc2022"
     )
-    DEBIAN_BOOKWORM: str = "debian:bookworm"
+    UBUNTU_22_04: str = "ubuntu:22.04"
 
 
 JSON_DATA_SOURCE = (
@@ -67,7 +67,7 @@ JSON_DATA_SOURCE = (
 
 
 DEVTOOLSETS = {
-    16: "gcc-toolset-11",  # probably, as its mentioned in vfx ref
+    16: "gcc-toolset-11",
     15: "gcc-toolset-11",
     14: "devtoolset-9",
     13: "devtoolset-6",
@@ -76,23 +76,16 @@ DEVTOOLSETS = {
 """Matched devtoolset to Nuke major version."""
 
 VISUALSTUDIO_BUILDTOOLS = {
-    16: "2022",
-    15: "2022",
-    14: "2019",
-    13: "2017",
-    12: "2015",
+    16: "17",
+    15: "17",
+    14: "16",
+    13: "15",
 }
 """Matched Visual Studio build toolset to Nuke major version."""
 
 
-NUKE_INSTALL_DIRECTORIES: dict[OperatingSystem, str] = {
-    OperatingSystem.LINUX: "/usr/local/nuke_install",
-    OperatingSystem.WINDOWS: "C:\\\\nuke_install",
-}
-"""Install directory for Nuke per operating system."""
+NUKE_INSTALL_DIRECTORY: str = "/usr/local/nuke_install"
+"""Install directory for Nuke."""
 
-NUKE_TESTS_DIRECTORIES: dict[OperatingSystem, str] = {
-    OperatingSystem.LINUX: "/nuke_tests/",
-    OperatingSystem.WINDOWS: "C:\\\\nuke_tests\\",
-}
-"""Tests directory for Nuke per operating system."""
+NUKE_TESTS_DIRECTORY: str = "/nuke_tests/"
+"""Tests directory for Nuke."""

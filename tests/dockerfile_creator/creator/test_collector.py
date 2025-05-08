@@ -33,25 +33,25 @@ def dummy_data() -> dict:
         "15": {
             "15.1v5": {
                 "installer": {
-                    "mac_x86": "mac_url",
+                    "mac_x86_64": "mac_url",
                     "mac_arm": "mac_arm_url",
                 }
             },
             "15.0v2": {
                 "installer": {
-                    "mac_x86": "mac_url",
-                    "linux_x86": "linux_url",
-                    "windows_x86": "windows_url",
+                    "mac_x86_64": "mac_url",
+                    "linux_x86_64": "linux_url",
+                    "windows_x86_64": "windows_url",
                 },
             },
         },
         "14": {
             "14.1v2": {
                 "installer": {
-                    "mac_x86": "mac_url",
-                    "mac_arm": None,
-                    "linux_x86": "linux_url",
-                    "windows_x86": "windows_url",
+                    "mac_x86_64": "mac_url",
+                    "mac_arm_64": None,
+                    "linux_x86_64": "linux_url",
+                    "windows_x86_64": "windows_url",
                 },
             },
         },
@@ -143,14 +143,14 @@ def test_get_dockerfiles_but_skip_12() -> None:
         "15": {
             "15.0v2": {
                 "installer": {
-                    "linux_x86": "linux_url",
+                    "linux_x86_64": "linux_url",
                 },
             },
         },
         "12": {
             "12.0v2": {
                 "installer": {
-                    "linux_x86": "linux_url",
+                    "linux_x86_64": "linux_url",
                 },
             },
         },

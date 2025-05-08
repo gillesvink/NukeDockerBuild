@@ -60,7 +60,6 @@ def get_dockerfiles(data: dict) -> list[Dockerfile]:
         for _, outer_value in data.items()
         for inner_key, inner_value in outer_value.items()
     }
-
     dockerfiles: list[Dockerfile] = []
     for version, release_data in releases.items():
         installer_data = release_data.get("installer")
@@ -70,7 +69,7 @@ def get_dockerfiles(data: dict) -> list[Dockerfile]:
         if version_number < 13:
             continue
 
-        for os in ["linux_x86", "windows_x86"]:
+        for os in ["linux_x86_64", "windows_x86_64"]:
             install_url = installer_data.get(os)
             if not install_url:
                 continue

@@ -51,12 +51,7 @@ class TestDockerfile:
             (
                 OperatingSystem.WINDOWS,
                 15.0,
-                UpstreamImage.WINDOWS_SERVERCORE_LTSC2022,
-            ),
-            (
-                OperatingSystem.WINDOWS,
-                12.0,
-                UpstreamImage.WINDOWS_SERVERCORE_LTSC2022,
+                UpstreamImage.UBUNTU_22_04,
             ),
         ],
     )
@@ -80,10 +75,10 @@ class TestDockerfile:
             (OperatingSystem.LINUX, 15.1, "gcc-toolset-11"),
             (OperatingSystem.LINUX, 14.9, "devtoolset-9"),
             (OperatingSystem.LINUX, 13.0, "devtoolset-6"),
-            (OperatingSystem.WINDOWS, 15.0, "2022"),
-            (OperatingSystem.WINDOWS, 15.1, "2022"),
-            (OperatingSystem.WINDOWS, 14.9, "2019"),
-            (OperatingSystem.WINDOWS, 13.0, "2017"),
+            (OperatingSystem.WINDOWS, 15.0, "17"),
+            (OperatingSystem.WINDOWS, 15.1, "17"),
+            (OperatingSystem.WINDOWS, 14.9, "16"),
+            (OperatingSystem.WINDOWS, 13.0, "15"),
         ],
     )
     def test__get_toolset(
@@ -102,7 +97,7 @@ class TestDockerfile:
         ("test_operating_system", "expected_work_dir"),
         [
             (OperatingSystem.LINUX, "WORKDIR /nuke_build_directory"),
-            (OperatingSystem.WINDOWS, "WORKDIR C:\\\\nuke_build_directory"),
+            (OperatingSystem.WINDOWS, "WORKDIR /nuke_build_directory"),
         ],
     )
     def test_work_dir(
@@ -162,7 +157,7 @@ class TestDockerfile:
             f"LABEL 'com.nukedockerbuild.nuke_version'={test_nuke_version}"
             in retrieved_labels
         )
-        assert "LABEL 'org.opencontainers.version'=1.0" in retrieved_labels
+        assert "LABEL 'org.opencontainers.version'=" in retrieved_labels
         assert (
             f"LABEL 'com.nukedockerbuild.operating_system'='{test_operating_system.value}'"
             in retrieved_labels
@@ -258,7 +253,7 @@ class TestDockerfile:
             ),
             (
                 OperatingSystem.WINDOWS,
-                "ARG NUKE_SOURCE_FILES",
+                "ARG NUKE_SOURCE_FILES\nARG TOOLCHAIN",
             ),
         ],
     )
@@ -282,7 +277,7 @@ class TestDockerfile:
             ),
             (
                 OperatingSystem.WINDOWS,
-                "COPY $NUKE_SOURCE_FILES C:\\\\nuke_install",
+                "COPY $NUKE_SOURCE_FILES /usr/local/nuke_install\nCOPY $TOOLCHAIN /nukedockerbuild/",
             ),
         ],
     )

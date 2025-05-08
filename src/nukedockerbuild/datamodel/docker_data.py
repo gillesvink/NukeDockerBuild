@@ -21,7 +21,7 @@ from nukedockerbuild.datamodel.commands import (
 )
 from nukedockerbuild.datamodel.constants import (
     DEVTOOLSETS,
-    NUKE_INSTALL_DIRECTORIES,
+    NUKE_INSTALL_DIRECTORY,
     VISUALSTUDIO_BUILDTOOLS,
     OperatingSystem,
     UpstreamImage,
@@ -39,11 +39,7 @@ class Dockerfile:
     @property
     def work_dir(self) -> str:
         """Return the work dir."""
-        return (
-            "WORKDIR C:\\\\nuke_build_directory"
-            if self.operating_system == OperatingSystem.WINDOWS
-            else "WORKDIR /nuke_build_directory"
-        )
+        return "WORKDIR /nuke_build_directory"
 
     @property
     def run_commands(self) -> str:
@@ -72,11 +68,11 @@ class Dockerfile:
         """Return image labels as a string."""
         label_prefix = "org.opencontainers"
         labels = {
-            f"{label_prefix}.version": 1.0,
+            f"{label_prefix}.version": 2.0,
             f"{label_prefix}.image.created": datetime.now().strftime("%Y-%m-%d"),
-            f"{label_prefix}.image.description": "Ready to use Image for building Nuke plugins.",
+            f"{label_prefix}.image.description": "Ready to use image for building Nuke plugins.",
             f"{label_prefix}.license": "MIT",
-            f"{label_prefix}.url": "https://github.com/gillesvink/NukeDockerBuild",
+            f"{label_prefix}.url": "https://codeberg.org/gillesvink/NukeDockerBuild",
         }
         label_prefix = "com.nukedockerbuild"
         additional_labels = {
@@ -99,14 +95,18 @@ class Dockerfile:
     def args(self) -> str:
         """Return all arguments necessary."""
         all_args = ["NUKE_SOURCE_FILES"]
+        if self.operating_system == OperatingSystem.WINDOWS:
+            all_args.append("TOOLCHAIN")
         return "\n".join(f"ARG {argument}" for argument in all_args)
 
     @property
     def copy(self) -> str:
         """Additional copy statements to include."""
         nuke_sources = (
-            f"COPY $NUKE_SOURCE_FILES {NUKE_INSTALL_DIRECTORIES[self.operating_system]}"
+            f"COPY $NUKE_SOURCE_FILES {NUKE_INSTALL_DIRECTORY}"
         )
+        if self.operating_system == OperatingSystem.WINDOWS:
+            return f"{nuke_sources}\nCOPY $TOOLCHAIN /nukedockerbuild/"
         return f"{nuke_sources}"
 
     @property
@@ -124,7 +124,7 @@ class Dockerfile:
     def upstream_image(self) -> UpstreamImage:
         """Return matching upstream image."""
         if self.operating_system == OperatingSystem.WINDOWS:
-            return UpstreamImage.WINDOWS_SERVERCORE_LTSC2022
+            return UpstreamImage.UBUNTU_22_04
         if self.nuke_version >= 15.0:
             return UpstreamImage.ROCKYLINUX_8
         if self.nuke_version < 15.0 and self.nuke_version >= 14.0:
