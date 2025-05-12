@@ -34,24 +34,19 @@ This data is used once a day to check if there is anything new a new dockerfile 
 First of all make sure you have Docker installed on your system. Guides can be found here at [Docker Install](https://docs.docker.com/engine/install/).
 Once installed, you can test the docker image by running the command provided here. There might be some warnings of deprecation, that is because some source code in the examples uses deprecated functions.
 
-### Windows docker requirements
-Windows has some additional requirements to run this image. You need to have at least Windows 11 Pro or greater. Besides that, you need to 'switch to Windows containers' in the Docker Desktop application.
-
-![Switch to Windows Containers](./resources/switch_to_windows.png)
-
-Else it will use the Windows Subsystem for Linux (which is basically a virtualization of the Linux system, allowing you to even build Linux plugins on Windows.)
-
 ### Run tests locally
 Beneath here are some quick tests to verify everything is working on your system. It should pass compiling (this is a test for a Nuke 15 image). It might take a while for the image to be downloaded
 depending on your local internet connection.
 
 #### Linux:
 ```bash
-docker run --rm nukedockerbuild:15.0-linux bash -c "cd /usr/local/nuke_install/tests && cmake . -B build && cmake --build build"
+./build.sh 15.1 linux
+docker run --rm nukedockerbuild:15.1-linux bash -c "cd /usr/local/nuke_install/tests && cmake . -B build && cmake --build build"
 ```
 
 #### Windows:
 ```bash
+./build.sh 15.1 windows
 docker run --rm nukedockerbuild:16.0-windows bash -c "
     cd /usr/local/nuke_install/tests && \
     cmake . \
@@ -73,21 +68,10 @@ docker run --rm -v "$(pwd):/nuke_build_directory \
     "cmake . -B build && cmake --build build
 ```
 
-#### Windows:
-On Windows it is important that `--isolution=process` is set as it is mounting the directory, else there will be issues with cleaning files in the mounted directory. Also, for CMake building it requires the config to be specified for release using `--config Release`.
-##### Powershell
-```bash
-docker run --rm --isolation=process `
-    -v ${PWD}:C:\nuke_build_directory `
-    nukedockerbuild:15.0-windows-latest powershell -Command `
-    "cmake . -DCMAKE_GENERATOR_PLATFORM=x64 -B build ; `
-    cmake --build build --config Release"
-```
-
 ## ⚙️ Technical info
 The images depend on the specs provided by the [NDK documentation](https://learn.foundry.com/nuke/developers/13.2/ndkdevguide/intro/pluginbuildinginstallation.html) and the [VFX reference platform](https://vfxplatform.com/).
 
-Nuke will always be installed at `/usr/local/nuke_install` on Linux and `C:\nuke_install` on Windows. The entry directory if you execute this image will be `/nuke_build_directory` on Linux and `C:\nuke_build_directory` on Windows.
+Nuke will always be installed at `/usr/local/nuke_install` The entry directory if you execute this image will be `/nuke_build_directory`.
 
 The image also has the `NUKE_VERSION` environment set, this will always contain the version that is available in the image. For example `15.0`
 
@@ -95,8 +79,9 @@ The image also has the `NUKE_VERSION` environment set, this will always contain 
 All Linux images are based on Red Hat based images. This means [Rocky Linux](https://hub.docker.com/_/rockylinux) for Nuke 15+ and [CentOS](https://hub.docker.com/_/centos) for anything lower than 15. As [Foundry is using Rocky](https://learn.foundry.com/nuke/content/release_notes/15.0/nuke_15.0v1_releasenotes.html), I choose to stick to that as well. However it is basically identical to Alma.
 
 ### Windows
-For Windows the [Server Core ltsc2022](https://hub.docker.com/_/microsoft-windows-servercore) image is used. Besides that, for package installation the [Chocolatey package registry](https://community.chocolatey.org/packages) is used to install both the VS Build Tools as well as CMake.
-
+Windows images are based on Ubuntu 22.04 (LTSC). They use the [wine-msvc](https://github.com/mstorsjo/msvc-wine) project to make cross compilation possible. As they mention:
+> This downloads and unpacks the necessary Visual Studio components using the same installer manifests as Visual Studio 2017/2019's installer uses. Downloading and installing it requires accepting the license, available at https://go.microsoft.com/fwlink/?LinkId=2086102 for the currently latest version.
+So be sure to read that before using this project.
 
 ## ❤️ Thanks
 Thanks to everyone who contributed anything to the images that are used in these dockerfiles and to the maintainers of all plugins used! Without all the open source code applications that are available this would never have been possible.
