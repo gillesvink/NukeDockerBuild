@@ -2,12 +2,13 @@
 
 @maintainer: Gilles Vink
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 
 from nukedockerbuild.datamodel.constants import (
-    NUKE_INSTALL_DIRECTORIES,
+    NUKE_INSTALL_DIRECTORY,
     OperatingSystem,
     UpstreamImage,
 )
@@ -124,16 +125,45 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
     OperatingSystem.WINDOWS: [
         DockerCommand(
             [
-                r'powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('
-                "'https://community.chocolatey.org/install.ps1'))"
-                r'" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"',
-                "choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y",
-                "choco install visualstudio{toolset}buildtools -y",
-                "choco install visualstudio{toolset}-workload-vctools --package-parameters '--includeRecommended' -y",
-                'powershell -Command "Remove-Item -Path \\"$env:TEMP\\*\\" -Force -Recurse"',
-                "powershell -Command \"Remove-Item -Path 'C:\\ProgramData\\Package Cache\\*' -Force -Recurse\"",
-            ],
-            minimum_version=13.0,
+                "apt-get update",
+                "apt-get install wine64 python3 msitools ca-certificates git wget ninja-build winbind -y ",
+                "apt-get clean -y",
+                "rm -rf /var/lib/apt/lists/*",
+                "wget https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-linux-x86_64.sh",
+                "chmod +x cmake-3.29.3-linux-x86_64.sh",
+                "./cmake-3.29.3-linux-x86_64.sh --prefix=/usr/local --skip-license",
+                "rm cmake-3.29.3-linux-x86_64.sh",
+            ]
+        ),
+        DockerCommand(
+            [
+                "$(command -v wine64 || command -v wine || false) wineboot --init",
+                "while pgrep wineserver > /dev/null; do sleep 1; done",
+                # Based on https://github.com/mstorsjo/msvc-wine/blob/master/Dockerfile
+            ]
+        ),
+        DockerCommand(
+            [
+                "cd ~/",
+                "git clone https://github.com/mstorsjo/msvc-wine.git",
+                "cd msvc-wine",
+                "git checkout 44dc13b5e62ecc2373fbe7e4727a525001f403f4",
+                "PYTHONUNBUFFERED=1 ./vsdownload.py --major {toolset} --accept-license --dest /opt/msvc",
+                "./install.sh /opt/msvc",
+                "mv ./msvcenv-native.sh /opt/msvc",
+                "cd ../ && rm -rf ./msvc-wine",
+                "bash -c 'export BIN=/opt/msvc/bin/x64/",
+                ". /opt/msvc/msvcenv-native.sh",
+                'MSVCDIR=$(. "${{BIN}}msvcenv.sh" && echo $MSVCDIR)',
+                r"MSVCDIR=${{MSVCDIR//\\\\//}}",
+                r"MSVCDIR=${{MSVCDIR#z:}}",
+                'echo "export BIN=${{BIN}}" >> /etc/bashrc',
+                'echo "export MSVCDIR=$MSVCDIR" >> /etc/bashrc',
+                'echo "export CC=${{BIN}}cl" >> /etc/basbashrc',
+                'echo "export CXX=${{BIN}}cl" >> /etc/bashrc',
+                'echo "export RC=${{BIN}}rc" >> /etc/bashrc',
+                "echo \"source /opt/msvc/msvcenv-native.sh\" >> /etc/bashrc'",
+            ]
         ),
     ],
 }
@@ -142,9 +172,7 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
 OS_ENVIRONMENTS: dict[OperatingSystem, DockerEnvironments] = {
     OperatingSystem.LINUX: DockerEnvironments(
         {
-            "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORIES[
-                OperatingSystem.LINUX
-            ],
+            "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORY,
             "BASH_ENV": "/usr/bin/scl_enable",
             "ENV": "/usr/bin/scl_enable",
             "PROMPT_COMMAND": "/usr/bin/scl_enable",
@@ -152,9 +180,9 @@ OS_ENVIRONMENTS: dict[OperatingSystem, DockerEnvironments] = {
     ),
     OperatingSystem.WINDOWS: DockerEnvironments(
         {
-            "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORIES[
-                OperatingSystem.WINDOWS
-            ],
+            "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORY,
+            "PATH": "/opt/msvc/bin/x64:$PATH",
+            "GLOBAL_TOOLCHAIN": "/nukedockerbuild/toolchain.cmake",
         }
     ),
 }

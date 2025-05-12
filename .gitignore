@@ -1,7 +1,9 @@
 *.pyc
 *.drawio
 .vscode
-**/_nuke_sources
+_nuke_sources
 *.tgz
 .DS_Store
 *.egg-info
+nuke_source
+log.txt

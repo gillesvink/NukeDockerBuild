@@ -25,8 +25,8 @@ def test_operating_system_from_shortname(
 @pytest.mark.parametrize(
     ("test_mapped_name", "expected_os"),
     [
-        ("windows_x86", OperatingSystem.WINDOWS),
-        ("linux_x86", OperatingSystem.LINUX),
+        ("windows_x86_64", OperatingSystem.WINDOWS),
+        ("linux_x86_64", OperatingSystem.LINUX),
     ],
 )
 def test_operating_system_from_mapped_name(
