@@ -81,6 +81,7 @@ All Linux images are based on Red Hat based images. This means [Rocky Linux](htt
 ### Windows
 Windows images are based on Ubuntu 22.04 (LTSC). They use the [wine-msvc](https://github.com/mstorsjo/msvc-wine) project to make cross compilation possible. As they mention:
 > This downloads and unpacks the necessary Visual Studio components using the same installer manifests as Visual Studio 2017/2019's installer uses. Downloading and installing it requires accepting the license, available at https://go.microsoft.com/fwlink/?LinkId=2086102 for the currently latest version.
+
 So be sure to read that before using this project.
 
 ## ❤️ Thanks
