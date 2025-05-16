@@ -9,6 +9,8 @@ dockerfile_path="$1"
 target_folder="$2"
 
 url=$(grep "LABEL 'com.nukedockerbuild.nuke_source'" "$dockerfile_path" | awk -F"=" '{print $2}' | tr -d "'")
+version=$(grep "LABEL 'com.nukedockerbuild.nuke_version'" "$dockerfile_path" | awk -F"=" '{print $2}' | tr -d "'")
+
 if [ -z "$url" ]; then
     echo "Error: Label not found in the Dockerfile."
     exit 1
@@ -28,12 +30,20 @@ echo "Remove compressed Nuke"
 rm ${nuke_temp_files}/${filename}
 
 echo "Install Nuke to ${target_folder}"
-chmod +x ${nuke_temp_files}/${filename%.*}.run
-${nuke_temp_files}/${filename%.*}.run --accept-foundry-eula --prefix=${target_folder} --exclude-subdir
+if (( $(echo "$version < 12.0" | bc -l) )); then
+    unzip ${nuke_temp_files}/${filename%.*}-installer -d ${target_folder}
+else
+    chmod +x ${nuke_temp_files}/${filename%.*}.run
+    ${nuke_temp_files}/${filename%.*}.run --accept-foundry-eula --prefix=${target_folder} --exclude-subdir
+fi
 
 echo "Keep only source files"
-mkdir ${target_folder}/tests
-cp -r ${target_folder}/Documentation/NDKExamples/examples/* ${target_folder}/tests
+mkdir -p ${target_folder}/tests
+if (( $(echo "$version < 12.0" | bc -l) )); then
+    cp -r ${target_folder}/Documentation/NDK/examples/* ${target_folder}/tests
+else
+    cp -r ${target_folder}/Documentation/NDKExamples/examples/* ${target_folder}/tests
+fi
 
 find ${target_folder} -mindepth 1 -maxdepth 1 ! -name "tests" ! -name "cmake" ! -name "include" ! -name "*Fdk*" ! -name "*Fn*" ! -name "*Ndk*" ! -name "*DDI*" ! -name "source" -exec rm -rf {} \;
 

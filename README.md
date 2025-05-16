@@ -1,4 +1,4 @@
-> Ready to use build images to for Nuke plugins for Linux and Windows.
+> Ready to use build images for Nuke plugins for Linux and Windows.
 
 --- 
 The images produced here will include everything you need to build Nuke plugins. This includes the compiler for C++ ([gcc-toolsets](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/12) on Linux, [Visual Studio](https://visualstudio.microsoft.com/downloads/) on Windows, [CMake](https://cmake.org/) and the Nuke files required to compile.)
@@ -7,7 +7,9 @@ These images are meant for both local development using development containers a
 
 
 ## How to use
-Build the image you need locally. This can be done with the build.sh or build.ps1 scripts. Specify the Nuke version you need, and it will build the correct image to use. For example 15.1 is specified in the examples here:
+Build the image you need locally. This can be done with the build.sh or build. Specify the Nuke version you need, and it will build the correct image to use. For example 15.1 is specified in the examples here:
+
+It is build within a separate dind container, and then copied over to the host. This makes it possible to build images with just Docker installed. All necessary dependencies will be installed automatically within the dind container.
 
 ### Linux
 ```bash
@@ -15,8 +17,6 @@ Build the image you need locally. This can be done with the build.sh or build.ps
 ```
 
 ### Windows
-Make sure you have `wine` installed for the installer to run.
-
 ```bash
 ./build.sh 15.1 windows
 ```

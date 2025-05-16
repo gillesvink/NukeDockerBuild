@@ -2,6 +2,7 @@
 
 @maintainer: Gilles Vink
 """
+
 from __future__ import annotations
 
 from enum import Enum
@@ -53,9 +54,6 @@ class UpstreamImage(str, Enum):
     ROCKYLINUX_8: str = "rockylinux:8"
     CENTOS_7_9: str = "centos:centos7.9.2009"
     CENTOS_7_4: str = "centos:centos7.4.1708"
-    WINDOWS_SERVERCORE_LTSC2022: str = (
-        "mcr.microsoft.com/windows/servercore:ltsc2022"
-    )
     UBUNTU_22_04: str = "ubuntu:22.04"
 
 
@@ -71,7 +69,9 @@ DEVTOOLSETS = {
     15: "gcc-toolset-11",
     14: "devtoolset-9",
     13: "devtoolset-6",
-    12: "devtoolset-2",
+    12: "devtoolset-6",
+    11: "gcc gcc-c++",
+    10: "gcc gcc-c++",
 }
 """Matched devtoolset to Nuke major version."""
 

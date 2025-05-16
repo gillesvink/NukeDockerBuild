@@ -7,30 +7,33 @@ fi
 
 NUKEVERSION="$1"
 OPERATING_SYSTEM="$2"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if command -v docker &> /dev/null; then
+    COMMAND="docker"
+else
+    echo "Docker not installed. Please install that first."
+    exit 1
+fi
+
+echo "Using $COMMAND for build."
 
 echo "Starting build for: '${NUKEVERSION}'."
+mkdir -p build
 
-DOCKERFILE_DIR=dockerfiles/${NUKEVERSION}/${OPERATING_SYSTEM}
+docker run \
+    -v "${SCRIPT_DIR}:/nukedockerbuild" \
+    -v ${SCRIPT_DIR}/build:/build \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    --rm \
+    docker.io/docker:dind \
+    sh -c "apk add --no-cache bash && \
+    /nukedockerbuild/scripts/build.sh ${NUKEVERSION} ${OPERATING_SYSTEM}"
 
-if [ "$OPERATING_SYSTEM" == "windows" ]; then
-    cp dependencies/windows/toolchain.cmake $DOCKERFILE_DIR
-fi
+docker load -i ${SCRIPT_DIR}/build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar
 
-
-cd dockerfiles/${NUKEVERSION}/${OPERATING_SYSTEM}
-echo "Creating image for Nuke version: ${NUKEVERSION}:${OPERATING_SYSTEM}"
-SOURCES_DIR="_nuke_sources"
-
-mkdir -p ${SOURCES_DIR}
-../../../scripts/get_nuke_${OPERATING_SYSTEM}.sh Dockerfile ${SOURCES_DIR}
-
-if [ -d "cmake" ]; then
-    echo "Found cmake folder for backwards compatibility"
-    cp -r cmake $SOURCES_DIR
-fi
-
-docker buildx build \
-    -t nukedockerbuild:$NUKEVERSION-${OPERATING_SYSTEM} \
-    --build-arg NUKE_SOURCE_FILES=$SOURCES_DIR \
-    .
-
+docker run \
+    -v "${SCRIPT_DIR}/build:/build" \
+    --rm \
+    docker.io/docker:dind \
+    sh -c "rm -rf /build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar"
