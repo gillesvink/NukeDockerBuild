@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
-LABEL 'org.opencontainers.version'=2.0
-LABEL 'org.opencontainers.image.created'='2025-05-08'
+LABEL 'org.opencontainers.version'=2.1
+LABEL 'org.opencontainers.image.created'='2025-05-16'
 LABEL 'org.opencontainers.image.description'='Ready to use image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
 LABEL 'org.opencontainers.url'='https://codeberg.org/gillesvink/NukeDockerBuild'
@@ -17,10 +17,10 @@ COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
 COPY $TOOLCHAIN /nukedockerbuild/
 
 RUN apt-get update \
-  && apt-get install wine64 python3 msitools ca-certificates git wget ninja-build winbind -y  \
+  && apt-get install wine64 python3 msitools ca-certificates git curl ninja-build winbind -y  \
   && apt-get clean -y \
   && rm -rf /var/lib/apt/lists/* \
-  && wget https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-linux-x86_64.sh \
+  && curl -LO https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-linux-x86_64.sh \
   && chmod +x cmake-3.29.3-linux-x86_64.sh \
   && ./cmake-3.29.3-linux-x86_64.sh --prefix=/usr/local --skip-license \
   && rm cmake-3.29.3-linux-x86_64.sh

@@ -31,7 +31,7 @@ echo "Creating image for Nuke version: ${NUKEVERSION}:${OPERATING_SYSTEM}"
 SOURCES_DIR="_nuke_sources"
 
 mkdir -p ${SOURCES_DIR}
-# ${MAIN_DIR}/scripts/get_nuke_${OPERATING_SYSTEM}.sh Dockerfile ${SOURCES_DIR}
+${MAIN_DIR}/scripts/get_nuke_${OPERATING_SYSTEM}.sh Dockerfile ${SOURCES_DIR}
 
 if [ -d "cmake" ]; then
     echo "Found cmake folder for backwards compatibility"

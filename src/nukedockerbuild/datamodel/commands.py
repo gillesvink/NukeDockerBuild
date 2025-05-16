@@ -209,10 +209,10 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
         DockerCommand(
             [
                 "apt-get update",
-                "apt-get install wine64 python3 msitools ca-certificates git wget ninja-build winbind -y ",
+                "apt-get install wine64 python3 msitools ca-certificates git curl ninja-build winbind -y ",
                 "apt-get clean -y",
                 "rm -rf /var/lib/apt/lists/*",
-                "wget https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-linux-x86_64.sh",
+                "curl -LO https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-linux-x86_64.sh",
                 "chmod +x cmake-3.29.3-linux-x86_64.sh",
                 "./cmake-3.29.3-linux-x86_64.sh --prefix=/usr/local --skip-license",
                 "rm cmake-3.29.3-linux-x86_64.sh",
@@ -256,9 +256,6 @@ OS_ENVIRONMENTS: dict[OperatingSystem, DockerEnvironments] = {
     OperatingSystem.LINUX: DockerEnvironments(
         {
             "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORY,
-            "BASH_ENV": "/usr/bin/scl_enable",
-            "ENV": "/usr/bin/scl_enable",
-            "PROMPT_COMMAND": "/usr/bin/scl_enable",
         }
     ),
     OperatingSystem.WINDOWS: DockerEnvironments(
