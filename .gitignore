@@ -7,3 +7,5 @@ _nuke_sources
 *.egg-info
 nuke_source
 log.txt
+dockerfiles/**/toolchain.cmake
+*.tar
