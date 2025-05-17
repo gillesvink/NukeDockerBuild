@@ -13,8 +13,8 @@ DOCKERFILE_DIR=${MAIN_DIR}/dockerfiles/${NUKEVERSION}/${OPERATING_SYSTEM}
 apk add curl bc
 
 if [ "$OPERATING_SYSTEM" == "windows" ]; then
-    if (( $(echo "$NUKEVERSION < 13.0" | bc -l) )); then
-        echo "Nuke versions lower than 13.0 are not supported on Windows."
+    if (( $(echo "$NUKEVERSION < 12.0" | bc -l) )); then
+        echo "Nuke versions lower than 12.0 are not supported on Windows."
         exit 1
     fi
     echo http://dl-cdn.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories

@@ -138,7 +138,7 @@ def test_get_dockerfiles(dummy_data: dict) -> None:
     assert get_dockerfiles(dummy_data) == expected_dockerfiles
 
 
-def test_get_dockerfiles_but_skip_12_only_on_windows() -> None:
+def test_get_dockerfiles_but_skip_11_only_on_windows() -> None:
     """Test to not include version 12 as this is not valid for images."""
     dummy_data = {
         "15": {
@@ -148,8 +148,8 @@ def test_get_dockerfiles_but_skip_12_only_on_windows() -> None:
                 },
             },
         },
-        "12": {
-            "12.0v2": {
+        "11": {
+            "11.0v2": {
                 "installer": {
                     "windows_x86_64": "windows_url",
                 },

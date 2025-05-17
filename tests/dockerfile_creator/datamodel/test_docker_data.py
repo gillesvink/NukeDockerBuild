@@ -83,6 +83,7 @@ class TestDockerfile:
             (OperatingSystem.WINDOWS, 15.1, "17"),
             (OperatingSystem.WINDOWS, 14.9, "16"),
             (OperatingSystem.WINDOWS, 13.0, "15"),
+            (OperatingSystem.WINDOWS, 12.0, "15"),
         ],
     )
     def test__get_toolset(

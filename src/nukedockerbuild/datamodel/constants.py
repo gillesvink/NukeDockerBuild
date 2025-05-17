@@ -80,6 +80,7 @@ VISUALSTUDIO_BUILDTOOLS = {
     15: "17",
     14: "16",
     13: "15",
+    12: "15",
 }
 """Matched Visual Studio build toolset to Nuke major version."""
 
