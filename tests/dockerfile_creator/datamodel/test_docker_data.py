@@ -48,10 +48,12 @@ class TestDockerfile:
             (OperatingSystem.LINUX, 13.2, UpstreamImage.CENTOS_7_4),
             (OperatingSystem.LINUX, 13.0, UpstreamImage.CENTOS_7_4),
             (OperatingSystem.LINUX, 12.0, UpstreamImage.CENTOS_7_4),
+            (OperatingSystem.LINUX, 11.0, UpstreamImage.CENTOS_7_4),
+            (OperatingSystem.LINUX, 10.0, UpstreamImage.CENTOS_7_4),
             (
                 OperatingSystem.WINDOWS,
                 15.0,
-                UpstreamImage.UBUNTU_22_04,
+                UpstreamImage.DEBIAN_BOOKWORM,
             ),
         ],
     )
@@ -75,10 +77,13 @@ class TestDockerfile:
             (OperatingSystem.LINUX, 15.1, "gcc-toolset-11"),
             (OperatingSystem.LINUX, 14.9, "devtoolset-9"),
             (OperatingSystem.LINUX, 13.0, "devtoolset-6"),
+            (OperatingSystem.LINUX, 12.0, "devtoolset-6"),
+            (OperatingSystem.LINUX, 11.0, "gcc gcc-c++"),
             (OperatingSystem.WINDOWS, 15.0, "17"),
             (OperatingSystem.WINDOWS, 15.1, "17"),
             (OperatingSystem.WINDOWS, 14.9, "16"),
             (OperatingSystem.WINDOWS, 13.0, "15"),
+            (OperatingSystem.WINDOWS, 12.0, "15"),
         ],
     )
     def test__get_toolset(
@@ -126,11 +131,7 @@ class TestDockerfile:
         environments_mock.__getitem__.assert_called_once_with(
             dummy_dockerfile.operating_system
         )
-        assert (
-            f"NUKE_VERSION={dummy_dockerfile.nuke_version}"
-            in collected_environments
-        )
-
+        assert f"NUKE_VERSION={dummy_dockerfile.nuke_version}" in collected_environments
 
     @pytest.mark.parametrize(
         ("test_operating_system", "test_nuke_version", "test_nuke_source"),
@@ -184,16 +185,20 @@ class TestDockerfile:
         os_commands_mock = MagicMock(wraps=OS_COMMANDS)
         image_commands_mock = MagicMock(wraps=IMAGE_COMMANDS)
 
-        with patch(
-            "nukedockerbuild.datamodel.docker_data.OS_COMMANDS",
-            os_commands_mock,
-        ) as os_commands_mock, patch(
-            "nukedockerbuild.datamodel.docker_data.IMAGE_COMMANDS",
-            image_commands_mock,
-        ), patch(
-            "nukedockerbuild.datamodel.docker_data.Dockerfile."
-            "_remove_invalid_commands_for_version"
-        ) as remove_commands_mock:
+        with (
+            patch(
+                "nukedockerbuild.datamodel.docker_data.OS_COMMANDS",
+                os_commands_mock,
+            ) as os_commands_mock,
+            patch(
+                "nukedockerbuild.datamodel.docker_data.IMAGE_COMMANDS",
+                image_commands_mock,
+            ),
+            patch(
+                "nukedockerbuild.datamodel.docker_data.Dockerfile."
+                "_remove_invalid_commands_for_version"
+            ) as remove_commands_mock,
+        ):
             test_dockerfile.run_commands
 
         image_commands_mock.get.assert_called_once_with(
@@ -235,7 +240,7 @@ class TestDockerfile:
         self,
         dummy_dockerfile: Dockerfile,
         test_nuke_version: float,
-        test_commands: DockerCommand(),
+        test_commands: DockerCommand([]),
         command_still_in_list: list[str],
     ) -> None:
         """Test command to be isolated from list if not matching version."""

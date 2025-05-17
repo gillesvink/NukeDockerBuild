@@ -1,33 +1,30 @@
 FROM rockylinux:8
 
-LABEL 'org.opencontainers.version'=1.0
-LABEL 'org.opencontainers.image.created'='2025-02-28'
-LABEL 'org.opencontainers.image.description'='Ready to use Image for building Nuke plugins.'
+LABEL 'org.opencontainers.version'=1.1
+LABEL 'org.opencontainers.image.created'='2025-05-16'
+LABEL 'org.opencontainers.image.description'='Ready to use image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
-LABEL 'org.opencontainers.url'='https://github.com/gillesvink/NukeDockerBuild'
+LABEL 'org.opencontainers.url'='https://codeberg.org/gillesvink/NukeDockerBuild'
 LABEL 'com.nukedockerbuild.based_on'='rockylinux:8'
 LABEL 'com.nukedockerbuild.operating_system'='linux'
 LABEL 'com.nukedockerbuild.nuke_version'=16.0
-LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/16.0v1/Nuke16.0v1-linux-x86_64.tgz'
+LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/16.0v2/Nuke16.0v2-linux-x86_64.tgz'
 
 ARG NUKE_SOURCE_FILES
 
 COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
 
-RUN echo 'Installing required packages.' \
-  && dnf install gcc-toolset-11 -y \
-  && dnf install cmake3 -y \
-  && dnf install mesa-libGLU-devel -y
+RUN dnf install gcc-toolset-11 -y \
+  && dnf install cmake3 git -y \
+  && dnf install mesa-libGLU-devel -y \
+  && dnf clean all \
+  && rm -rf /var/cache/dnf
 
-RUN echo 'Setting devtoolset to gcc-toolset-11.' \
-  && echo 'unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable gcc-toolset-11' >> /usr/bin/scl_enable \
-  && echo 'source scl_source enable gcc-toolset-11' >> /etc/bashrc \
+RUN echo 'source scl_source enable gcc-toolset-11' >> /usr/bin/scl_enable \
+  && echo 'source /usr/bin/scl_enable' >> /etc/bashrc \
   && chmod +x /usr/bin/scl_enable
 
 WORKDIR /nuke_build_directory
 
-ENV CMAKE_PREFIX_PATH=/usr/local/nuke_install \
-  BASH_ENV=/usr/bin/scl_enable \
-  ENV=/usr/bin/scl_enable \
-  PROMPT_COMMAND=/usr/bin/scl_enable
+ENV CMAKE_PREFIX_PATH=/usr/local/nuke_install
 ENV NUKE_VERSION=16.0

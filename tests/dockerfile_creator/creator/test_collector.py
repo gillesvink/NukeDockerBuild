@@ -77,12 +77,15 @@ def test_fetch_json_data_but_no_data_found(test_status_code: int) -> None:
     """Test to make sure we raise an exception when data is not found."""
     requests_get_mock = MagicMock(spec=Response)
     requests_get_mock.status_code = test_status_code
-    with patch(
-        "nukedockerbuild.creator.collector.requests.get",
-        return_value=requests_get_mock,
-    ), pytest.raises(
-        ValueError,
-        match="Request returned 404. Please check the URL and try again.",
+    with (
+        patch(
+            "nukedockerbuild.creator.collector.requests.get",
+            return_value=requests_get_mock,
+        ),
+        pytest.raises(
+            ValueError,
+            match="Request returned 404. Please check the URL and try again.",
+        ),
     ):
         fetch_json_data()
 
@@ -95,9 +98,7 @@ def test_fetch_json_data_but_no_data_found(test_status_code: int) -> None:
         ("9.1v3", 9.1),
     ],
 )
-def test__nuke_version_to_float(
-    test_nuke_version: str, expected_float: float
-) -> None:
+def test__nuke_version_to_float(test_nuke_version: str, expected_float: float) -> None:
     """Test to convert string Nuke version to float."""
     assert _nuke_version_to_float(test_nuke_version) == expected_float
 
@@ -137,29 +138,29 @@ def test_get_dockerfiles(dummy_data: dict) -> None:
     assert get_dockerfiles(dummy_data) == expected_dockerfiles
 
 
-def test_get_dockerfiles_but_skip_12() -> None:
+def test_get_dockerfiles_but_skip_11_only_on_windows() -> None:
     """Test to not include version 12 as this is not valid for images."""
     dummy_data = {
         "15": {
             "15.0v2": {
                 "installer": {
-                    "linux_x86_64": "linux_url",
+                    "windows_x86_64": "windows_url",
                 },
             },
         },
-        "12": {
-            "12.0v2": {
+        "11": {
+            "11.0v2": {
                 "installer": {
-                    "linux_x86_64": "linux_url",
+                    "windows_x86_64": "windows_url",
                 },
             },
         },
     }
     expected_dockerfiles = [
         Dockerfile(
-            operating_system=OperatingSystem.LINUX,
+            operating_system=OperatingSystem.WINDOWS,
             nuke_version=15.0,
-            nuke_source="linux_url",
+            nuke_source="windows_url",
         ),
     ]
     assert get_dockerfiles(dummy_data) == expected_dockerfiles

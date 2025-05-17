@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import os
-from copy import copy
+from copy import copy, deepcopy
 from dataclasses import dataclass
 from datetime import datetime
 from itertools import chain
@@ -50,7 +50,6 @@ class Dockerfile:
                 OS_COMMANDS.get(self.operating_system, []),
             )
         )
-        commands = list(commands)
         self._remove_invalid_commands_for_version(commands)
 
         formatted_commands = "\n\n".join(
@@ -102,9 +101,7 @@ class Dockerfile:
     @property
     def copy(self) -> str:
         """Additional copy statements to include."""
-        nuke_sources = (
-            f"COPY $NUKE_SOURCE_FILES {NUKE_INSTALL_DIRECTORY}"
-        )
+        nuke_sources = f"COPY $NUKE_SOURCE_FILES {NUKE_INSTALL_DIRECTORY}"
         if self.operating_system == OperatingSystem.WINDOWS:
             return f"{nuke_sources}\nCOPY $TOOLCHAIN /nukedockerbuild/"
         return f"{nuke_sources}"
@@ -124,7 +121,7 @@ class Dockerfile:
     def upstream_image(self) -> UpstreamImage:
         """Return matching upstream image."""
         if self.operating_system == OperatingSystem.WINDOWS:
-            return UpstreamImage.UBUNTU_22_04
+            return UpstreamImage.DEBIAN_BOOKWORM
         if self.nuke_version >= 15.0:
             return UpstreamImage.ROCKYLINUX_8
         if self.nuke_version < 15.0 and self.nuke_version >= 14.0:

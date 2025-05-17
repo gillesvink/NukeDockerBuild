@@ -1,11 +1,11 @@
-FROM ubuntu:22.04
+FROM debian:bookworm
 
-LABEL 'org.opencontainers.version'=2.0
-LABEL 'org.opencontainers.image.created'='2025-05-08'
+LABEL 'org.opencontainers.version'=2.1
+LABEL 'org.opencontainers.image.created'='2025-05-17'
 LABEL 'org.opencontainers.image.description'='Ready to use image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
 LABEL 'org.opencontainers.url'='https://codeberg.org/gillesvink/NukeDockerBuild'
-LABEL 'com.nukedockerbuild.based_on'='ubuntu:22.04'
+LABEL 'com.nukedockerbuild.based_on'='debian:bookworm'
 LABEL 'com.nukedockerbuild.operating_system'='windows'
 LABEL 'com.nukedockerbuild.nuke_version'=15.2
 LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/15.2v2/Nuke15.2v2-win-x86_64.zip'
@@ -17,10 +17,10 @@ COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
 COPY $TOOLCHAIN /nukedockerbuild/
 
 RUN apt-get update \
-  && apt-get install wine64 python3 msitools ca-certificates git wget ninja-build winbind -y  \
+  && apt-get install wine64 python3 msitools ca-certificates git curl ninja-build winbind -y  \
   && apt-get clean -y \
   && rm -rf /var/lib/apt/lists/* \
-  && wget https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-linux-x86_64.sh \
+  && curl -LO https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-linux-x86_64.sh \
   && chmod +x cmake-3.29.3-linux-x86_64.sh \
   && ./cmake-3.29.3-linux-x86_64.sh --prefix=/usr/local --skip-license \
   && rm cmake-3.29.3-linux-x86_64.sh

@@ -2,6 +2,7 @@
 
 @maintainer: Gilles Vink
 """
+
 from __future__ import annotations
 
 import logging
@@ -66,10 +67,12 @@ def get_dockerfiles(data: dict) -> list[Dockerfile]:
         version_number = _nuke_version_to_float(version)
 
         # As everything below Nuke 13 is considered EOL. Skipping it.
-        if version_number < 13:
+        if version_number < 10:
             continue
 
         for os in ["linux_x86_64", "windows_x86_64"]:
+            if os == "windows_x86_64" and version_number < 12:
+                continue
             install_url = installer_data.get(os)
             if not install_url:
                 continue

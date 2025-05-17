@@ -18,7 +18,7 @@ from nukedockerbuild.datamodel.constants import (
 class DockerCommand:
     """Object to store a docker command."""
 
-    commands: list[str] = field(default_factory=list)
+    commands: list[str]
     """List of commands related to this RUN command."""
     minimum_version: float | None = None
     """Minimum version it needs to run this command."""
@@ -50,36 +50,72 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
     UpstreamImage.ROCKYLINUX_8: [  # such an improvement compared to CentOS D:
         DockerCommand(
             [
-                "echo 'Installing required packages.'",
                 "dnf install {toolset} -y",
-                "dnf install cmake3 -y",
+                "dnf install cmake3 git -y",
                 "dnf install mesa-libGLU-devel -y",
+                "dnf clean all",
+                "rm -rf /var/cache/dnf",
             ]
         ),
     ],
     UpstreamImage.CENTOS_7_9: [
         DockerCommand(
             [
-                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
-                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
-                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
-                "echo 'Installing required packages.'",
                 "ulimit -n 1024",
-                "yum -y install epel-release",
-                "yum -y install centos-release-scl",
                 "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
                 "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
                 "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
+                "yum -y install centos-release-scl-rh ",
+                (
+                    r"sed -i 's/7/7.4.1708/g; s|^#\s*\(baseurl=http://\)mirror"
+                    r"|\1vault|g; /mirrorlist/d' "
+                    "/etc/yum.repos.d/CentOS-SCLo-*.repo"
+                ),
                 "yum -y install {toolset}",
-                "yum -y install cmake3",
-                "yum -y install mesa-libGLU-devel",
+                "yum clean all",
+                "rm -rf /var/cache/yum",
+            ]
+        ),
+        DockerCommand(
+            [
+                "ulimit -n 1024",
+                "yum update -y",
+                "yum -y install epel-release",
+                "yum -y install mesa-libGLU-devel make",
+                "cd /tmp/",
+                "curl -LO https://github.com/Kitware/CMake/releases/download/v3.27.7/cmake-3.27.7-linux-x86_64.sh",
+                "chmod +x cmake-3.27.7-linux-x86_64.sh",
+                "./cmake-3.27.7-linux-x86_64.sh --prefix=/usr/local --skip-license",
+                "rm cmake-3.27.7-linux-x86_64.sh",
+                "yum clean all",
+                "rm -rf /var/cache/yum",
+            ]
+        ),
+        DockerCommand(
+            [
+                "ulimit -n 1024",
+                "yum update -y",
+                "yum install -y autoconf curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-CPAN perl-devel xz",
+                "cd /tmp",
+                "curl -LO https://www.kernel.org/pub/software/scm/git/git-2.9.5.tar.xz",
+                "tar xf git-2.9.5.tar.xz",
+                "rm git-2.9.5.tar.xz",
+                "cd git-2.9.5",
+                "make configure",
+                "source scl_source enable {toolset}",
+                "./configure --prefix=/usr/local",
+                "make all",
+                "make install",
+                "cd ../",
+                "rm -rf git-2.9.5",
+                "yum clean all",
+                "rm -rf /var/cache/yum",
             ]
         ),
     ],
     UpstreamImage.CENTOS_7_4: [
         DockerCommand(
             [
-                "echo 'Installing devtoolset.'",
                 "ulimit -n 1024",
                 "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
                 "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
@@ -92,19 +128,67 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
                     "/etc/yum.repos.d/CentOS-SCLo-*.repo"
                 ),
                 "yum -y install {toolset}",
+                "yum clean all",
+                "rm -rf /var/cache/yum",
             ]
         ),
         DockerCommand(
             [
-                "sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo",
-                "sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo",
-                "sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo",
-                "echo 'Installing required packages.'",
                 "ulimit -n 1024",
+                "yum update -y",
                 "yum -y install epel-release",
-                "yum -y install cmake3",
-                "yum -y install mesa-libGLU-devel",
+                "yum -y install mesa-libGLU-devel make",
+                "cd /tmp/",
+                "curl -LO https://github.com/Kitware/CMake/releases/download/v3.27.7/cmake-3.27.7-linux-x86_64.sh",
+                "chmod +x cmake-3.27.7-linux-x86_64.sh",
+                "./cmake-3.27.7-linux-x86_64.sh --prefix=/usr/local --skip-license",
+                "rm cmake-3.27.7-linux-x86_64.sh",
+                "yum clean all",
+                "rm -rf /var/cache/yum",
             ]
+        ),
+        DockerCommand(
+            [
+                "ulimit -n 1024",
+                "yum update -y",
+                "yum install -y autoconf curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-CPAN perl-devel xz",
+                "cd /tmp",
+                "curl -LO https://www.kernel.org/pub/software/scm/git/git-2.9.5.tar.xz",
+                "tar xf git-2.9.5.tar.xz",
+                "rm git-2.9.5.tar.xz",
+                "cd git-2.9.5",
+                "source scl_source enable {toolset}",
+                "make configure",
+                "./configure --prefix=/usr/local",
+                "make all",
+                "make install",
+                "cd ../",
+                "rm -rf git-2.9.5",
+                "yum clean all",
+                "rm -rf /var/cache/yum",
+            ],
+            minimum_version=12.0,
+        ),
+        DockerCommand(
+            [
+                "ulimit -n 1024",
+                "yum update -y",
+                "yum install -y autoconf curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-CPAN perl-devel xz",
+                "cd /tmp",
+                "curl -LO https://www.kernel.org/pub/software/scm/git/git-2.9.5.tar.xz",
+                "tar xf git-2.9.5.tar.xz",
+                "rm git-2.9.5.tar.xz",
+                "cd git-2.9.5",
+                "make configure",
+                "./configure --prefix=/usr/local",
+                "make all",
+                "make install",
+                "cd ../",
+                "rm -rf git-2.9.5",
+                "yum clean all",
+                "rm -rf /var/cache/yum",
+            ],
+            maximum_version=11.3,
         ),
     ],
 }
@@ -113,23 +197,22 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
 OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
     OperatingSystem.LINUX: [
         DockerCommand(
-            [
-                "echo 'Setting devtoolset to {toolset}.'",
-                "echo 'unset BASH_ENV PROMPT_COMMAND ENV && source scl_source "
-                "enable {toolset}' >> /usr/bin/scl_enable",
-                "echo 'source scl_source enable {toolset}' >> /etc/bashrc",
+            commands=[
+                "echo 'source scl_source enable {toolset}' >> /usr/bin/scl_enable",
+                "echo 'source /usr/bin/scl_enable' >> /etc/bashrc",
                 "chmod +x /usr/bin/scl_enable",
-            ]
+            ],
+            minimum_version=12,
         ),
     ],
     OperatingSystem.WINDOWS: [
         DockerCommand(
             [
                 "apt-get update",
-                "apt-get install wine64 python3 msitools ca-certificates git wget ninja-build winbind -y ",
+                "apt-get install wine64 python3 msitools ca-certificates git curl ninja-build winbind -y ",
                 "apt-get clean -y",
                 "rm -rf /var/lib/apt/lists/*",
-                "wget https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-linux-x86_64.sh",
+                "curl -LO https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-linux-x86_64.sh",
                 "chmod +x cmake-3.29.3-linux-x86_64.sh",
                 "./cmake-3.29.3-linux-x86_64.sh --prefix=/usr/local --skip-license",
                 "rm cmake-3.29.3-linux-x86_64.sh",
@@ -162,7 +245,7 @@ OS_COMMANDS: dict[OperatingSystem, list[DockerCommand]] = {
                 'echo "export CC=${{BIN}}cl" >> /etc/basbashrc',
                 'echo "export CXX=${{BIN}}cl" >> /etc/bashrc',
                 'echo "export RC=${{BIN}}rc" >> /etc/bashrc',
-                "echo \"source /opt/msvc/msvcenv-native.sh\" >> /etc/bashrc'",
+                'echo "source /opt/msvc/msvcenv-native.sh" >> /etc/bashrc\'',
             ]
         ),
     ],
@@ -173,9 +256,6 @@ OS_ENVIRONMENTS: dict[OperatingSystem, DockerEnvironments] = {
     OperatingSystem.LINUX: DockerEnvironments(
         {
             "CMAKE_PREFIX_PATH": NUKE_INSTALL_DIRECTORY,
-            "BASH_ENV": "/usr/bin/scl_enable",
-            "ENV": "/usr/bin/scl_enable",
-            "PROMPT_COMMAND": "/usr/bin/scl_enable",
         }
     ),
     OperatingSystem.WINDOWS: DockerEnvironments(
