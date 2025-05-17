@@ -7,7 +7,7 @@ These images are meant for both local development using development containers a
 
 
 ## How to use
-Build the image you need locally. This can be done with the build.sh or build. Specify the Nuke version you need, and it will build the correct image to use. For example 15.1 is specified in the examples here:
+Build the image you need locally. This can be done with the `build.sh` script. Specify the Nuke version you need, and it will build the correct image to use. For example 15.1 is specified in the examples here:
 
 It is build within a separate dind container, and then copied over to the host. This makes it possible to build images with just Docker installed. All necessary dependencies will be installed automatically within the dind container.
 
@@ -22,7 +22,7 @@ Please note that it takes some time to run. It will show some Wine errors due to
 ./build.sh 15.1 windows
 ```
 
-It is recommended to keep the builded images in your own registry, so you don't need to build each use.
+It is recommended to push the builded images to your own registry, so you don't need to build each use.
 
 ## ⬆️ How is this updated? 
 Since Nuke requires every minor release to be compiled natively, it needs to have a docker image as well for each minor version.
