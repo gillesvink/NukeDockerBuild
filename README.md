@@ -17,6 +17,7 @@ It is build within a separate dind container, and then copied over to the host. 
 ```
 
 ### Windows
+Please note that it takes some time to run. It will show some Wine errors due to no display being available in the containerized build. This is fine however. (The entire build takes around ~15 minutes on my machine)
 ```bash
 ./build.sh 15.1 windows
 ```

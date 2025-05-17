@@ -17,7 +17,11 @@ if [ "$OPERATING_SYSTEM" == "windows" ]; then
         echo "Nuke versions lower than 13.0 are not supported on Windows."
         exit 1
     fi
+    echo http://dl-cdn.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories
+    apk update
     apk add wine
+    wineboot --init
+
     cp ${MAIN_DIR}/dependencies/windows/toolchain.cmake $DOCKERFILE_DIR
 fi
 
