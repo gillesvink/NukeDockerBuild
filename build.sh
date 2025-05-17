@@ -9,14 +9,7 @@ NUKEVERSION="$1"
 OPERATING_SYSTEM="$2"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if command -v docker &> /dev/null; then
-    COMMAND="docker"
-else
-    echo "Docker not installed. Please install that first."
-    exit 1
-fi
-
-echo "Using $COMMAND for build."
+command -v docker &> /dev/null || { echo "Docker not installed. Please install that first."; exit 1; }
 
 echo "Starting build for: '${NUKEVERSION}'."
 mkdir -p build
