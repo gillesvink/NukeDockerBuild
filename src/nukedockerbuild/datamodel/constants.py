@@ -54,7 +54,7 @@ class UpstreamImage(str, Enum):
     ROCKYLINUX_8: str = "rockylinux:8"
     CENTOS_7_9: str = "centos:centos7.9.2009"
     CENTOS_7_4: str = "centos:centos7.4.1708"
-    UBUNTU_22_04: str = "ubuntu:22.04"
+    DEBIAN_BOOKWORM: str = "debian:bookworm"
 
 
 JSON_DATA_SOURCE = (

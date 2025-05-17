@@ -53,7 +53,7 @@ class TestDockerfile:
             (
                 OperatingSystem.WINDOWS,
                 15.0,
-                UpstreamImage.UBUNTU_22_04,
+                UpstreamImage.DEBIAN_BOOKWORM,
             ),
         ],
     )

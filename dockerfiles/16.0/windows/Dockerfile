@@ -1,11 +1,11 @@
-FROM ubuntu:22.04
+FROM debian:bookworm
 
 LABEL 'org.opencontainers.version'=2.1
-LABEL 'org.opencontainers.image.created'='2025-05-16'
+LABEL 'org.opencontainers.image.created'='2025-05-17'
 LABEL 'org.opencontainers.image.description'='Ready to use image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
 LABEL 'org.opencontainers.url'='https://codeberg.org/gillesvink/NukeDockerBuild'
-LABEL 'com.nukedockerbuild.based_on'='ubuntu:22.04'
+LABEL 'com.nukedockerbuild.based_on'='debian:bookworm'
 LABEL 'com.nukedockerbuild.operating_system'='windows'
 LABEL 'com.nukedockerbuild.nuke_version'=16.0
 LABEL 'com.nukedockerbuild.nuke_source'='https://thefoundry.s3.amazonaws.com/products/nuke/releases/16.0v2/Nuke16.0v2-win-x86_64.zip'
