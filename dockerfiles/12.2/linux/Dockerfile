@@ -1,7 +1,7 @@
 FROM centos:centos7.4.1708
 
 LABEL 'org.opencontainers.version'=1.0
-LABEL 'org.opencontainers.image.created'='2025-05-16'
+LABEL 'org.opencontainers.image.created'='2025-05-18'
 LABEL 'org.opencontainers.image.description'='Ready to use image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
 LABEL 'org.opencontainers.url'='https://codeberg.org/gillesvink/NukeDockerBuild'
@@ -45,6 +45,7 @@ RUN ulimit -n 1024 \
   && tar xf git-2.9.5.tar.xz \
   && rm git-2.9.5.tar.xz \
   && cd git-2.9.5 \
+  && source scl_source enable devtoolset-6 \
   && make configure \
   && ./configure --prefix=/usr/local \
   && make all \
@@ -54,14 +55,11 @@ RUN ulimit -n 1024 \
   && yum clean all \
   && rm -rf /var/cache/yum
 
-RUN echo 'unset BASH_ENV PROMPT_COMMAND ENV && source scl_source enable devtoolset-6' >> /usr/bin/scl_enable \
-  && echo 'source scl_source enable devtoolset-6' >> /etc/bashrc \
+RUN echo 'source scl_source enable devtoolset-6' >> /usr/bin/scl_enable \
+  && echo 'source /usr/bin/scl_enable' >> /etc/bashrc \
   && chmod +x /usr/bin/scl_enable
 
 WORKDIR /nuke_build_directory
 
-ENV CMAKE_PREFIX_PATH=/usr/local/nuke_install \
-  BASH_ENV=/usr/bin/scl_enable \
-  ENV=/usr/bin/scl_enable \
-  PROMPT_COMMAND=/usr/bin/scl_enable
+ENV CMAKE_PREFIX_PATH=/usr/local/nuke_install
 ENV NUKE_VERSION=12.2
