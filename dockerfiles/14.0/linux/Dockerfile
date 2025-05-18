@@ -19,7 +19,7 @@ RUN ulimit -n 1024 \
   && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
   && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
   && yum -y install centos-release-scl-rh  \
-  && sed -i 's/7/7.4.1708/g; s|^#\s*\(baseurl=http://\)mirror|\1vault|g; /mirrorlist/d' /etc/yum.repos.d/CentOS-SCLo-*.repo \
+  && sed -i 's/7/7.9.2009/g; s|^#\s*\(baseurl=http://\)mirror|\1vault|g; /mirrorlist/d' /etc/yum.repos.d/CentOS-SCLo-*.repo \
   && yum -y install devtoolset-9 \
   && yum clean all \
   && rm -rf /var/cache/yum
