@@ -77,7 +77,7 @@ Nuke will always be installed at `/usr/local/nuke_install` The entry directory i
 The image also has the `NUKE_VERSION` environment set, this will always contain the version that is available in the image. For example `15.0`
 
 ### Linux
-All Linux images are based on Red Hat based images. This means [Rocky Linux](https://hub.docker.com/_/rockylinux) for Nuke 15+ and [CentOS](https://hub.docker.com/_/centos) for anything lower than 15. As [Foundry is using Rocky](https://learn.foundry.com/nuke/content/release_notes/15.0/nuke_15.0v1_releasenotes.html), I choose to stick to that as well. However it is basically identical to Alma.
+All Linux images are based on Red Hat based images. This means [Rocky Linux](https://hub.docker.com/_/rockylinux) for Nuke 15+ and [manylinux2014](https://quay.io/repository/pypa/manylinux2014_x86_64?tab=tags) for anything lower than 15. As [Foundry is using Rocky](https://learn.foundry.com/nuke/content/release_notes/15.0/nuke_15.0v1_releasenotes.html), I choose to stick to that as well. However it is basically identical to Alma.
 
 ### Windows
 Windows images are based on Debian Bookworm. They use the [wine-msvc](https://github.com/mstorsjo/msvc-wine) project to make cross compilation possible. As they mention:
