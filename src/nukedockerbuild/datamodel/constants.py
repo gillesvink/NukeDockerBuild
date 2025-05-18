@@ -52,8 +52,7 @@ class UpstreamImage(str, Enum):
     """Enumeration for possible upstream images."""
 
     ROCKYLINUX_8: str = "rockylinux:8"
-    CENTOS_7_9: str = "centos:centos7.9.2009"
-    CENTOS_7_4: str = "centos:centos7.4.1708"
+    MANYLINUX_2014: str = "quay.io/pypa/manylinux2014_x86_64"
     DEBIAN_BOOKWORM: str = "debian:bookworm"
 
 
@@ -67,11 +66,11 @@ JSON_DATA_SOURCE = (
 DEVTOOLSETS = {
     16: "gcc-toolset-11",
     15: "gcc-toolset-11",
-    14: "devtoolset-9",
-    13: "devtoolset-6",
-    12: "devtoolset-6",
-    11: "gcc gcc-c++",
-    10: "gcc gcc-c++",
+    14: "gcc-toolset-9",
+    13: "gcc-toolset-9",
+    12: "gcc-toolset-9",
+    11: "gcc-toolset-9",
+    10: "gcc-toolset-9",
 }
 """Matched devtoolset to Nuke major version."""
 

@@ -1,6 +1,6 @@
 FROM debian:bookworm
 
-LABEL 'org.opencontainers.version'=1.0
+LABEL 'org.opencontainers.version'=1.1
 LABEL 'org.opencontainers.image.created'='2025-05-17'
 LABEL 'org.opencontainers.image.description'='Ready to use image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'

@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import os
-from copy import copy, deepcopy
+from copy import copy
 from dataclasses import dataclass
 from datetime import datetime
 from itertools import chain
@@ -113,20 +113,32 @@ class Dockerfile:
         general_environments = DockerEnvironments({"NUKE_VERSION": self.nuke_version})
 
         return "\n".join(
-            environments.to_docker_format()
+            environments.to_docker_format().format(cpp_version=self.cpp_version)
             for environments in [os_environments, general_environments]
         )
+
+    @property
+    def cpp_version(self) -> int:
+        matched_cpp_version = {
+            16: 17,
+            15: 17,
+            14: 17,
+            13: 14,
+            12: 14,
+            11: 11,
+            10: 11,
+        }
+
+        return matched_cpp_version[int(self.nuke_version)]
 
     @property
     def upstream_image(self) -> UpstreamImage:
         """Return matching upstream image."""
         if self.operating_system == OperatingSystem.WINDOWS:
             return UpstreamImage.DEBIAN_BOOKWORM
-        if self.nuke_version >= 15.0:
-            return UpstreamImage.ROCKYLINUX_8
-        if self.nuke_version < 15.0 and self.nuke_version >= 14.0:
-            return UpstreamImage.CENTOS_7_9
-        return UpstreamImage.CENTOS_7_4
+        if self.nuke_version < 15.0:
+            return UpstreamImage.MANYLINUX_2014
+        return UpstreamImage.ROCKYLINUX_8
 
     def to_dockerfile(self) -> str:
         """Convert current instance to a dockerfile string."""
