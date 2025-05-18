@@ -73,8 +73,8 @@ class TestDockerfile:
     @pytest.mark.parametrize(
         ("test_operating_system", "test_version", "expected_toolset"),
         [
-            (OperatingSystem.LINUX, 15.0, "gcc-toolset-11"),
-            (OperatingSystem.LINUX, 15.1, "gcc-toolset-11"),
+            (OperatingSystem.LINUX, 15.0, "11"),
+            (OperatingSystem.LINUX, 15.1, "11"),
             (OperatingSystem.WINDOWS, 15.0, "17"),
             (OperatingSystem.WINDOWS, 15.1, "17"),
             (OperatingSystem.WINDOWS, 14.9, "16"),

@@ -64,13 +64,13 @@ JSON_DATA_SOURCE = (
 
 
 DEVTOOLSETS = {
-    16: "gcc-toolset-11",
-    15: "gcc-toolset-11",
-    14: "gcc-toolset-9",
-    13: "gcc-toolset-9",
-    12: "gcc-toolset-9",
-    11: "gcc-toolset-9",
-    10: "gcc-toolset-9",
+    16: "11",
+    15: "11",
+    14: "",
+    13: "",
+    12: "",
+    11: "",
+    10: "",
 }
 """Matched devtoolset to Nuke major version."""
 

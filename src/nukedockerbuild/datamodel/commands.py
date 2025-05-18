@@ -50,9 +50,11 @@ IMAGE_COMMANDS: dict[UpstreamImage, list[DockerCommand]] = {
     UpstreamImage.ROCKYLINUX_8: [  # such an improvement compared to CentOS D:
         DockerCommand(
             [
-                "dnf install {toolset} -y",
+                "dnf install gcc-toolset-{toolset}-gcc gcc-toolset-{toolset}-gcc-c++ -y",
                 "dnf install cmake3 git -y",
                 "dnf install mesa-libGLU-devel -y",
+                "ln -s /opt/rh/gcc-toolset-{toolset}/root/bin/gcc /usr/bin/gcc",
+                "ln -s /opt/rh/gcc-toolset-{toolset}/root/bin/g++ /usr/bin/g++",
                 "dnf clean all",
                 "rm -rf /var/cache/dnf",
             ]

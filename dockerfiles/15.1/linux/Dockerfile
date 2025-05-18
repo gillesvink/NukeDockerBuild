@@ -1,7 +1,7 @@
 FROM rockylinux:8
 
-LABEL 'org.opencontainers.version'=1.1
-LABEL 'org.opencontainers.image.created'='2025-05-16'
+LABEL 'org.opencontainers.version'=1.2
+LABEL 'org.opencontainers.image.created'='2025-05-18'
 LABEL 'org.opencontainers.image.description'='Ready to use image for building Nuke plugins.'
 LABEL 'org.opencontainers.license'='MIT'
 LABEL 'org.opencontainers.url'='https://codeberg.org/gillesvink/NukeDockerBuild'
@@ -14,17 +14,16 @@ ARG NUKE_SOURCE_FILES
 
 COPY $NUKE_SOURCE_FILES /usr/local/nuke_install
 
-RUN dnf install gcc-toolset-11 -y \
+RUN dnf install gcc-toolset-11-gcc gcc-toolset-11-gcc-c++ -y \
   && dnf install cmake3 git -y \
   && dnf install mesa-libGLU-devel -y \
+  && ln -s /opt/rh/gcc-toolset-11/root/bin/gcc /usr/bin/gcc \
+  && ln -s /opt/rh/gcc-toolset-11/root/bin/g++ /usr/bin/g++ \
   && dnf clean all \
   && rm -rf /var/cache/dnf
 
-RUN echo 'source scl_source enable gcc-toolset-11' >> /usr/bin/scl_enable \
-  && echo 'source /usr/bin/scl_enable' >> /etc/bashrc \
-  && chmod +x /usr/bin/scl_enable
-
 WORKDIR /nuke_build_directory
 
-ENV CMAKE_PREFIX_PATH=/usr/local/nuke_install
+ENV CMAKE_PREFIX_PATH=/usr/local/nuke_install \
+  CXXFLAGS=-std=c++17
 ENV NUKE_VERSION=15.1
