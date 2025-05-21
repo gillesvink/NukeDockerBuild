@@ -1,22 +1,31 @@
 #!/bin/bash
 
 if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <path_to_dockerfile> <target_folder>"
+    echo "Usage: $0 <nuke_version> <target_folder>"
     exit 1
 fi
 
-dockerfile_path="$1"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+
+version=$(echo "$1" | sed -E 's/^([0-9]+\.[0-9]+).*/\1/')
+major=$(echo "${version}" | awk -F '.' '{print $1}')
 target_folder="$2"
 
-url=$(grep "LABEL 'com.nukedockerbuild.nuke_source'" "$dockerfile_path" | awk -F"=" '{print $2}' | tr -d "'")
-version=$(grep "LABEL 'com.nukedockerbuild.nuke_version'" "$dockerfile_path" | awk -F"=" '{print $2}' | tr -d "'")
+minor_releases_url=https://codeberg.org/gillesvink/NukeVersionParser/raw/branch/main/nuke-minor-releases.json
+
+url=$(curl -s "${minor_releases_url}" | jq -r --arg prefix "$version" --arg major "$major" '
+  .[$major] | to_entries[] | select(.key | startswith($prefix)) | .value.installer.linux_x86_64
+')
+
 
 if [ -z "$url" ]; then
-    echo "Error: Label not found in the Dockerfile."
+    echo "No version found for: '${version}'. Is it actually an existing version?"
     exit 1
 else
-    echo "Process data from: $url"
+    echo "Downloading from: $url"
 fi
+
 
 filename=$(basename "$url")
 nuke_temp_files=/tmp/nuke_temp_files
@@ -49,3 +58,5 @@ find ${target_folder} -mindepth 1 -maxdepth 1 ! -name "tests" ! -name "cmake" ! 
 
 echo "Clean nuke temp files"
 rm -rf ${nuke_temp_files}
+
+${SCRIPT_DIR}/patch.sh ${target_folder}
