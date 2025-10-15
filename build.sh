@@ -1,17 +1,22 @@
 #!/bin/bash
 
 if [ "$#" -lt 2 ]; then
-    echo "Usage: $0 <nuke-version> <windows/linux> [optional: --podman]"
+    echo "Usage: $0 <nuke-version> <windows/linux> [optional: --podman, --skip-load]"
     exit 1
 fi
 
 NUKEVERSION="$1"
 OPERATING_SYSTEM="$2"
 USE_PODMAN=false
+SKIP_LOAD=false
 
-if [ "$#" -eq 3 ] && [ "$3" == "--podman" ]; then
-    USE_PODMAN=true
-fi
+for arg in "${@:3}"; do
+    case "$arg" in
+        --podman) USE_PODMAN=true ;;
+        --skip-load) SKIP_LOAD=true ;;
+    esac
+done
+
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -35,9 +40,10 @@ if $USE_PODMAN; then
         quay.io/podman/stable:latest \
         bash -c "/nukedockerbuild/scripts/build.sh ${NUKEVERSION} ${OPERATING_SYSTEM} --podman"
 
-    podman load -i ${SCRIPT_DIR}/build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar
-    
-    rm -rf /build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar
+    if ! $SKIP_LOAD; then
+        podman load -i ${SCRIPT_DIR}/build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar
+        rm -rf /build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar
+    fi
 
 else
     docker run \
@@ -49,11 +55,12 @@ else
         sh -c "apk add --no-cache bash && \
         /nukedockerbuild/scripts/build.sh ${NUKEVERSION} ${OPERATING_SYSTEM}"
 
-    docker load -i ${SCRIPT_DIR}/build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar
-
-    docker run \
-        -v "${SCRIPT_DIR}/build:/build" \
-        --rm \
-        docker.io/docker:dind \
-        sh -c "rm -rf /build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar"
+    if ! $SKIP_LOAD; then
+        docker load -i ${SCRIPT_DIR}/build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar
+        docker run \
+            -v "${SCRIPT_DIR}/build:/build" \
+            --rm \
+            docker.io/docker:dind \
+            sh -c "rm -rf /build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar"
+    fi
 fi
