@@ -12,7 +12,6 @@ Build the image you need locally. This can be done with the `build.sh` script. S
 > [!TIP]
 > For security it is recommended to use Podman, as these images do not require any root privilege.
 
-
 It is build within a separate dind container, and then copied over to the host. This makes it possible to build images with just Docker or Podman installed. All necessary dependencies will be installed automatically within the dind/podman container.
 
 ### Linux
