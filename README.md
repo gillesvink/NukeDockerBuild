@@ -25,7 +25,6 @@ Please note that it takes some time to run. It will show some Wine errors due to
 ```bash
 ./build.sh 15.1 windows
 ./build.sh 15.1 windows --podman # for podman build
-
 ```
 
 It is recommended to push the built images to your own registry, so you don't need to build each use.
