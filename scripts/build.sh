@@ -80,6 +80,6 @@ else
         .
 
     docker save -o /build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}
+    chmod 777 /build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar
 fi
 
-# chmod 777 /build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar
