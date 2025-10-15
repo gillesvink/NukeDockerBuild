@@ -9,6 +9,10 @@ These images are meant for both local development using development containers a
 ## How to use
 Build the image you need locally. This can be done with the `build.sh` script. Specify the Nuke version you need, and it will build the correct image to use. For example 15.1 is specified in the examples here:
 
+> [!TIP]
+> For security it is recommended to use Podman, as these images do not require any root privilege.
+
+
 It is build within a separate dind container, and then copied over to the host. This makes it possible to build images with just Docker or Podman installed. All necessary dependencies will be installed automatically within the dind/podman container.
 
 ### Linux
