@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM docker.io/debian:bookworm
 
 LABEL 'org.opencontainers.version'=2.1
 LABEL 'org.opencontainers.image.created'='2025-05-17'
