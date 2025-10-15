@@ -9,31 +9,34 @@ These images are meant for both local development using development containers a
 ## How to use
 Build the image you need locally. This can be done with the `build.sh` script. Specify the Nuke version you need, and it will build the correct image to use. For example 15.1 is specified in the examples here:
 
-It is build within a separate dind container, and then copied over to the host. This makes it possible to build images with just Docker installed. All necessary dependencies will be installed automatically within the dind container.
+It is build within a separate dind container, and then copied over to the host. This makes it possible to build images with just Docker or Podman installed. All necessary dependencies will be installed automatically within the dind/podman container.
 
 ### Linux
 ```bash
 ./build.sh 15.1 linux
+./build.sh 15.1 linux --podman # for podman build
 ```
 
 ### Windows
 Please note that it takes some time to run. It will show some Wine errors due to no display being available in the containerized build. This is fine however. (The entire build takes around ~15 minutes on my machine)
 ```bash
 ./build.sh 15.1 windows
+./build.sh 15.1 windows --podman # for podman build
+
 ```
 
-It is recommended to push the builded images to your own registry, so you don't need to build each use.
+It is recommended to push the built images to your own registry, so you don't need to build each use.
 
 ## ⬆️ How is this updated? 
-Since Nuke requires every minor release to be compiled natively, it needs to have a docker image as well for each minor version.
+Since Nuke requires every minor release to be compiled natively, it needs to have an image as well for each minor version.
 
 This is done in an automatic process to create the Dockerfiles whenever there is a new Nuke minor release. It uses the minor supported releases JSON from my other repo: [NukeVersionParser](https://codeberg.org/gillesvink/NukeVersionParser).
 
 This data is used once a day to check if there is anything new a new dockerfile will be created
 
 ## 📝 Quickstart 
-First of all make sure you have Docker installed on your system. Guides can be found here at [Docker Install](https://docs.docker.com/engine/install/).
-Once installed, you can test the docker image by running the command provided here. There might be some warnings of deprecation, that is because some source code in the examples uses deprecated functions.
+First of all make sure you have Docker or Podman installed on your system. Guides can be found here at [Docker Install](https://docs.docker.com/engine/install/) or at [Podman Install](https://podman.io/docs/installation).
+Once installed, you can test the image by running the command provided here. There might be some warnings of deprecation, that is because some source code in the examples uses deprecated functions.
 
 ### Run tests locally
 Beneath here are some quick tests to verify everything is working on your system. It should pass compiling (this is a test for a Nuke 15 image). It might take a while for the image to be downloaded
