@@ -51,7 +51,7 @@ class OperatingSystem(str, Enum):
 class UpstreamImage(str, Enum):
     """Enumeration for possible upstream images."""
 
-    ROCKYLINUX_8: str = "quay.io/rockylinux:8"
+    ROCKYLINUX_8: str = "docker.io/rockylinux:8"
     MANYLINUX_2014: str = "quay.io/pypa/manylinux2014_x86_64"
     DEBIAN_BOOKWORM: str = "docker.io/debian:bookworm"
 

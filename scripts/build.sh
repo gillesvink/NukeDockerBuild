@@ -72,14 +72,14 @@ if $USE_PODMAN; then
         --build-arg NUKE_SOURCE_FILES=${SOURCES_DIR} \
         .
 
-    podman save -o /build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}
+    podman save nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM} | gzip > /build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar.gz
 else
     docker buildx build \
         -t nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM} \
         --build-arg NUKE_SOURCE_FILES=${SOURCES_DIR} \
         .
 
-    docker save -o /build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}
-    chmod 777 /build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar
+    docker save nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM} | gzip > /build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar.gz
+    chmod 777 /build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar.gz
 fi
 

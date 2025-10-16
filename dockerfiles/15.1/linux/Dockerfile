@@ -1,4 +1,4 @@
-FROM quay.io/rockylinux:8
+FROM docker.io/rockylinux:8
 
 LABEL 'org.opencontainers.version'=1.2
 LABEL 'org.opencontainers.image.created'='2025-05-18'

@@ -41,8 +41,8 @@ if $USE_PODMAN; then
         bash -c "/nukedockerbuild/scripts/build.sh ${NUKEVERSION} ${OPERATING_SYSTEM} --podman"
 
     if ! $SKIP_LOAD; then
-        podman load -i ${SCRIPT_DIR}/build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar
-        rm -rf /build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar
+        podman load -i ${SCRIPT_DIR}/build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar.gz
+        rm -rf /build/nukedockerbuild-${NUKEVERSION}-${OPERATING_SYSTEM}.tar.gz
     fi
 
 else
@@ -56,11 +56,11 @@ else
         /nukedockerbuild/scripts/build.sh ${NUKEVERSION} ${OPERATING_SYSTEM}"
 
     if ! $SKIP_LOAD; then
-        docker load -i ${SCRIPT_DIR}/build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar
+        docker load -i ${SCRIPT_DIR}/build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar.gz
         docker run \
             -v "${SCRIPT_DIR}/build:/build" \
             --rm \
             docker.io/docker:dind \
-            sh -c "rm -rf /build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar"
+            sh -c "rm -rf /build/nukedockerbuild:${NUKEVERSION}-${OPERATING_SYSTEM}.tar.gz"
     fi
 fi

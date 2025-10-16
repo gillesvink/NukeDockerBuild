@@ -8,4 +8,4 @@ _nuke_sources
 nuke_source
 log.txt
 dockerfiles/**/toolchain.cmake
-*.tar
+*.tar.gz
